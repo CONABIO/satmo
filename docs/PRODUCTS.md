@@ -28,7 +28,7 @@ This is for instance the case of near real time products, which have an immediat
 The table below lists the final products produced in near-real time.
 
 | Abbreviation |                    Name                   | Spatial Resolution | Origin |
-|==============|===========================================|====================|========|
+|--------------|-------------------------------------------|--------------------|--------|
 | Chl\_OC3     | chlorophyll band-ratio model oc3          |                    |        |
 | FLH          | fluorescence line height                  |                    |        |
 | TSM          | total suspended matter concentration      |                    |        |
@@ -45,7 +45,7 @@ The table below lists the final products produced in near-real time.
 Intermediary products are mostly surface reflectance layers, used for the computation of above products.
 
 | Wavelength | Spatial resolution | Origin |    Used for    |
-|============|====================|========|================|
+|------------|--------------------|--------|----------------|
 |        412 |                    |        |                |
 |        443 |                    |        |                |
 |        488 |                    |        |                |
@@ -61,7 +61,7 @@ If any? Additional data used for processing steps (e.g. Atmospheric correction)
 
 
 | Wavelength | Spatial resolution | Origin |    Used for    |
-|============|====================|========|================|
+|------------|--------------------|--------|----------------|
 |        748 |                    |        | Atm correction |
 |        869 |                    |        | Atm correction |
 |       1240 |                    |        | Atm correction |
