@@ -44,15 +44,19 @@ The table below lists the final products produced in near-real time.
 
 Intermediary products are mostly surface reflectance layers, used for the computation of above products.
 
-| Wavelength | Spatial resolution | Origin |    Used for    |
-|------------|--------------------|--------|----------------|
-|        412 |                    |        |                |
-|        443 |                    |        |                |
-|        488 |                    |        |                |
-|        531 |                    |        |                |
-|        555 |                    |        |                |
-|        670 |                    |        |                |
-|            |                    |        |                |
+| Wavelength | Spatial resolution | Origin | Used for |
+|------------|--------------------|--------|----------|
+|        412 |                    |        |          |
+|        443 |                    |        |          |
+|        469 |                    |        |          |
+|        488 |                    |        |          |
+|        531 |                    |        |          |
+|        547 |                    |        |          |
+|        555 |                    |        |          |
+|        645 |                    |        |          |
+|        667 |                    |        |          |
+|        670 |                    |        |          |
+|        678 |                    |        |          |
 
 
 - Ancillary data
