@@ -11,14 +11,19 @@ The overall system can be summarized with the conceptual diagram below.
 
 
 
-*SATMO should be a point where analysis ready data from various satellite sources is available, facilitating efficient analysis with well integrated and up to date datasets.*
+Therefore *SATMO should be a point where analysis ready data from various satellite sources is available, facilitating efficient analysis with well integrated and up to date datasets.*
 
-Direct output of the system will be:
-- Alert system for Sargassum, Algeae blooms and coral bleaching
-- Forcast and early warning system
+Direct applications of the overall system will be:
+
+- Alert, forecast and early warning system for issues such as
+	- Sargassum blooms (Detect and forecast future locations according to ocean currents)
+	- Algea blooms (Including rapid alert to inform sanitary authorities that can subsequently test for toxicity)
+	- Risks of coral bleeching
+- Facilitated centralized access to various kind of data and information about seas and oceans
 
 
 These activities should result in:
-- Improved knowledge and understanding of marine ecosystems and dynamics
-- Better capacity to monitor, protect, and manage marine ecosystems 
+
+- An improved knowledge and understanding of marine ecosystems and dynamics
+- A better capacity to monitor, protect, and manage marine ecosystems
 
