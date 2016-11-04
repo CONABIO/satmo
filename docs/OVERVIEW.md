@@ -47,3 +47,17 @@ This implies that SATMO must
 - Produce and update information required to compute anomalies
 
 ![](img/satmo_general_processing_chain.svg)
+
+## Detailed description of the ingestion and processing steps
+
+### Data sources
+
+This is a description of the fully automated ingestion and processing module of the SATMO. The main source of raw data is the ocean color [DAAC](http://oceandata.sci.gsfc.nasa.gov/). Processing from L0 to L1A is completely standard and performed automatically and in near real time by the ocean color system. L1A products are therefore preferred over L0 as they maintain all data characteristics and are suitable for re-calibrations, while limiting storage and processing requirements. Alternatively data can be obtained directly from the CONABIO antenna, as it receives, directly from various sensors, Production datasets (PDS). This option however, requires further data processing and is considered secondary at the moment and would only be used in case of dysfunction of the ocean color DAAC or in case of US government shutdown.
+
+
+### Data processing
+
+Processing is done automatically, triggered by the availability of the required data on the ocean color DAAC, with a flexible and modular design that combines existing tools with custom made solutions. The main pre-processing steps (e.g. generation of L2 surface reflectance data) are supported by the (already existing) SeaDAS processing modules, while later steps of the processing chain are implemented in python.
+This flexible design enables the implementation of new algorithms in a timely manner as well as the capacity to accommodate new sensors.
+
+The (daily, weekly and monthly) composites calculated are required to compute and update climatologies for each variables, from which anomalies can be generated. 
