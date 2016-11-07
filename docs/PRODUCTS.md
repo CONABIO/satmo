@@ -6,12 +6,12 @@ Similarly to the previous version of the system, the area covered stretches from
 
 The number of pixels covering the areas for the various spatial resolutions (250, 500 and 1000 m) will depend on the Coordinate Reference System (CRS) chosen for the output.
 
-An equal area projection (laea, aea) centered in the 
+Plate caree appears to be the standard projection of the ocean color community. This remains an open consideration that requires further assessment considering the requirements of both web visualization and analysis.
 
 
 ## Intermediary Vs Final
 
-Final products are defined by biophysical variables whose values have a direct biological/ecological/analytical interest (Chlorophyll-alpha, Sea Surface Temperature, etc). On the contrary, intermediary products do not represent any direct biologically meaningful biophysical variable (reflectance, ). These would for instance not be displayed/displayable on the web visualization platform.
+Final products are defined by biophysical variables whose values have a direct biological/ecological/analytical interest (ocean color products, Sea Surface Temperature, etc). On the contrary, intermediary products do not represent any direct biologically meaningful biophysical variable (e.g.: reflectance), but are essential to compute final products. Intermediary products would for instance not be displayed/displayable on the web visualization platform.
 
 
 ## Rolling Vs permanent archiving
@@ -21,55 +21,18 @@ This is for instance the case of near real time products, which have an immediat
 
 ## Product list
 
-### Near real time products
-
-- Final products:
-
-The table below lists the final products produced in near-real time.
-
-| Abbreviation |                    Name                   | Spatial Resolution | Origin |
-|--------------|-------------------------------------------|--------------------|--------|
-| Chl\_OC3     | chlorophyll band-ratio model oc3          |                    |        |
-| FLH          | fluorescence line height                  |                    |        |
-| TSM          | total suspended matter concentration      |                    |        |
-| Kd(490)      | diffuse attenuation coefficient at 490 nm |                    |        |
-| SST          | Sea Surface Temperature                   |                    |        |
-| NSST         | Night Sea Surface Temperature             |                    |        |
-| SST4         | Short Waves Sea Surface Temperature       |                    |        |
+### Ocean color products
 
 
-
-
-- Intermediary products:
-
-Intermediary products are mostly surface reflectance layers, used for the computation of above products.
-
-| Wavelength | Spatial resolution | Origin | Used for |
-|------------|--------------------|--------|----------|
-|        412 |                    |        |          |
-|        443 |                    |        |          |
-|        469 |                    |        |          |
-|        488 |                    |        |          |
-|        531 |                    |        |          |
-|        547 |                    |        |          |
-|        555 |                    |        |          |
-|        645 |                    |        |          |
-|        667 |                    |        |          |
-|        670 |                    |        |          |
-|        678 |                    |        |          |
-
-
-- Ancillary data
-
-If any? Additional data used for processing steps (e.g. Atmospheric correction)
-
-
-| Wavelength | Spatial resolution | Origin |    Used for    |
-|------------|--------------------|--------|----------------|
-|        748 |                    |        | Atm correction |
-|        869 |                    |        | Atm correction |
-|       1240 |                    |        | Atm correction |
-|       2130 |                    |        | Atm correction |
+| Abbreviation |                    Name                   | reference | Remark |
+|--------------|-------------------------------------------|-----------|--------|
+| Chl\_OC3     | chlorophyll band-ratio model oc3          |           |        |
+| FLH          | fluorescence line height                  |           |        |
+| TSM          | total suspended matter concentration      |           |        |
+| Kd(490)      | diffuse attenuation coefficient at 490 nm |           |        |
+| SST          | Sea Surface Temperature                   |           |        |
+| NSST         | Night Sea Surface Temperature             |           |        |
+| SST4         | Short Waves Sea Surface Temperature       |           |        |
 
 
 ### Composite products and climatologies
@@ -80,22 +43,60 @@ If any? Additional data used for processing steps (e.g. Atmospheric correction)
 
 
 
+### Additional variables
+
+|       Product        | Source (technology) |                  Source (institution)                  |
+|----------------------|---------------------|--------------------------------------------------------|
+| Ocean winds          |                     | See [nasa winds](https://winds.jpl.nasa.gov/)          |
+| Salinity             | SMOS-MIRAS          | CATDS? ESA?                                            |
+| (Dynamic) topography | OSTM/Jason-2        |                                                        |
+| Ocean currents       |                     | [NOAA](https://www.nodc.noaa.gov/General/current.html) |
+|                      |                     |                                                        |
+
+
+## Input data assessment
+
+### Ocean color data sources
+
+- MODIS Terra
+- MODIS Aqua
+- VIIRS NPP
+- SeaWIFS
+- Sentinel 3
+- MERIS
+
+### Spectral characteristics	
+
+|  Name  | MODIS | VIIRS | MERIS | SeaWifs | Sentinel3 |
+|--------|-------|-------|-------|---------|-----------|
+| BLUE1  |   412 |   412 |       |         |           |
+| BLUE2  |   443 |   445 |       |         |           |
+| BLUE3  |   469 |       |       |         |           |
+| BLUE4  |   488 |   488 |       |         |           |
+| GREEN1 |   531 |       |       |         |           |
+| GREEN2 |   551 |       |       |         |           |
+| GREEN3 |   555 |   555 |       |         |           |
+| RED1   |   645 |   640 |       |         |           |
+| RED2   |   667 |   672 |       |         |           |
+| RED3   |   678 |       |       |         |           |
+| RED4   |   748 |   748 |       |         |           |
+| NIR1   |   859 |       |       |         |           |
+| NIR2   |   869 |   867 |       |         |           |
+| SWIR1  |  1240 |  1240 |       |         |           |
+| SWIR1  |  1640 |       |       |         |           |
+| SWIR2  |  2130 |       |       |         |           |
+
+<!-- TODO: Make a plot (ggplot) to visualize all spectral bands of all sensors -->
+
+
+
+
+
+
 ### Annex products
 
 Bathymetry, coast lines, administrative borders
 
-
-## Data sources
-
-- MODIS Terra
-- MODIS Aqua
-- VIIRS
-- SeaWIFS
-
-## Cross sensor composite products
-
-Sounds silly to me to keep sensors separated rather than building unified variables from the various data sources!
-What are the options?
 
 
 ## Software and processing
@@ -109,5 +110,3 @@ What are the options?
 
 
 ## Sandbox/TODO section
-
-- Justify need for 250m for ocean monitoring (sea surface is rather homogeneous)
