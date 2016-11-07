@@ -103,6 +103,30 @@ Bathymetry, coast lines, administrative borders
 
 ### Processing steps
 
+`multilevel_processor.py`
+
+To run:
+
+`multilevel_processor.py modis_SR.par`
+
+
+Content of `modis_SR.par`
+
+```
+[main]
+# ifile corresponds to input files (comma separated list)
+# Apparently files need to be unpacked first
+ifile=T2016260171500.L1A_LAC.bz2,T2016260202500.L1A_LAC.bz2,T2016260220000.L1A_LAC.bz2
+
+[l2gen]
+l2prod=Rrs_469 Rrs_555 Rrs_645 Rrs_859
+
+# SUBSETTING OPTIONS
+south=3
+north=33
+west=-122
+east=-72
+```
 
 ### Quality control
 
