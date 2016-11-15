@@ -16,7 +16,7 @@ Final products are defined by biophysical variables whose values have a direct b
 
 ## Rolling Vs permanent archiving
 
-Even though they constitute final products, certain variables do not need to be stored permanently on the system, and can be replaced by new incoming data, hence saving storage.
+Even though they constitute final products, certain variables do not need to be stored permanently on the system, and can be replaced by new incoming data, hnece saving storage.
 This is for instance the case of near real time products, which have an immediate relevance but become obsolete after consolidation.
 
 ## Product list
@@ -107,8 +107,8 @@ Bathymetry, coast lines, administrative borders
 
 To run:
 
-`multilevel_processor.py modis_SR.par`
-
+`multilevel_processor.py --output_dir=ODIR modis_SR.par
+`
 
 Content of `modis_SR.par`
 
@@ -117,6 +117,8 @@ Content of `modis_SR.par`
 # ifile corresponds to input files (comma separated list)
 # Apparently files need to be unpacked first
 ifile=T2016260171500.L1A_LAC.bz2,T2016260202500.L1A_LAC.bz2,T2016260220000.L1A_LAC.bz2
+use_nrt_anc=1
+overwrite=1
 
 [l2gen]
 l2prod=Rrs_469 Rrs_555 Rrs_645 Rrs_859
