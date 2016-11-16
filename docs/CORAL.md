@@ -20,8 +20,17 @@ source ~/.zshrc
 echo "source $OCSSWROOT/OCSSW_bash.env" >> ~/.zshrc
 ```
 
-
+I also updated the pre-processors by running
+```sh
+update_luts.py terra
+update_luts.py aqua
+update_luts.py seawifs
+update_luts.py viirsn
+```
 
 ### Notes
 
 The /data drive was initially mounted with noexec; so I remounted it by running `mount -o remount,exec /dev/mapper/data-Vol_001 /data`
+
+Any jupyter notebook started by `loic` can be accessed remotely via browser. ([coral:9999](coral:9999)). Password is `notebook`. The notebook server running permanently (launched with `nohup jupyter notebook &`) is running from within the `satmo-dev` virtualenv.
+
