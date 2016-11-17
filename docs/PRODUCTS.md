@@ -16,7 +16,7 @@ Final products are defined by biophysical variables whose values have a direct b
 
 ## Rolling Vs permanent archiving
 
-Even though they constitute final products, certain variables do not need to be stored permanently on the system, and can be replaced by new incoming data, hnece saving storage.
+Even though they constitute final products, certain variables do not need to be stored permanently on the system, and can be replaced by new incoming data, hence saving storage.
 This is for instance the case of near real time products, which have an immediate relevance but become obsolete after consolidation.
 
 ## Product list

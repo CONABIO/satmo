@@ -60,4 +60,29 @@ This is a description of the fully automated ingestion and processing module of 
 Processing is done automatically, triggered by the availability of the required data on the ocean color DAAC, with a flexible and modular design that combines existing tools with custom made solutions. The main pre-processing steps (e.g. generation of L2 surface reflectance data) are supported by the (already existing) SeaDAS processing modules, while later steps of the processing chain are implemented in python.
 This flexible design enables the implementation of new algorithms in a timely manner as well as the capacity to accommodate new sensors.
 
-The (daily, weekly and monthly) composites calculated are required to compute and update climatologies for each variables, from which anomalies can be generated. 
+The (daily, weekly and monthly) composites calculated are required to compute and update climatologies for each variables, from which anomalies can be generated.
+
+### L1A to L2bin
+
+We directly generate spatially binned reflectance data using the Can be done in one step using the `multilevel-processor.py` 
+
+
+
+## Calculation of indices
+
+
+## Annex products
+
+
+- jpg preview
+- json file with metadata (download url, preview url, cloud cover, processing date, variables, etc)
+
+These additional output will be later used by the satmo data explorer (a dynamic website that generate product pages based on the content of the ftp site).
+
+## System operation
+
+The system includes both a near real time component, capable of downloading data as they become available on the oceancolor servers and processing them immediately, and must be operable on any subset of data.
+
+## Administration interface
+
+An interface to select variables, start/stop the system, update collections, etc will be designed. Ideally with an authentication system connected to the conabio user database; otherwise using unix accounts of the server on which the system is running.

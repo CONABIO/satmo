@@ -31,6 +31,7 @@ Not yet defined
 ## Authors
 
 - Loïc Dutrieux <loic.dutrieux@conabio.gob.mx>
+- Sergio Cerdeira Estrada
 
 
 ## Changes
