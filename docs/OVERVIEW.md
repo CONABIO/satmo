@@ -54,6 +54,18 @@ This implies that SATMO must
 
 This is a description of the fully automated ingestion and processing module of the SATMO. The main source of raw data is the ocean color [DAAC](http://oceandata.sci.gsfc.nasa.gov/). Processing from L0 to L1A is completely standard and performed automatically and in near real time by the ocean color system. L1A products are therefore preferred over L0 as they maintain all data characteristics and are suitable for re-calibrations, while limiting storage and processing requirements. Alternatively data can be obtained directly from the CONABIO antenna, as it receives, directly from various sensors, Production datasets (PDS). This option however, requires further data processing and is considered secondary at the moment and would only be used in case of dysfunction of the ocean color DAAC or in case of US government shutdown.
 
+### Data download
+
+#### Reflectance data (MODIS, SeaWifs, VIIRS)
+
+Because L1A data are archived according to their acquisition time and not according to their geo-location, the difficulty in setting up an automated download is to identify the right data on the oceancolor servers.
+The pragmatic approach for data download are the following:
+
+- When updating archive data, get the list of download urls manually using the [data browser](http://oceancolor.gsfc.nasa.gov/cgi/browse.pl?sen=am), save as text file, place in the appropriate directory (tbd) and run the download updater function.
+- For near real time, use a subscription that will automatically select the files and make them available on a daily basis. These files can then easily be retrieved.
+
+Further more automated options will be explored in the future using the common metadata repository or by sending requests to the browse.pl API.
+
 
 ### Data processing
 
@@ -81,8 +93,28 @@ These additional output will be later used by the satmo data explorer (a dynamic
 
 ## System operation
 
-The system includes both a near real time component, capable of downloading data as they become available on the oceancolor servers and processing them immediately, and must be operable on any subset of data.
+The system must include both a near real time component -- capable of downloading data as they become available on the oceancolor servers and processing them immediately -- and a component that enables flexible updating or re-processing of different collections when needed.
+
+The different modes are then:
+
+- Near real time operation
+- Updating mode (updates a given collection, only missing data are downloaded or processed)
+- Re-process mode (reprocesses an entire collection)
 
 ## Administration interface
 
 An interface to select variables, start/stop the system, update collections, etc will be designed. Ideally with an authentication system connected to the conabio user database; otherwise using unix accounts of the server on which the system is running.
+
+The interface will be written with the flask python web framework.
+
+Controls of the administration interface would then be:
+
+- Start and stop NRT system
+- Chose directories of input and output data
+- Select variables to process
+- Trigger a collection update or a re-processing
+
+Additionally the interface should display:
+
+- Status
+- Errors
