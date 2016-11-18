@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, date
+from datetime import datetime
 
 # Global variable that contains sensor information
 SENSOR_CODES = {'A': 'aqua',
@@ -18,13 +18,19 @@ def parse_file_name(id):
 
     Returns:
         dictionary: Dictionary containing information on sensor, date, level, etc
+        year, month, doy, dom are integers
     """
     id_grep = re.compile(".*([A-Z])(\d{7})\d{6}\.(.*)_(.*)\..*")
     m = id_grep.search(id)
     if m is None:
         raise ValueError('No valid data name found for %s' % id)
-    id_meta = {'sensor': SENSOR_CODES[m.group(1)],
-               'date': datetime.strptime(m.group(2), "%Y%j").date(),
+    dt = datetime.strptime(m.group(2), "%Y%j")
+    id_meta = {'sensor': SENSOR_CODES[m.group(1)], #TODO: a KeyError will be thrown if a key is not in SENSOR_CODES, what to do with it
+               'date': dt.date(),
+               'year': dt.year,
+               'month': dt.month,
+               'doy': dt.timetuple().tm_yday,
+               'dom': dt.timetuple().tm_mday,
                'level': m.group(3),
                'product': m.group(4)}
     return id_meta
