@@ -10,7 +10,7 @@ SATMO is the satellite component of a complete marine monitoring and analysis sy
 
 The overall system can be summarized with the conceptual diagram below.
 
-![](img/marine_monitoring_overview.svg)
+![](img/SIMAR_overview.png)
 
 
 
@@ -64,7 +64,7 @@ The pragmatic approach for data download are the following:
 - When updating archive data, get the list of download urls manually using the [data browser](http://oceancolor.gsfc.nasa.gov/cgi/browse.pl?sen=am), save as text file, place in the appropriate directory (tbd) and run the download updater function.
 - For near real time, use a subscription that will automatically select the files and make them available on a daily basis. These files can then easily be retrieved.
 
-Further more automated options will be explored in the future using the common metadata repository or by sending requests to the browse.pl API.
+Further more automated options will be explored in the future using the common metadata repository or by sending requests to the `browse.pl` API.
 
 
 ### Data processing
