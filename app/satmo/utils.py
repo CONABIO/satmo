@@ -5,7 +5,11 @@ from datetime import datetime
 SENSOR_CODES = {'A': 'aqua',
                 'T': 'terra',
                 'S': 'seawifs',
-                'V': 'viirs'}
+                'V': 'viirs',
+                'O': 'octs',
+                'C': 'czcs',
+                'M': 'meris',
+                'H': 'hico'}
 
 def parse_file_name(id):
     """Filename parser for modis, viirs, seawifs
