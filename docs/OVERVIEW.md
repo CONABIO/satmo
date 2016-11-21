@@ -46,7 +46,7 @@ This implies that SATMO must
 - Compute ecologically relevant variables
 - Produce and update information required to compute anomalies
 
-![](img/satmo_general_processing_chain.svg)
+![](img/satmo_general_processing_chain.png)
 
 ## Detailed description of the ingestion and processing steps
 
