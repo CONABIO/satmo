@@ -126,11 +126,13 @@ The figures below are raw data (L1A) volume estimates till end of __2018__:
 
 |     Sensor    | Yearly volume (GB) | Number of years | Total volume (GB) |
 |---------------|--------------------|-----------------|-------------------|
-| Seawifs (LAC) | 52                 |              14 |                   |
-| MODIS Terra   | 880                |              19 |                   |
-| MODIS Aqua    | 880                |              17 |                   |
-| VIIRS         | 2,140              |               7 |                   |
+| Seawifs (LAC) | 52                 |              14 | 728               |
+| MODIS Terra   | 880                |              19 | 1,6720            |
+| MODIS Aqua    | 880                |              17 | 14,960            |
+| VIIRS         | 2,140              |               7 | 14,980            |
 | MERIS (FRS)   |                    |                 |                   |
 | Sentinel 3a   |                    |                 |                   |
+| Total         |                    |                 | 47,388            |
+|               |                    |                 |                   |
 
 
