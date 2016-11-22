@@ -74,16 +74,16 @@ This flexible design enables the implementation of new algorithms in a timely ma
 
 The (daily, weekly and monthly) composites calculated are required to compute and update climatologies for each variables, from which anomalies can be generated.
 
-### L1A to L2bin
+### L1A to L3bin
 
 We directly generate spatially binned reflectance data using the Can be done in one step using the `multilevel-processor.py` 
 
 
 
-## Calculation of indices
+### Calculation of indices
 
 
-## Annex products
+### Annex products
 
 
 - jpg preview
@@ -101,7 +101,7 @@ The different modes are then:
 - Updating mode (updates a given collection, only missing data are downloaded or processed)
 - Re-process mode (reprocesses an entire collection)
 
-## Administration interface
+### Administration interface
 
 An interface to select variables, start/stop the system, update collections, etc will be designed. Ideally with an authentication system connected to the conabio user database; otherwise using unix accounts of the server on which the system is running.
 
@@ -117,4 +117,20 @@ Controls of the administration interface would then be:
 Additionally the interface should display:
 
 - Status
-- Errors
+- Errors and warnings
+
+
+## Data volumes
+
+The figures below are raw data (L1A) volume estimates till end of __2018__:
+
+|     Sensor    | Yearly volume (GB) | Number of years | Total volume (GB) |
+|---------------|--------------------|-----------------|-------------------|
+| Seawifs (LAC) | 52                 |              14 |                   |
+| MODIS Terra   | 880                |              19 |                   |
+| MODIS Aqua    | 880                |              17 |                   |
+| VIIRS         | 2,140              |               7 |                   |
+| MERIS (FRS)   |                    |                 |                   |
+| Sentinel 3a   |                    |                 |                   |
+
+
