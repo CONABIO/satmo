@@ -21,7 +21,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         sensors: (list) list of strings, Valid entries are 'am' (aqua), 'tm' (terra),
         'sw' (seawifs), 'v0' (viirs)
         date_begin (datetime or str): date of the first day of the period queried
-        use 'mm-dd-yyyy' format if passing it as a string
+        use 'yyyy-mm-dd' format if passing it as a string
         per (str): The period queried. One of 'DAY', 'MO', 'YR'
         north (float): north latitude of bounding box in DD
         south (float): south latitude of bounding box in DD
@@ -39,7 +39,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         raise TypeError('sensors must be a list')
     sensors = '@'.join(sensors)
     if type(date_begin) is str:
-        date_begin = datetime.strptime(date_begin, "%m-%d-%Y")
+        date_begin = datetime.strptime(date_begin, "%Y-%m-%d")
     dnm = []
     if day is True:
         dnm.append('D')
