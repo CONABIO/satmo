@@ -6,7 +6,7 @@ import time
 import warnings
 from pprint import pprint
 
-from .utils import parse_file_name
+from .utils import parse_file_name, make_file_path
 from .errors import HttpResourceNotAvailable
 
 def download_file(url, write_dir):
@@ -61,10 +61,7 @@ def download_to_tree(url, base_dir, overwrite = False, check_integrity = False):
     Returns:
         str: The filename of the downloaded file
     """
-    file_meta = parse_file_name(url)
-    # use following
-    write_dir = os.path.join(base_dir, file_meta['sensor'], file_meta['level'],\
-                             str(file_meta['year']), str(file_meta['doy']))
+    write_dir = os.path.join(base_dir, make_file_path(url, add_file = False))
     if not overwrite:
         file_path = os.path.join(write_dir, url.split('/')[-1])
         if os.path.isfile(file_path): # The file exists
