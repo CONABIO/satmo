@@ -14,8 +14,8 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
 
     Uses an old school perl 'API' to get a list of filenames that intersect with a
     geographical area and a time period. Only L1A products are queried at the moment,
-    however, the function could easily be changed to query other collections (see prm)
-    query argument
+    however, the function could easily be changed to query other collections (see prm
+    query argument)
 
     Args:
         sensors: (list) list of strings, Valid entries are 'am' (aqua), 'tm' (terra),
@@ -37,6 +37,12 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     """
     if type(sensors) is not list:
         raise TypeError('sensors must be a list')
+    # Seawifs special case
+    if 'sw' in sensors:
+        typ = 'MLAC'
+        sensors.remove('sw')
+    else:
+        typ = ''
     sensors = '@'.join(sensors)
     if type(date_begin) is str:
         date_begin = datetime.strptime(date_begin, "%Y-%m-%d")
@@ -54,6 +60,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
               'sen': sensors,
               'dnm': dnm,
               'prm': 'TC',
+              'typ': typ,
               'n': north,
               's': south,
               'w': west,
@@ -75,4 +82,4 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     file_list = r1.text.split('\n')
     return file_list[:-1]
 
-# file_list = query_from_extent(['am'], '01-01-2007', 'MO', 33, 3, -110, -70)
+# file_list = query_from_extent(['am'], '01-01-2007', 'MO', 33, 10, -100, -70)
