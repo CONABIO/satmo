@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+import os
 
 # Global variable that contains sensor information
 SENSOR_CODES = {'A': 'aqua',
@@ -24,19 +25,24 @@ def parse_file_name(id):
         dictionary: Dictionary containing information on sensor, date, level, etc
         year, month, doy, dom are integers
     """
-    id_grep = re.compile(".*([A-Z])(\d{7})\d{6}\.(.*)_(.*)\..*")
-    m = id_grep.search(id)
+    pattern = re.compile(r"([A-Z])(\d{7})(\d{4})?(?:\d{2})?\.([A-Za-z1-3\-]{2,5})_(?:[A-Z]{3,4})_?(?:[A-Z]{3})?.*")
+    m = pattern.search(id)
     if m is None:
         raise ValueError('No valid data name found for %s' % id)
-    dt = datetime.strptime(m.group(2), "%Y%j")
+    dt_date = datetime.strptime(m.group(2), "%Y%j")
+    if m.group(3) is not None:
+        dt_time = datetime.strptime(m.group(3), "%H%M").time()
+    else:
+        dt_time = None
     id_meta = {'sensor': SENSOR_CODES[m.group(1)], #TODO: a KeyError will be thrown if a key is not in SENSOR_CODES, what to do with it
-               'date': dt.date(),
-               'year': dt.year,
-               'month': dt.month,
-               'doy': dt.timetuple().tm_yday,
-               'dom': dt.timetuple().tm_mday,
-               'level': m.group(3),
-               'product': m.group(4)}
+               'date': dt_date.date(),
+               'time': dt_time,
+               'year': dt_date.year,
+               'month': dt_date.month,
+               'doy': dt_date.timetuple().tm_yday,
+               'dom': dt_date.timetuple().tm_mday,
+               'level': m.group(4),
+               'filename': m.group(0)}
     return id_meta
 
 
@@ -50,3 +56,24 @@ def parse_file_name(id):
 # V2014004000000.L2_SNPP_SST3.nc
 # S2001005025918.L1A_GAC.Z
 # S2001005025918.L1A_MLAC.bz2
+# http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/A2005047193000.L2_LAC_IOP.nc
+
+def make_file_path(filename, add_file = True):
+    """Generate file path from its name
+
+    Parses typical filename to build the path where the file should be
+    written/found
+
+    Args:
+        filename (str): Filename or string containing the filename (e.g. Download url)
+        add_file (bool): Path alone, or with filename appended
+
+    Return:
+        File path.
+    """
+    file_meta = parse_file_name(filename)
+    file_path = os.path.join(file_meta['sensor'], file_meta['level'],\
+                             str(file_meta['year']), str(file_meta['doy']).zfill(3))
+    if add_file:
+        file_path = os.path.join(file_path, file_meta['filename'])
+    return file_path
