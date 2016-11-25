@@ -21,19 +21,23 @@ def parse_file_name(id):
         dictionary: Dictionary containing information on sensor, date, level, etc
         year, month, doy, dom are integers
     """
-    id_grep = re.compile("([A-Z])(\d{7})(\d{4})?(?:\d{2})?\.([A-Z1-3\-]{1,5})_(?:[A-Z]{3,4})_?(?:[A-Z]{3})?.*")
-    m = id_grep.search(id)
+    pattern = re.compile("([A-Z])(\d{7})(\d{4})?(?:\d{2})?\.([A-Za-z1-3\-]{2,5})_(?:[A-Z]{3,4})_?(?:[A-Z]{3})?.*")
+    m = pattern.search(id)
     if m is None:
         raise ValueError('No valid data name found for %s' % id)
-    dt = datetime.strptime(m.group(2), "%Y%j%H%M")
+    dt_date = datetime.strptime(m.group(2), "%Y%j")
+    if m.group(3) is not None:
+        dt_time = datetime.strptime(m.group(3), "%H%M").time()
+    else:
+        dt_time = None
     id_meta = {'sensor': SENSOR_CODES[m.group(1)], #TODO: a KeyError will be thrown if a key is not in SENSOR_CODES, what to do with it
-               'date': dt.date(),
-               'time': dt.time(),
-               'year': dt.year,
-               'month': dt.month,
-               'doy': dt.timetuple().tm_yday,
-               'dom': dt.timetuple().tm_mday,
-               'level': m.group(3),
+               'date': dt_date.date(),
+               'time': dt_time,
+               'year': dt_date.year,
+               'month': dt_date.month,
+               'doy': dt_date.timetuple().tm_yday,
+               'dom': dt_date.timetuple().tm_mday,
+               'level': m.group(4),
                'filename': m.group(0)}
     return id_meta
 
