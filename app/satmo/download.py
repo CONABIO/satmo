@@ -77,21 +77,7 @@ def download_to_tree(url, base_dir, overwrite = False, check_integrity = False):
         str: The filename of the downloaded file
     """
     write_dir = os.path.join(base_dir, make_file_path(url, add_file = False))
-    if not overwrite:
-        file_path = os.path.join(write_dir, url.split('/')[-1])
-        if os.path.isfile(file_path): # The file exists
-            if check_integrity:
-                h = requests.head(url)
-                if h.status_code == 404:
-                    raise HttpResourceNotAvailable
-                if os.path.getsize(file_path) == int(h.headers['Content-Length']): # file size matches
-                    return file_path
-            else:
-                return file_path
-    # Create directory if it doesn't exist yet
-    if not os.path.exists(write_dir):
-        os.makedirs(write_dir)
-    file_path = download_file(url, write_dir)
+    file_path = download_file(url, write_dir, overwrite = overwrite, check_integrity = check_integrity)
     return file_path
 
 
@@ -111,10 +97,6 @@ def download_robust(url, base_dir, n_retries = 5, pause_retries = 10, overwrite 
 
     Returns:
         Boolean, True when successful, False otherwise
-
-    TODO: About the overwrite option: how to handle when a file is updated by NASA on the server (reprocessed)
-    The filename would be different so the data wouldn't be recognized as existing unless it's mached against
-    the metadata produced by parse_file_name()
     """
     n = 1
     while n <= n_retries:
