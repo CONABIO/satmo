@@ -2,16 +2,6 @@ import re
 from datetime import datetime
 import os
 
-# Global variable that contains sensor information
-SENSOR_CODES = {'A': 'aqua',
-                'T': 'terra',
-                'S': 'seawifs',
-                'V': 'viirs',
-                'O': 'octs',
-                'C': 'czcs',
-                'M': 'meris',
-                'H': 'hico'}
-
 def parse_file_name(id):
     """Filename parser for modis, viirs, seawifs
 
