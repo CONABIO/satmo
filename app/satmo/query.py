@@ -6,6 +6,7 @@ import urllib.parse
 import requests
 import re
 from datetime import datetime
+import os.path
 
 
 def query_from_extent(sensors, date_begin, per, north, south, west, east, day = True,\
@@ -82,4 +83,29 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     file_list = r1.text.split('\n')
     return file_list[:-1]
 
-# file_list = query_from_extent(['am'], '01-01-2007', 'MO', 33, 10, -100, -70)
+# file_list = query_from_extent(['am'], '2007-01-01', 'MO', 33, 10, -100, -70)
+
+def make_download_url(file_name, host = 'http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/'):
+    """Builds a download URL from a (L1A) file name
+
+    Simple helper that given a filename (obtained with query_from_extent
+    for example), prepends the 'getFile url' of the oceancolor DAAC and appends 
+    '.gz' when files are not netcdf.
+
+    Args:
+        file_name (str): name of a L1A file present on oceancolor servers
+        host (str): Address of the root of the archive. DON'T FORGET TRAILING SLASH
+
+    Details:
+        In line with query_from_extent, this function is designed to work
+        with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and
+        other data levels.
+
+    Returns:
+        A string of the URL at which the file can be downloaded (ready to be passed to
+        download_robust)
+    """
+    url_components = [host, file_name]
+    if os.path.splitext(file_name)[1] is not '.nc':
+        url_components.append('.gz')
+    return ''.join(url_components)

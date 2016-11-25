@@ -1,4 +1,4 @@
 - `l1aextract_[sensor]` can be used to 'crop' l1a files and save disk space
 - `l1aextract_viirs` is only available for latest seadas versions (not yet on coral)
 - Ask on forum whether files processed with `multilevel_processor.py` are definitive wrt ancillary data
-- 
+- VIIRS seems to have geofiles in separate files for L1A. Do they need to be (explicitely) downloaded for further processing
