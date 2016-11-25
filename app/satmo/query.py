@@ -71,7 +71,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     if r0.status_code != 200:
         raise requests.HTTPError
     # regular expression to find the orderid in the html page
-    orderid_grep = re.compile("filenamelist&id=(\d+\.\d+)")
+    orderid_grep = re.compile(r"filenamelist&id=(\d+\.\d+)")
     m = orderid_grep.search(r0.text)
     query1_args = {'sub': 'filenamelist',
                    'id': m.group(1),
