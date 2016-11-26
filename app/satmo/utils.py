@@ -3,6 +3,8 @@ import glob
 from datetime import datetime
 import os
 
+from .global_variables import SENSOR_CODES
+
 def parse_file_name(id):
     """Filename parser for modis, viirs, seawifs
 
