@@ -107,5 +107,5 @@ def make_download_url(file_name, host = 'http://oceandata.sci.gsfc.nasa.gov/cgi/
     """
     url_components = [host, file_name]
     if os.path.splitext(file_name)[1] is not '.nc':
-        url_components.append('.gz')
+        url_components.append('.bz2')
     return ''.join(url_components)
