@@ -42,12 +42,13 @@ class l2Process(object):
         self.infile_list = glob.glob(os.path.join(self.input_dir, pattern))
     def make_parfile(self):
         env = Environment(loader=FileSystemLoader(self.template_dir))
-               template = env.get_template('multilevel-processor-template.par')
-               par_file = template.render(infiles = infiles_string)
+        template = env.get_template('multilevel-processor-template.par')
+        par_file = template.render(infiles = infiles_string)
     def execute(self):
         status = subprocess.call(['multilevel_processor.py', 'modis_SR.par'])
         # Status should be zero if command completed successfully
     def clean(self):
+        pass
 
 
 
