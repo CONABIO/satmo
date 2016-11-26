@@ -1,4 +1,5 @@
 import re
+import glob
 from datetime import datetime
 import os
 
@@ -67,3 +68,18 @@ def make_file_path(filename, add_file = True):
     if add_file:
         file_path = os.path.join(file_path, file_meta['filename'])
     return file_path
+
+def super_glob(dir, pattern):
+    """glob with regex
+
+    Args:
+        dir (str): Search dir
+        pattern (str): regex pattern
+
+    Returns:
+        List of matches
+    """
+    full_list = glob.glob(os.path.join(dir, '*'))
+    re_pattern = re.compile(pattern)
+    reduced_list = filter(re_pattern.search, full_list)
+    return reduced_list

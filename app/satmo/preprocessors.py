@@ -5,6 +5,8 @@ import os
 import bz2
 import glob
 
+from .utils import super_glob 
+
 
 
 def bz2_unpack(source, destination):
@@ -38,8 +40,8 @@ class l2Process(object):
     def __init__(self, input_dir, template_dir):
         self.input_dir = input_dir
         self.template_dir = template_dir
-    def get_file_list(self, pattern = '*.gz2'):
-        self.infile_list = glob.glob(os.path.join(self.input_dir, pattern))
+    def get_file_list(self, pattern = r'*.(gz2|nc)$'):
+        self.infile_list = super_glob(self.input_dir, pattern)
     def make_parfile(self):
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template('multilevel-processor-template.par')
