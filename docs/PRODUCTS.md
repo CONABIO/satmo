@@ -4,25 +4,21 @@
 
 Similarly to the previous version of the system, the area covered stretches from South to North between 3 and 33 degrees and from West to East between -122 and -72 degrees.
 
-The number of pixels covering the areas for the various spatial resolutions (250, 500 and 1000 m) will depend on the Coordinate Reference System (CRS) chosen for the output.
+The number of pixels covering the areas for the various spatial resolutions (250, 500 and 1000 m) will depend on the Coordinate Reference System (CRS) chosen for the output (2880x4800 at 1km resolution with a plate caree CRS)
 
 Plate caree appears to be the standard projection of the ocean color community. This remains an open consideration that requires further assessment considering the requirements of both web visualization and analysis.
 
 
 ## Intermediary Vs Final
 
-Final products are defined by biophysical variables whose values have a direct biological/ecological/analytical interest (ocean color products, Sea Surface Temperature, etc). On the contrary, intermediary products do not represent any direct biologically meaningful biophysical variable (e.g.: reflectance), but are essential to compute final products. Intermediary products would for instance not be displayed/displayable on the web visualization platform.
+Final products are defined by biophysical variables whose values have a direct biological/ecological/analytical interest (ocean color products, Sea Surface Temperature, etc). On the contrary, intermediary products do not represent any direct biologically meaningful biophysical variable (e.g.: reflectance), but are essential to compute final products. Intermediary products would for instance not be made available to users or via ftp or visible on the web visualization platform.
 
-
-## Rolling Vs permanent archiving
-
-Even though they constitute final products, certain variables do not need to be stored permanently on the system, and can be replaced by new incoming data, hence saving storage.
-This is for instance the case of near real time products, which have an immediate relevance but become obsolete after consolidation.
 
 ## Product list
 
 ### Ocean color products
 
+TODO: Product list is yet to be defined
 
 | Abbreviation |                    Name                   | reference | Remark |
 |--------------|-------------------------------------------|-----------|--------|
@@ -37,11 +33,19 @@ This is for instance the case of near real time products, which have an immediat
 
 ### Composite products and climatologies
 
+Compositing times can be:
+
+- Daily
+- 8 days (45 composites per year + 5 days remainder on a non leap year)
+- 16 days (22 composites per year + 13 days remainder on a non leap year)
+- Monthly
+
+These composites and the associated climatologies are only computed for the ocean color and temperature products defined in the previous section; not for reflectance data.
 
 
 ### Anomalies
 
-
+Anomalies are derived in near real time by confronting newly acquired data to climatologies.
 
 ### Additional variables
 
@@ -65,7 +69,9 @@ This is for instance the case of near real time products, which have an immediat
 - Sentinel 3
 - MERIS
 
-### Spectral characteristics	
+### Spectral characteristics
+
+All sensors have different spectral and spatial characteristics, the table below (in progress) attempts to unifies them for facilitated processing.
 
 |  Name  | MODIS | VIIRS | MERIS | SeaWifs | Sentinel3 |
 |--------|-------|-------|-------|---------|-----------|
@@ -75,7 +81,7 @@ This is for instance the case of near real time products, which have an immediat
 | BLUE4  |   488 |   488 |       |         |           |
 | GREEN1 |   531 |       |       |         |           |
 | GREEN2 |   551 |       |       |         |           |
-| GREEN3 |   555 |   555 |       |         |           |
+| GREEN3 |   547 |   555 |       |         |           |
 | RED1   |   645 |   640 |       |         |           |
 | RED2   |   667 |   672 |       |         |           |
 | RED3   |   678 |       |       |         |           |
@@ -86,53 +92,11 @@ This is for instance the case of near real time products, which have an immediat
 | SWIR1  |  1640 |       |       |         |           |
 | SWIR2  |  2130 |       |       |         |           |
 
-<!-- TODO: Make a plot (ggplot) to visualize all spectral bands of all sensors -->
+References: 
 
-
-
-
-
-
-### Annex products
-
-Bathymetry, coast lines, administrative borders
-
-
-
-## Software and processing
-
-### Processing steps
-
-`multilevel_processor.py`
-
-To run:
-
-`multilevel_processor.py --output_dir=ODIR modis_SR.par
-`
-
-Content of `modis_SR.par`
-
-```
-[main]
-# ifile corresponds to input files (comma separated list)
-# Apparently files need to be unpacked first
-ifile=T2016260171500.L1A_LAC.bz2,T2016260202500.L1A_LAC.bz2,T2016260220000.L1A_LAC.bz2
-use_nrt_anc=1
-overwrite=1
-
-[l2gen]
-l2prod=Rrs_469 Rrs_555 Rrs_645 Rrs_859
-
-# SUBSETTING OPTIONS
-south=3
-north=33
-west=-122
-east=-72
-```
+- [MODIS VIIRS spectral characteristics comparison](http://www.goes-r.gov/users/comet/npoess/multispectral_topics/rgb/media/graphics/viirs_ols_modis_table.gif)
+- [MODIS VIIRS comparison](http://www.star.nesdis.noaa.gov/jpss/documents/meetings/2011/AMS_Seattle_2011/Poster/A-TRAIN%20%20Perf%20Cont%20%20MODIS%20Observa%20-%20Guenther%20-%20WPNB.pdf)
 
 ### Quality control
 
-
-
-
-## Sandbox/TODO section
+TODO
