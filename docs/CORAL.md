@@ -13,7 +13,7 @@ usermod -aG seadas xtuser
 mkdir /data/ocssw
 chown root:seadas /data/ocssw
 chmod 775 /data/ocssw/
-./install_ocssw.py --install-dir=/data/ocssw --git-branch=v7.2 --aqua --seawifs --terra --viirsn
+./install_ocssw.py --install-dir=/data/ocssw --git-branch=v7.3 --aqua --seawifs --terra --viirsn
 # When running as loic
 echo "export OCSSWROOT=/data/ocssw" >> ~/.zshrc
 source ~/.zshrc
@@ -27,6 +27,19 @@ update_luts.py aqua
 update_luts.py seawifs
 update_luts.py viirsn
 ```
+
+### GDAL
+
+```sh
+add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+apt-get update
+apt-get install libgdal-dev gdal-bin
+```
+
+### Other stuff
+
+- virtualenv
+- virtualenvwrapper
 
 ### Notes
 
