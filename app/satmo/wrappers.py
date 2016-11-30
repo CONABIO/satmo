@@ -26,7 +26,7 @@ def timerange_download(sensors, begin, end, write_dir,\
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
 
     Returns:
-        dictionary with 2 lists (downloaded and non downloaded files)
+        list of boolean
     """
     if type(begin) is str:
         begin = datetime.strptime(begin, "%Y-%m-%d")

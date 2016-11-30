@@ -3,3 +3,4 @@
 - Ask on forum whether files processed with `multilevel_processor.py` are definitive wrt ancillary data
 - VIIRS seems to have geofiles in separate files for L1A. Do they need to be (explicitely) downloaded for further processing
 - do all night scenes of a given night fall in the same doy
+- How to pass ancdir (`getanc.py`) to `multilevel-processor.py`
