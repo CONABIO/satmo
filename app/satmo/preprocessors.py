@@ -32,6 +32,27 @@ def bz2_unpack(source, destination):
     return out_file
 
 
+def bz2_compress(source, destination, compresslevel = 3):
+    """Unpacks data compressed with bz2
+    
+    Utility function to bz2 compress data
+
+    Args:
+        source (str): the filename to compress
+        destination (str): the destination directory, filename will be
+        set automatically
+        compresslevel (int): Compression level
+
+    Returns:
+        str: The filename of the bz2 compressed file
+    """
+    if not os.path.exists(destination):
+        os.makedirs(destination)
+    out_file = os.path.join(destination, os.path.basename(source)) + '.bz2'
+    with open(source, 'rb') as src, bz2.BZ2File(out_file, 'wb', compresslevel = compresslevel) as dst:
+        for data in iter(lambda : src.read(100 * 1024), b''):
+            dst.write(data)
+    return out_file
 
 
 # Make a class that holds all the information of a future L2 (binned) product
