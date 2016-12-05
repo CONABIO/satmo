@@ -13,4 +13,8 @@ setup(name='satmo',
       install_requires=[
           'requests',
           'future',
-          'jinja2'])
+          'jinja2',
+          'pyproj',
+          'affine',
+          'rasterio',
+          'netCDF4'])
