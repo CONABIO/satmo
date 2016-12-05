@@ -38,8 +38,16 @@ apt-get install libgdal-dev gdal-bin
 
 ### Other stuff
 
+```sh
+apt-get install python-pip python-scipy python-numpy
+```
+
 - virtualenv
 - virtualenvwrapper
+
+```sh
+mkvirtualenv --system-site-packages satmo-dev
+```
 
 ### Notes
 
