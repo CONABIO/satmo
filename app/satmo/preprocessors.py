@@ -4,6 +4,7 @@ import os.path
 import os
 import bz2
 import glob
+import warnings
 
 from .utils import super_glob, parse_file_name
 
@@ -91,6 +92,7 @@ class extractJob(object):
     def __init__(self, input_dir):
         self.input_dir = input_dir
         self.file_list = glob.glob(os.path.join(input_dir, '*L1A*'))
+        self.has_subs = any(['.sub' in x for x in self.file_list])
         # Check for consitency of the input list by checking that all files have the same extension
         ext = os.path.splitext(self.file_list[0])[1]
         if not all(os.path.splitext(x)[1] == ext for x in self.file_list):
@@ -103,7 +105,7 @@ class extractJob(object):
         else:
             raise ValueError('Cannot extract data for this sensor')
 
-    def extract(self, north, south, east, west):
+    def extract(self, north, south, east, west, overwrite = False):
         """Data extraction method
 
         Used for its side effect of extracting the L1A file to the specified extent
@@ -113,10 +115,15 @@ class extractJob(object):
             south (float): south latitude of bounding box in DD
             west (float): west longitude of bounding box in DD
             east (float): east longitude of bounding box in DD
+            overwrite (bool): Should existing .sub files be overwritten. Usefull
+            to differentiate archive updating vs re-processing. 
 
         Return:
             Status returned by multilevel_processor.py (0: fine, 1: error) 
         """
+        if not overwrite and self.has_subs:
+            warnings.warn('Files in %s have already been extracted. Set overwrite to True to overwrite them.' % self.input_dir)
+            return 0
         ext = os.path.splitext(self.file_list[0])[1]
         if ext == '.bz2':
             self.file_list = [bz2_unpack(x, self.input_dir) for x in self.file_list]
