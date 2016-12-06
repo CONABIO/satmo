@@ -165,7 +165,7 @@ class extractJob(object):
         full_list = glob.glob(os.path.join(self.input_dir, '*'))
         if keep_uncompressed:
             # Match sub and sub.bz2
-            pattern = r'.*[\.sub$|\.sub\.bz2$]'
+            pattern = r'.*(\.sub$|\.sub\.bz2$)'
         else:
             # Match sub.bz2 only
             pattern = r'.*\.sub\.bz2$'
