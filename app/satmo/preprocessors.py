@@ -85,14 +85,15 @@ class extractJob(object):
     Args:
         input_dir (str): location of the files to extract, ideally the directory should
         not contain any other files, otherwise there is a risk they get deleted
-    TODO: Add a mechanism to check whether the extraction has already been performed
+        pattern (str): regex pattern to match input files
     """
     template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('extract.par')
 
-    def __init__(self, input_dir):
+    def __init__(self, input_dir, pattern = r'.*L1A.*\.bz2$'):
         self.input_dir = input_dir
-        self.file_list = glob.glob(os.path.join(input_dir, '*L1A*'))
-        self.has_subs = any(['.sub' in x for x in self.file_list])
+        self.file_list_full = glob.glob(os.path.join(input_dir, '*L1A*'))
+        self.file_list = super_glob(input_dir, pattern)
+        self.has_subs = any(['.sub' in x for x in self.file_list_full])
         # Check for consitency of the input list by checking that all files have the same extension
         ext = os.path.splitext(self.file_list[0])[1]
         if not all(os.path.splitext(x)[1] == ext for x in self.file_list):
