@@ -116,7 +116,11 @@ class extractJob(object):
             west (float): west longitude of bounding box in DD
             east (float): east longitude of bounding box in DD
             overwrite (bool): Should existing .sub files be overwritten. Usefull
-            to differentiate archive updating vs re-processing. 
+            to differentiate archive updating vs re-processing.
+
+        Details:
+            It is safe to apply a buffer (larger extent, e.g. 2 extra degrees on each side) around
+            the area ordered with query_from_extent (query module).
 
         Return:
             Status returned by multilevel_processor.py (0: fine, 1: error) 

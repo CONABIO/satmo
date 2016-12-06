@@ -4,3 +4,4 @@
 - VIIRS seems to have geofiles in separate files for L1A. Do they need to be (explicitely) downloaded for further processing
 - do all night scenes of a given night fall in the same doy
 - How to pass ancdir (`getanc.py`) to `multilevel-processor.py`
+- TO avoid crashes when extracting (because of swath outside of extent), the extent of `query_from_extent` should be smaller than `extractJob.extract` extent.
