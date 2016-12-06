@@ -150,7 +150,7 @@ class extractJob(object):
     def compress(self):
         """Compress the extracted files present in the directory with bz2
         """
-        subfiles_list = super_glob(os.path.join(self.input_dir, '.*\.sub$'))
+        subfiles_list = super_glob(self.input_dir, '.*\.sub$')
         compressed_list = [bz2_compress(x, self.input_dir) for x in subfiles_list]
         return compressed_list
 
