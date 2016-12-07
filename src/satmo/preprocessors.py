@@ -7,6 +7,7 @@ import glob
 import warnings
 
 from .utils import super_glob, parse_file_name
+from .errors import SeadasError
 
 
 
@@ -140,6 +141,8 @@ class extractJob(object):
             dst.write(par)
         # Run multilevel_processor.py
         status = subprocess.call(['multilevel_processor.py', '--use_existing', par_file, '--output_dir=' + self.input_dir])
+        if status != 0:
+            raise SeadasError('Multilevel processor exited with %d during extraction' % status)
         return status
 
     def compress(self):
