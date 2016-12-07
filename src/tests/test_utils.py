@@ -25,6 +25,15 @@ class TestUtils(unittest.TestCase):
         with self.assertRaises(KeyError):
             satmo.parse_file_name(file_name_key_error)
 
+    def test_make_path(self):
+        file_name = 'T2013001043500.L1A_LAC'
+        self.assertEqual(satmo.make_file_path(file_name), 'terra/L1A/2013/001/T2013001043500.L1A_LAC')
+        self.assertEqual(satmo.make_file_path(file_name, add_file = False), 'terra/L1A/2013/001')
+        self.assertEqual(satmo.make_file_path(file_name, add_file = False, doy = False), 'terra/L1A/2013')
+        self.assertEqual(satmo.make_file_path(file_name, add_file = True, doy = False), 'terra/L1A/2013/T2013001043500.L1A_LAC')
+        self.assertEqual(satmo.make_file_path(file_name, add_file = True, doy = False, level = 'L3m'), 'terra/L3m/2013')
+        with self.assertRaises(ValueError):
+            satmo.make_file_path(file_name, add_file = False, doy = True, level = 'L3M')
 
 if __name__ == '__main__':
     unittest.main()
