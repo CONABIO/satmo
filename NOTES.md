@@ -5,3 +5,6 @@
 - do all night scenes of a given night fall in the same doy
 - How to pass ancdir (`getanc.py`) to `multilevel-processor.py`
 - TO avoid crashes when extracting (because of swath outside of extent), the extent of `query_from_extent` should be smaller than `extractJob.extract` extent.
+- VIIRS:
+    - l1aextract_viirs is not yet part of the `multilevel_processor.py`
+    - GEO files (required for many things) can be downloaded from the oceancolor servers. TO be able to generate these files directly from L1A source files, a gigantic DEM is needed

@@ -58,17 +58,11 @@ def bz2_compress(source, destination, compresslevel = 3):
 
 # Make a class that holds all the information of a future L2 (binned) product
 
-class l2Process(object):
-    def __init__(self, input_dir, template_dir):
+class l3mapProcessJob(object):
+    def __init__(self, input_dir, pattern = r'.*'):
         self.input_dir = input_dir
-        self.template_dir = template_dir
-    def get_file_list(self, pattern = r'*.(bz2|nc)$'):
-        self.infile_list = super_glob(self.input_dir, pattern)
-    def make_parfile(self):
-        env = Environment(loader=FileSystemLoader(self.template_dir))
-        template = env.get_template('multilevel-processor-template.par')
-        par_file = template.render(infiles = infiles_string)
-    def execute(self):
+        self.file_list = super_glob(input_dir, pattern)
+    def execute(self, north, south, east, west):
         status = subprocess.call(['multilevel_processor.py', 'modis_SR.par'])
         # Status should be zero if command completed successfully
     def clean(self):
@@ -89,7 +83,7 @@ class extractJob(object):
     """
     template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('extract.par')
 
-    def __init__(self, input_dir, pattern = r'.*L1A.*\.bz2$'):
+    def __init__(self, input_dir, pattern = r'.*L1A.*\.(nc|bz2)$'):
         self.input_dir = input_dir
         self.file_list_full = glob.glob(os.path.join(input_dir, '*L1A*'))
         self.file_list = super_glob(input_dir, pattern)
