@@ -1,6 +1,6 @@
 import re
 import glob
-from datetime import datetime
+from datetime import datetime, time
 import os
 
 from .global_variables import SENSOR_CODES
@@ -85,3 +85,24 @@ def super_glob(dir, pattern):
     re_pattern = re.compile(pattern)
     reduced_list = filter(re_pattern.search, full_list)
     return reduced_list
+
+def is_day(filename):
+    """Logical function to check whether a file is a night or a day file
+
+    Details:
+        Because time reported in file names are GMT times and not local
+        times, this function has been customized for the satmo project area
+        and is only valid for that area
+
+    Args:
+        filename (str): file name of a dataset
+
+    Returns:
+        Boolean, True if day file, False otherwise
+    """
+    dt_time = parse_file_name(filename)['time']
+    # 12pm threshold validated against a full year for aqua, terra, viirs
+    if dt_time > time(12, 0): 
+        return True
+    else:
+        return False
