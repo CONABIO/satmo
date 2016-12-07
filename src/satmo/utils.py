@@ -3,7 +3,7 @@ import glob
 from datetime import datetime, time
 import os
 
-from .global_variables import SENSOR_CODES
+from .global_variables import SENSOR_CODES, DATA_LEVELS
 
 def parse_file_name(id):
     """Filename parser for modis, viirs, seawifs
@@ -51,7 +51,7 @@ def parse_file_name(id):
 # S2001005025918.L1A_MLAC.bz2
 # http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/A2005047193000.L2_LAC_IOP.nc
 
-def make_file_path(filename, add_file = True):
+def make_file_path(filename, add_file = True, doy = True, level = None):
     """Generate file path from its name
 
     Parses typical filename to build the path where the file should be
@@ -60,15 +60,31 @@ def make_file_path(filename, add_file = True):
     Args:
         filename (str): Filename or string containing the filename (e.g. Download url)
         add_file (bool): Path alone, or with filename appended
+        doy (bool): Should doy (day of the year) be part of the path (otherwise)
+        it finishes by year/(filename)
+        level (str): allows to build a path for a different level (useful to set output dir
+        when processing higher levels with seadas).
+
+    Details:
+        If set, the level argument is checked against a database of valid data levels and automatically
+        sets add_file to False
 
     Return:
         File path.
     """
     file_meta = parse_file_name(filename)
-    file_path = os.path.join(file_meta['sensor'], file_meta['level'],\
-                             str(file_meta['year']), str(file_meta['doy']).zfill(3))
+    if level is None:
+        level = file_meta['level']
+    else:
+        if level not in DATA_LEVELS:
+            raise ValueError("Invalid level set")
+        add_file = False
+    path_elements = [file_meta['sensor'], level, str(file_meta['year'])]
+    if doy:
+        path_elements.append(str(file_meta['doy']).zfill(3))
     if add_file:
-        file_path = os.path.join(file_path, file_meta['filename'])
+        path_elements.append(file_meta['filename'])
+    file_path = os.path.join(*path_elements)
     return file_path
 
 def super_glob(dir, pattern):

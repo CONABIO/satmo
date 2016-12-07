@@ -7,3 +7,5 @@ SENSOR_CODES = {'A': 'aqua',
                 'C': 'czcs',
                 'M': 'meris',
                 'H': 'hico'}
+
+DATA_LEVELS = ['L0', 'L1A', 'L1B', 'L2', 'L3b', 'L3m']
