@@ -8,3 +8,4 @@
 - VIIRS:
     - l1aextract_viirs is not yet part of the `multilevel_processor.py`
     - GEO files (required for many things) can be downloaded from the oceancolor servers. TO be able to generate these files directly from L1A source files, a gigantic DEM is needed
+- Lots of algorithms with formulas here http://oceancolor.gsfc.nasa.gov/cms/atbd
