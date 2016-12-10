@@ -35,5 +35,12 @@ class TestUtils(unittest.TestCase):
         with self.assertRaises(ValueError):
             satmo.make_file_path(file_name, add_file = False, doy = True, level = 'L3M')
 
+    def test_make_file_name(self):
+        file_name = 'T2005007002500.L2_LAC_OC.nc'
+        self.assertRaises(satmo.make_file_name(file_name, 'L3b', 'SST'), 'T2005007.L3b_DAY_SST.nc')
+        self.assertRaises(satmo.make_file_name(file_name, 'L3b', 'SST4', 'tif'), 'T2005007.L3b_DAY_SST4.tif')
+        with self.assertRaises(ValueError):
+            satmo.make_file_name(file_name, 'L3c', 'SST')
+
 if __name__ == '__main__':
     unittest.main()

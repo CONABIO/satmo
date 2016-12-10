@@ -87,6 +87,25 @@ def make_file_path(filename, add_file = True, doy = True, level = None):
     file_path = os.path.join(*path_elements)
     return file_path
 
+def make_file_name(filename, level, suite, ext = '.nc'):
+    """Jumps a filename to its corresponding filename at a higher level
+
+    Args:
+        filename (str): Input file name (e.g. Level 2A filename)
+        level (str): data level of returned file name
+        suite (str): product suite name
+        ext (str): Extension, defaults to '.nc'
+
+    Details:
+        level= argument is checked against a database of valid levels 
+    """
+    if level not in DATA_LEVELS:
+        raise ValueError("Invalid level set")
+    input_dict = parse_file_name(filename)
+    out_name = '%s.%s_DAY_%s%s' % (input_dict['filename'][:8], level, suite, ext)
+    return out_name
+
+
 def super_glob(dir, pattern):
     """glob with regex
 
