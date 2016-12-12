@@ -67,7 +67,7 @@ def bz2_compress(source, destination, compresslevel = 3, overwrite = False):
 
 # Make a class that holds all the information of a future L2 (binned) product
 
-class l3mapProcessJob(object):
+class l3map(object):
 
     template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('l3bprocess.par')
 
@@ -108,6 +108,8 @@ class l3mapProcessJob(object):
         if status0 != 0:
             raise SeadasError('Multilevel processor exited with %d during processing to L2bin' % status)
         # Prepare l3mapgen command and run it
+        bin_file = 
+        out_file = 
         # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.nc 
         # resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
         return output_file
@@ -172,9 +174,7 @@ class extractJob(object):
         ext = os.path.splitext(self.file_list[0])[1]
         if ext == '.bz2':
             self.file_list = [bz2_unpack(x, self.input_dir) for x in self.file_list]
-        infile_string = ','.join(self.file_list)
-        # FIll template
-        par = self.template.render(infile_string = infile_string,
+        par = self.template.render(file_list = self.file_list,
                                    north = north,
                                    south = south,
                                    east = east,

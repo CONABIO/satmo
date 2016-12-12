@@ -1,5 +1,5 @@
 [main]
-ifile={{ infile_string }}
+ifile={{ file_list|join(',') }}
 #overwrite=1
 [l1aextract_{{sensor}}]
 SWlon= {{west}}
