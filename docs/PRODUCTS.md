@@ -43,7 +43,7 @@ Files are deleted as soon as extracted L1A products are produced, which may happ
 
 Spatial query should be done with an extent that is smaller then the satmo area extent, to ensure that data do intersect with extraction extent when running `l1aextract_<sensor>` (see below). Otherwise the program crashes.
 
-
+---
 
 ### `L1A sub` (extracted `L1A`)
 
@@ -92,16 +92,19 @@ File are stored in the same folders than L1A data, they ultimately replace them 
 
 Data must be kept
 
+---
 
 ### `L1B`
 
 Intermediate product of L2 processing, not stored or kept.
 
+---
 
 ### `GEO` files
 
 Intermediate product of L2 processing, not stored or kept.
 
+---
 
 ### `L2`
 
@@ -153,6 +156,7 @@ Example: `V2014004000000.L2_SNPP_SST.nc`
 
 Because processing is so computationnaly expensive, data must be kept. However, one special case concerns the near real time L2 products which should be overwritten a few day after the initial processing triggered by availability of ancillary data.
 
+---
 
 ### `L3b`
 
@@ -180,6 +184,7 @@ Example: `T2014004.L3b_DAY_RRS`
 
 Files are deleted immediately after processing
 
+---
 
 ### `L3m`
 
@@ -206,6 +211,8 @@ Example: `T2014004.L3m_DAY_RRS.nc`
 #### Persistence
 
 Must be kept (end of pre-processing chain). Overwritten during consolidation a few days after near real time processing.
+
+---
 
 ### Ocean color products
 
