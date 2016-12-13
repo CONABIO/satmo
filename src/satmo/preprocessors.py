@@ -7,7 +7,7 @@ import glob
 import warnings
 import string
 
-from .utils import super_glob, parse_file_name, make_file_path, is_day
+from .utils import super_glob, parse_file_name, make_file_path, make_file_name, is_day
 from .errors import SeadasError
 from .global_variables import PRODUCT_SUITES
 
@@ -69,17 +69,20 @@ def bz2_compress(source, destination, compresslevel = 3, overwrite = False):
 
 class l3map(object):
 
-    template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('l3bprocess.par')
+    template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('l2process.par')
 
-    def __init__(self, input_dir, pattern = r'.*', output_basedir = None):
+    def __init__(self, input_dir, pattern = r'.*L1A.*', L2_output_basedir = None, L3_output_basedir = None):
         self.input_dir = input_dir
         self.file_list = super_glob(input_dir, pattern)
         self.sensor = parse_file_name(self.file_list[0])['sensor']
-        if output_basedir is None:
-            output_basedir = string.replace(input_dir, make_file_path(self.file_list[0], add_file = False), '')
-        self.output_dir = os.path.join(output_basedir, make_file_path(self.file_list[0], doy = False, level = 'L3b'))
+        if L2_output_basedir is None:
+            L2_output_basedir = string.replace(input_dir, make_file_path(self.file_list[0], add_file = False), '')
+        if L3_output_basedir is None:
+            L3_output_basedir = L2_output_basedir
+        self.L2_output_dir = os.path.join(L2_output_basedir, make_file_path(self.file_list[0], doy = False, level = 'L2'))
+        self.L3_output_dir = os.path.join(L3_output_basedir, make_file_path(self.file_list[0], doy = False, level = 'L3m'))
 
-    def execute(self, north, south, east, west, suite, day = True, binning_resolution = 1,\
+    def execute(self, north, south, east, west, suites = ['RRS', 'SST', 'SST4', 'PAR'], day = True, binning_resolution = 1,\
         mapping_resolution = '1km', proj4 = '+proj=laea +lat_0=18 +lon_0=-97', overwrite = False):
         # Day or night only filter
         file_list_sub = [x for x in self.file_list if is_day(x) is day]
@@ -87,32 +90,68 @@ class l3map(object):
         ext = os.path.splitext(file_list_sub[0])[1]
         if ext == '.bz2':
             file_list_sub = [bz2_unpack(x, self.input_dir) for x in file_list_sub]
-        # Create output dir if it doesn't exist
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-        # Create variables for templating and command run 
-        overwrite_int = int(overwrite)
-        prod_list = PRODUCT_SUITES[suite][self.sensor]
+        # Create L2 output dir if it doesn't exist
+        if not os.path.exists(self.L2_output_dir):
+            os.makedirs(self.L2_output_dir)
+        # Create variables for templating and command run
+        prod_list = [PRODUCT_SUITES[suite][self.sensor] for suite in suites]
         # Par file templating 
         par = self.template.render(binning_resolution = binning_resolution,
-                                   overwrite_int = overwrite_int,
+                                   overwrite = overwrite,
                                    prod_list = prod_list,
                                    file_list = file_list_sub)
         # par filename creation + writing to output directory
-        par_file = os.path.join(self.output_dir, '%s_l3bprocess.par' % self.sensor)
+        par_file = os.path.join(self.L2_output_dir, '%s_l2process.par' % self.sensor)
         with open(par_file, "wb") as dst:
             dst.write(par)
         # Build multilevel processing arguments list
-        arg_list_0 = ['multilevel_processor.py', par_file, '--use_existing', '--output_dir=%s' % self.output_dir]
-        status0 = subprocess.call(arg_list_0) # --use_existing --output_dir=  (--overwrite - also in par file)
-        if status0 != 0:
-            raise SeadasError('Multilevel processor exited with %d during processing to L2bin' % status)
-        # Prepare l3mapgen command and run it
-        bin_file = 
-        out_file = 
+        arg_list_0 = ['multilevel_processor.py',
+                      par_file,
+                      '--use_existing',
+                      '--output_dir=%s' % self.L2_output_dir]
+        status_0 = subprocess.call(arg_list_0) # --use_existing --output_dir=  (--overwrite - also in par file)
+        if status_0 != 0:
+            raise SeadasError('Multilevel processor exited with %d during processing to L2' % status_0)
+        # Prepare l2bin command and run it
+        L2_file_list = glob.glob(os.path.join(self.L2_output_dir, '*L2*'))
+        L2_file_list = [x for x in self.L2_file_list if is_day(x) is day]
+        # Create L3bin output dir if it doesn't exist
+        if not os.path.exists(self.L3_output_dir):
+            os.makedirs(self.L3_output_dir)
+        l2b_l3m_status_list = []
+        output_file_list = []
+        for suite in suites:
+            # l2bin
+            ofile = os.path.join(self.L3_output_dir, make_file_name(L2_file_list[0], 'L3b', suite))
+            l3bprod = PRODUCT_SUITES[suite][self.sensor]
+            l2bin_arg_list = ['l2bin',
+                              'l3bprod=%s' % '.'.join(l3bprod),
+                              'infile=%s' % ','.join(L2_file_list),
+                              'resolve=%d' % binning_resolution,
+                              'ofile=%s' % ofile,
+                              'night=%d' % int(not day)]
+            status_1 = subprocess.call(l2bin_arg_list)
+            l2b_l3m_status_list.append(status_1)
+            # l3mapgen
+            ifile = ofile
+            ofile = os.path.join(self.L3_output_dir, make_file_name(ifile, 'L3m', suite))
+            l3map_arg_list = ['l3mapgen',
+                              'ifile=%s' % ifile,
+                              'ofile=%s' % ofile,
+                              'resolution=%s' % mapping_resolution,
+                              'south=%d' % south,
+                              'north=%d' % north,
+                              'west=%d' % west,
+                              'east=%d' % east,
+                              'projection=%s' % proj4]
+            status_2 = subprocess.call(l3map_arg_list)
+            l2b_l3m_status_list.append(status_2)
+            output_file_list.append(ofile)
+        if 1 in l2b_l3m_status_list:
+            raise SeadasError('l2bin or l3mapgen exited with status 1')
         # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.nc 
         # resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
-        return output_file
+        return output_file_list
 
     def clean(self):
         pass
