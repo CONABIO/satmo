@@ -68,10 +68,23 @@ def bz2_compress(source, destination, compresslevel = 3, overwrite = False):
 # Make a class that holds all the information of a future L2 (binned) product
 
 class l3map(object):
+    """Class for data processing from L1A to L3map
+    """
 
     template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('l2process.par')
 
     def __init__(self, input_dir, pattern = r'.*L1A.*', L2_output_basedir = None, L3_output_basedir = None):
+        """Instantiate l3map class
+
+        Args:
+            input_dir (str): Directory where L1A files are located
+            pattern (str): regex pattern to find files in input_dir. Defaults to r'.*L1A.*'
+            L2_output_basedir (str): Base directory where L2 files (intermediate products) should be stored.
+            Only the base, the rest of the path will be generated automatically. Defaults to None, in which case
+            the base dir is set to be the same as input_dir
+            L3_output_basedir (str): Base directory where L3m files should be stored. If set to None (default),
+            L2_output_basedir is used.
+        """
         self.input_dir = input_dir
         self.file_list = super_glob(input_dir, pattern)
         self.sensor = parse_file_name(self.file_list[0])['sensor']
@@ -84,6 +97,26 @@ class l3map(object):
 
     def execute(self, north, south, east, west, suites = ['RRS', 'SST', 'SST4', 'PAR'], day = True, binning_resolution = 1,\
         mapping_resolution = '1km', proj4 = '+proj=laea +lat_0=18 +lon_0=-97', overwrite = False):
+        """Processes data from L1A to L3m level
+
+        Args:
+            north (float): north latitude of mapped file extent
+            south (float): south latitude of mapped file extent
+            west (float): west longitude of mapped file extent
+            east (float): east longitude of mapped file extent
+            suite (list): List of strings indicating the product suites to process.
+            defaults to ['RRS', 'SST', 'SST4', 'PAR']. Use ['NSST'] if day is set to False
+            day (bool): Process day or night data. Defaults to True. Enables filtering of input files and
+            appropriate l2bin night argument. suite argument should be adapted accordingly if day is set to False.
+            binning_resolution (int or str): Spatial binning resolution in km. Defaults to 1, use 'H' for 500 m
+            mapping_resolution (str): Resolution of output L3m file. Defaults to '1km'
+            proj4 (str): proj4 string, see list of valid projections in l3mapgen doc.
+            Defaults to '+proj=laea +lat_0=18 +lon_0=-97'
+            overwrite (bool): Should existing L2 files be overwritten? Defaults to False.
+
+        Returns:
+            List of L3m files created
+        """
         # Day or night only filter
         file_list_sub = [x for x in self.file_list if is_day(x) is day]
         # Extract files if they need extraction
@@ -96,8 +129,7 @@ class l3map(object):
         # Create variables for templating and command run
         prod_list = [PRODUCT_SUITES[suite][self.sensor] for suite in suites]
         # Par file templating 
-        par = self.template.render(binning_resolution = binning_resolution,
-                                   overwrite = overwrite,
+        par = self.template.render(overwrite = overwrite,
                                    prod_list = prod_list,
                                    file_list = file_list_sub)
         # par filename creation + writing to output directory
@@ -127,7 +159,7 @@ class l3map(object):
             l2bin_arg_list = ['l2bin',
                               'l3bprod=%s' % '.'.join(l3bprod),
                               'infile=%s' % ','.join(L2_file_list),
-                              'resolve=%d' % binning_resolution,
+                              'resolve=' + str(binning_resolution),
                               'ofile=%s' % ofile,
                               'night=%d' % int(not day)]
             status_1 = subprocess.call(l2bin_arg_list)
