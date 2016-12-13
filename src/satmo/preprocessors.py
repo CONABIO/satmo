@@ -152,6 +152,11 @@ class l3map(object):
         # Create L3bin output dir if it doesn't exist
         if not os.path.exists(self.L3_output_dir):
             os.makedirs(self.L3_output_dir)
+        # Write L2 file list to text file to use as input
+        L2_file_list_file = os.path.join(self.L3_output_dir, 'L2_file_list')
+        with open(L2_file_list_file, 'w') as dst:
+            for item in L2_file_list:
+                dst.write(item + '\n')
         l2b_l3m_status_list = []
         output_file_list = []
         for suite in suites:
@@ -160,7 +165,7 @@ class l3map(object):
             l3bprod = PRODUCT_SUITES[suite][self.sensor]
             l2bin_arg_list = ['l2bin',
                               'l3bprod=%s' % '.'.join(l3bprod),
-                              'infile=%s' % ','.join(L2_file_list),
+                              'infile=%s' % L2_file_list_file,
                               'resolve=' + str(binning_resolution),
                               'ofile=%s' % ofile,
                               'night=%d' % int(not day)]
