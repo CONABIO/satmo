@@ -86,13 +86,13 @@ class l3map(object):
             L2_output_basedir is used.
         """
         self.input_dir = input_dir
-        self.file_list = super_glob(input_dir, pattern)
+        self.file_list = super_glob(input_dir, pattern) # TODO: what if dir contains bz2 + uncompressed, or sub + full, etc 
         self.sensor = parse_file_name(self.file_list[0])['sensor']
         if L2_output_basedir is None:
             L2_output_basedir = string.replace(input_dir, make_file_path(self.file_list[0], add_file = False), '')
         if L3_output_basedir is None:
             L3_output_basedir = L2_output_basedir
-        self.L2_output_dir = os.path.join(L2_output_basedir, make_file_path(self.file_list[0], doy = False, level = 'L2'))
+        self.L2_output_dir = os.path.join(L2_output_basedir, make_file_path(self.file_list[0], doy = True, level = 'L2'))
         self.L3_output_dir = os.path.join(L3_output_basedir, make_file_path(self.file_list[0], doy = False, level = 'L3m'))
 
     def execute(self, north, south, east, west, suites = ['RRS', 'SST', 'SST4', 'PAR'], day = True, binning_resolution = 1,\
@@ -127,7 +127,9 @@ class l3map(object):
         if not os.path.exists(self.L2_output_dir):
             os.makedirs(self.L2_output_dir)
         # Create variables for templating and command run
-        prod_list = [PRODUCT_SUITES[suite][self.sensor] for suite in suites]
+        prod_list = []
+        for suite in suites:
+            prod_list += PRODUCT_SUITES[suite][self.sensor]
         # Par file templating 
         par = self.template.render(overwrite = overwrite,
                                    prod_list = prod_list,
