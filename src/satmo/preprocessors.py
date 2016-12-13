@@ -148,7 +148,7 @@ class l3map(object):
             raise SeadasError('Multilevel processor exited with %d during processing to L2' % status_0)
         # Prepare l2bin command and run it
         L2_file_list = glob.glob(os.path.join(self.L2_output_dir, '*L2*'))
-        L2_file_list = [x for x in self.L2_file_list if is_day(x) is day]
+        L2_file_list = [x for x in L2_file_list if is_day(x) is day]
         # Create L3bin output dir if it doesn't exist
         if not os.path.exists(self.L3_output_dir):
             os.makedirs(self.L3_output_dir)

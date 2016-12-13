@@ -5,7 +5,3 @@ overwrite={{ overwrite|int }}
 
 [l2gen]
 l2prod={{ prod_list|join(' ') }}
-
-[l2bin]
-resolve={{ binning_resolution }}
-l3bprod=ALL
