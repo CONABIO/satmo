@@ -164,7 +164,7 @@ class l3map(object):
             ofile = os.path.join(self.L3_output_dir, make_file_name(L2_file_list[0], 'L3b', suite))
             l3bprod = PRODUCT_SUITES[suite][self.sensor]
             l2bin_arg_list = ['l2bin',
-                              'l3bprod=%s' % '.'.join(l3bprod),
+                              'l3bprod=%s' % ','.join(l3bprod),
                               'infile=%s' % L2_file_list_file,
                               'resolve=' + str(binning_resolution),
                               'ofile=%s' % ofile,
