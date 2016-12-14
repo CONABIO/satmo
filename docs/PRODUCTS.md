@@ -132,7 +132,7 @@ Using `satmo`:
 
 At the moment it is not possible to produce L2 data without going all the way to `l3map`. Nevertheless L2 data is kept and stored in a separate folder
 
-```pyhton
+```python
 import satmo
 
 # Only includes non optional arguments
@@ -269,22 +269,101 @@ Anomalies are derived in near real time by confronting newly acquired data to cl
 
 ### Spectral characteristics
 
+Spectral characteristics of every sensor are listed below.
+
+
+#### MODIS
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        645 |                250 |
+|         |        859 |                250 |
+|         |        469 |                500 |
+|         |        555 |                500 |
+|         |       1240 |                500 |
+|         |       1640 |                500 |
+|         |       2130 |                500 |
+|         |        412 |               1000 |
+|         |        443 |               1000 |
+|         |        488 |               1000 |
+|         |        531 |               1000 |
+|         |        547 |               1000 |
+|         |        667 |               1000 |
+|         |        678 |               1000 |
+| Aerosol |        748 |               1000 |
+| Aerosol |        869 |               1000 |
+|         |            |                    |
+
+By default reflectance is produced ar 1km for all bands (see `l2gen`).
+
+---
+
+#### VIIRS
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        410 |                750 |
+|         |        443 |                750 |
+|         |        486 |                750 |
+|         |        551 |                750 |
+|         |        671 |                750 |
+| Aerosol |        745 |                750 |
+| Aerosol |        862 |                750 |
+|         |       1238 |                750 |
+|         |       1601 |                750 |
+|         |       2257 |                750 |
+
+VIIRS also contains a set of 350 m resolution bands, however, seadas does not currently allow surface reflectance processing from these bands.
+
+---
+
+#### Seawifs
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        412 |               1100 |
+|         |        443 |               1100 |
+|         |        490 |               1100 |
+|         |        510 |               1100 |
+|         |        555 |               1100 |
+|         |        670 |               1100 |
+| aerosol |        765 |               1100 |
+| aerosol |        865 |               1100 |
+
+---
+
+#### MERIS
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        413 | 1040 x 1200        |
+|         |        443 | 1040 x 1200        |
+|         |        490 | 1040 x 1200        |
+|         |        510 | 1040 x 1200        |
+|         |        560 | 1040 x 1200        |
+|         |        620 | 1040 x 1200        |
+|         |        665 | 1040 x 1200        |
+|         |        681 | 1040 x 1200        |
+|         |        709 | 1040 x 1200        |
+|         |        754 | 1040 x 1200        |
+|         |        762 | 1040 x 1200        |
+| aerosol |        779 | 1040 x 1200        |
+| aerosol |        865 | 1040 x 1200        |
+|         |        885 | 1040 x 1200        |
+|         |        900 | 1040 x 1200        |
+
+---
+
+#### Sentinel 3
+
+Spatial resolution: 300 m
+[Spectral channels](https://sentinel.esa.int/web/sentinel/user-guides/sentinel-3-olci/resolutions/radiometric)
+
+---
+
+#### Summary
+
 All sensors have different spectral and spatial characteristics, the table below (in progress) attempts to unifies them for facilitated processing.
-
-
-MODIS
-
-| Band name | Wavelength | Spatial resolution |
-|-----------|------------|--------------------|
-|           |        645 |                250 |
-|           |        859 |                250 |
-|           |        469 |                500 |
-|           |        555 |                500 |
-|           |       1240 |                500 |
-|           |       1640 |                500 |
-|           |       2130 |                500 |
-|           |        412 |               1000 |
-|           |            |                    |
 
 
 |  Name  | MODIS | VIIRS | MERIS | SeaWifs | Sentinel3 |
@@ -305,7 +384,7 @@ MODIS
 | SWIR1  |  1240 |  1240 |       |         |           |
 | SWIR1  |  1640 |       |       |         |           |
 | SWIR2  |  2130 |       |       |         |           |
-
+ 
 References: 
 
 - [MODIS VIIRS spectral characteristics comparison](http://www.goes-r.gov/users/comet/npoess/multispectral_topics/rgb/media/graphics/viirs_ols_modis_table.gif)

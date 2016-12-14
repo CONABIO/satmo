@@ -1,11 +1,11 @@
-- `l1aextract_[sensor]` can be used to 'crop' l1a files and save disk space
-- `l1aextract_viirs` is only available for latest seadas versions (not yet on coral)
 - Ask on forum whether files processed with `multilevel_processor.py` are definitive wrt ancillary data
-- VIIRS seems to have geofiles in separate files for L1A. Do they need to be (explicitely) downloaded for further processing
-- do all night scenes of a given night fall in the same doy
 - How to pass ancdir (`getanc.py`) to `multilevel-processor.py`
 - TO avoid crashes when extracting (because of swath outside of extent), the extent of `query_from_extent` should be smaller than `extractJob.extract` extent.
 - VIIRS:
     - l1aextract_viirs is not yet part of the `multilevel_processor.py`
     - GEO files (required for many things) can be downloaded from the oceancolor servers. TO be able to generate these files directly from L1A source files, a gigantic DEM is needed
 - Lots of algorithms with formulas here http://oceancolor.gsfc.nasa.gov/cms/atbd
+
+
+l2prod=ipar par (OC)
+l3bprod (PAR)
