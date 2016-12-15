@@ -143,7 +143,7 @@ class l3map(object):
                       par_file,
                       '--use_existing',
                       '--output_dir=%s' % self.L2_output_dir]
-        status_0 = subprocess.call(arg_list_0) # --use_existing --output_dir=  (--overwrite - also in par file)
+        status_0 = subprocess.call(arg_list_0)
         if status_0 != 0:
             raise SeadasError('Multilevel processor exited with %d during processing to L2' % status_0)
         # Prepare l2bin command and run it
@@ -153,7 +153,7 @@ class l3map(object):
         if not os.path.exists(self.L3_output_dir):
             os.makedirs(self.L3_output_dir)
         # Write L2 file list to text file to use as input
-        L2_file_list_file = os.path.join(self.L3_output_dir, 'L2_file_list')
+        L2_file_list_file = os.path.join(self.L3_output_dir, 'L2_file_list') # TODO: Make unique file names
         with open(L2_file_list_file, 'w') as dst:
             for item in L2_file_list:
                 dst.write(item + '\n')
@@ -162,6 +162,7 @@ class l3map(object):
         for suite in suites:
             # l2bin
             ofile = os.path.join(self.L3_output_dir, make_file_name(L2_file_list[0], 'L3b', suite))
+            # TODO: if ofile exists and overwrite not True, skip
             l3bprod = PRODUCT_SUITES[suite][self.sensor]
             l2bin_arg_list = ['l2bin',
                               'l3bprod=%s' % ','.join(l3bprod),
@@ -174,6 +175,7 @@ class l3map(object):
             # l3mapgen
             ifile = ofile
             ofile = os.path.join(self.L3_output_dir, make_file_name(ifile, 'L3m', suite))
+            # TODO: if ofile exists and overwrite not True, skip
             l3map_arg_list = ['l3mapgen',
                               'ifile=%s' % ifile,
                               'ofile=%s' % ofile,
@@ -192,8 +194,30 @@ class l3map(object):
         # resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
         return output_file_list
 
-    def clean(self):
-        pass
+    def clean(self, keep_uncompressed = False):
+        """Remove intermediary files generated during processing
+
+        Namely deletes on disk L1B, GEO and (optionally) uncompressed L1A files
+
+        Args:
+            keep_uncompressed (bool): Should uncompressed L1A files. Defaults to False (keep L1A archives only)
+
+        Returns:
+            Nothing. Used for its side effect of deleting files on disk
+        """
+        L1_rm_list = glob.glob(os.path.join(self.input_dir, '*'))
+        # Automatically remove compressed L1A files from the list
+        L1_rm_list = [x for x in L1_rm_list if not x.endswith('.bz2')]
+        if keep_uncompressed:
+            L1_rm_list = [x for x in L1_rm_list if not 'L1A_' in x]
+        [os.remove(x) for x in L1_rm_list]
+        L2_rm_list = glob.glob(os.path.join(self.L2_output_dir, '*'))
+        # Remove L2 files from the rm list
+        L2_rm_list = [x for x in L2_rm_list if not parse_file_name(x)['level'] == 'L2']
+        [os.remove(x) for x in L2_rm_list]
+        # TODO: this could cause problem if processing of other output (e.g. night files)
+        # is happening at the same moment
+        
 
 
 class extractJob(object):
@@ -271,7 +295,7 @@ class extractJob(object):
     def compress(self):
         """Compress the extracted files present in the directory with bz2
         """
-        subfiles_list = super_glob(self.input_dir, '.*\.sub$')
+        subfiles_list = super_glob(self.input_dir, '.*L1A_\.sub$')
         compressed_list = [bz2_compress(x, self.input_dir) for x in subfiles_list]
         return compressed_list
 
