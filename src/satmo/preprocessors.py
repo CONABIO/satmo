@@ -6,6 +6,7 @@ import bz2
 import glob
 import warnings
 import string
+import random
 
 from .utils import super_glob, parse_file_name, make_file_path, make_file_name, is_day
 from .errors import SeadasError
@@ -73,12 +74,11 @@ class l3map(object):
 
     template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('l2process.par')
 
-    def __init__(self, input_dir, pattern = r'.*L1A.*', L2_output_basedir = None, L3_output_basedir = None):
+    def __init__(self, input_dir, L2_output_basedir = None, L3_output_basedir = None):
         """Instantiate l3map class
 
         Args:
             input_dir (str): Directory where L1A files are located
-            pattern (str): regex pattern to find files in input_dir. Defaults to r'.*L1A.*'
             L2_output_basedir (str): Base directory where L2 files (intermediate products) should be stored.
             Only the base, the rest of the path will be generated automatically. Defaults to None, in which case
             the base dir is set to be the same as input_dir
@@ -86,7 +86,18 @@ class l3map(object):
             L2_output_basedir is used.
         """
         self.input_dir = input_dir
-        self.file_list = super_glob(input_dir, pattern) # TODO: what if dir contains bz2 + uncompressed, or sub + full, etc 
+        full_list = glob.glob(os.path.join(input_dir, '*'))
+        if any([re.search(r'\d{13}\.L1A_.*\.sub$', x) for x in full_list]):
+            # Contained already unpacked and spatially extracted files
+            self.file_list = super_glob(input_dir, r'\d{13}\.L1A_.*\.sub$')
+        elif any([re.search(r'\d{13}\.L1A_.*\.sub\.bz2$', x) for x in full_list]):
+            # Contained spatially extracted, not unpacked
+            self.file_list = super_glob(input_dir, r'\d{13}\.L1A_.*\.sub\.bz2$')
+        elif any([re.search(r'\d{13}\.L1A_.*(?<!\.bz2)$', x) for x in full_list]):
+            # Contains L1A data that do not end with bz2
+            self.file_list = super_glob(input_dir, r'\d{13}\.L1A_.*(?<!\.bz2)$')
+        else:
+            self.file_list = super_glob(input_dir, r'\d{13}\.L1A_.*')
         self.sensor = parse_file_name(self.file_list[0])['sensor']
         if L2_output_basedir is None:
             L2_output_basedir = string.replace(input_dir, make_file_path(self.file_list[0], add_file = False), '')
@@ -153,7 +164,10 @@ class l3map(object):
         if not os.path.exists(self.L3_output_dir):
             os.makedirs(self.L3_output_dir)
         # Write L2 file list to text file to use as input
-        L2_file_list_file = os.path.join(self.L3_output_dir, 'L2_file_list') # TODO: Make unique file names
+        L2_0_meta = parse_file_name(L2_file_list[0])
+        # Make unique filename
+        L2_file_list_file = os.path.join(self.L3_output_dir, 'L2_file_list_%d%03d_%d' % \
+                                        (L2_0_meta['year'], L2_0_meta['doy'], random.randint(1,9999)))
         with open(L2_file_list_file, 'w') as dst:
             for item in L2_file_list:
                 dst.write(item + '\n')
@@ -162,31 +176,31 @@ class l3map(object):
         for suite in suites:
             # l2bin
             ofile = os.path.join(self.L3_output_dir, make_file_name(L2_file_list[0], 'L3b', suite))
-            # TODO: if ofile exists and overwrite not True, skip
-            l3bprod = PRODUCT_SUITES[suite][self.sensor]
-            l2bin_arg_list = ['l2bin',
-                              'l3bprod=%s' % ','.join(l3bprod),
-                              'infile=%s' % L2_file_list_file,
-                              'resolve=' + str(binning_resolution),
-                              'ofile=%s' % ofile,
-                              'night=%d' % int(not day)]
-            status_1 = subprocess.call(l2bin_arg_list)
-            l2b_l3m_status_list.append(status_1)
+            if not os.path.isfile(ofile) or overwrite:
+                l3bprod = PRODUCT_SUITES[suite][self.sensor]
+                l2bin_arg_list = ['l2bin',
+                                  'l3bprod=%s' % ','.join(l3bprod),
+                                  'infile=%s' % L2_file_list_file,
+                                  'resolve=' + str(binning_resolution),
+                                  'ofile=%s' % ofile,
+                                  'night=%d' % int(not day)]
+                status_1 = subprocess.call(l2bin_arg_list)
+                l2b_l3m_status_list.append(status_1)
             # l3mapgen
             ifile = ofile
             ofile = os.path.join(self.L3_output_dir, make_file_name(ifile, 'L3m', suite))
-            # TODO: if ofile exists and overwrite not True, skip
-            l3map_arg_list = ['l3mapgen',
-                              'ifile=%s' % ifile,
-                              'ofile=%s' % ofile,
-                              'resolution=%s' % mapping_resolution,
-                              'south=%d' % south,
-                              'north=%d' % north,
-                              'west=%d' % west,
-                              'east=%d' % east,
-                              'projection=%s' % proj4]
-            status_2 = subprocess.call(l3map_arg_list)
-            l2b_l3m_status_list.append(status_2)
+            if not os.path.isfile(ofile) or overwrite:
+                l3map_arg_list = ['l3mapgen',
+                                  'ifile=%s' % ifile,
+                                  'ofile=%s' % ofile,
+                                  'resolution=%s' % mapping_resolution,
+                                  'south=%d' % south,
+                                  'north=%d' % north,
+                                  'west=%d' % west,
+                                  'east=%d' % east,
+                                  'projection=%s' % proj4]
+                status_2 = subprocess.call(l3map_arg_list)
+                l2b_l3m_status_list.append(status_2)
             output_file_list.append(ofile)
         if 1 in l2b_l3m_status_list:
             raise SeadasError('l2bin or l3mapgen exited with status 1')
