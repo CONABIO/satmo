@@ -307,11 +307,14 @@ class extractJob(object):
             raise SeadasError('Multilevel processor exited with %d during extraction' % status)
         return status
 
-    def compress(self):
+    def compress(self, overwrite = False):
         """Compress the extracted files present in the directory with bz2
+
+        Args:
+            overwrite (bool): Should existing bz2 files be overwritten
         """
         subfiles_list = super_glob(self.input_dir, '.*L1A_.*\.sub$')
-        compressed_list = [bz2_compress(x, self.input_dir) for x in subfiles_list]
+        compressed_list = [bz2_compress(x, self.input_dir, overwrite = overwrite) for x in subfiles_list]
         return compressed_list
 
     def clean(self, keep_uncompressed = False):
