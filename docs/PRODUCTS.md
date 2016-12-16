@@ -4,25 +4,219 @@
 
 Similarly to the previous version of the system, the area covered stretches from South to North between 3 and 33 degrees and from West to East between -122 and -72 degrees.
 
-The number of pixels covering the areas for the various spatial resolutions (250, 500 and 1000 m) will depend on the Coordinate Reference System (CRS) chosen for the output.
+The number of pixels covering the areas for the various spatial resolutions (250, 500 and 1000 m) will depend on the Coordinate Reference System (CRS) chosen for the output (2880x4800 at 1km resolution with a plate caree CRS)
 
 Plate caree appears to be the standard projection of the ocean color community. This remains an open consideration that requires further assessment considering the requirements of both web visualization and analysis.
 
 
 ## Intermediary Vs Final
 
-Final products are defined by biophysical variables whose values have a direct biological/ecological/analytical interest (ocean color products, Sea Surface Temperature, etc). On the contrary, intermediary products do not represent any direct biologically meaningful biophysical variable (e.g.: reflectance), but are essential to compute final products. Intermediary products would for instance not be displayed/displayable on the web visualization platform.
+Final products are defined by biophysical variables whose values have a direct biological/ecological/analytical interest (ocean color products, Sea Surface Temperature, etc). On the contrary, intermediary products do not represent any direct biologically meaningful biophysical variable (e.g.: reflectance), but are essential to compute final products. Intermediary products would for instance not be made available to users or via ftp or visible on the web visualization platform.
 
-
-## Rolling Vs permanent archiving
-
-Even though they constitute final products, certain variables do not need to be stored permanently on the system, and can be replaced by new incoming data, hence saving storage.
-This is for instance the case of near real time products, which have an immediate relevance but become obsolete after consolidation.
 
 ## Product list
 
+### `L1A`
+
+#### Description
+
+L1A products are what we consider the raw data. They are downloaded directly from the ocean color DAAC for each sensor independently. They are organized in 5min granules.
+
+#### Program used
+
+In most cases these files are downloaded, with python. The spatio-temporal query is either handled using the `satmo.query` module (when downloading archive data) or by using a OBPG data subscription (for near real time data). 
+
+#### Naming convention
+
+Example: `V2012005001200.L1A_SNPP.nc`
+
+#### Directory structure
+
+`sensor/L1A/YYYY/DDD/filename`
+
+#### Persistence
+
+Files are deleted as soon as extracted L1A products are produced, which may happen immediately after download or later on.
+
+
+#### Note
+
+Spatial query should be done with an extent that is smaller then the satmo area extent, to ensure that data do intersect with extraction extent when running `l1aextract_<sensor>` (see below). Otherwise the program crashes.
+
+---
+
+### `L1A sub` (extracted `L1A`)
+
+#### Description
+
+Extracted L1A products have the same characteristics than non extracted L1A products. The difference is that they result from a spatial extraction of the data to the SATMO project area performed to reduce volumes of data stored. 
+
+#### Program used
+
+`l1aextract_<sensor>` called via multilevel processor.
+
+par file:
+
+```sh
+[main]
+ifile=file1.L1A,file2.L1A
+#overwrite=1
+[l1aextract_{{sensor}}]
+SWlon= {{west}}
+SWlat= {{south}}
+NElon= {{east}}
+NElat= {{north}}
+```
+
+Using `satmo`:
+
+```python
+import satmo
+
+ext = satmo.extractJob('path/to/dir')
+ext.extract(33, 3, -72, -122)
+ext.compress()
+ext.clean()
+```
+
+#### Naming convention
+
+Example: `V2012005001200.L1A_SNPP.nc.sub`
+
+
+#### Directory structure
+
+File are stored in the same folders than L1A data, they ultimately replace them entirely. Therefore `sensor/L1A/YYYY/DDD/filename`.
+
+#### Persistence
+
+Data must be kept
+
+---
+
+### `L1B`
+
+Intermediate product of L2 processing, not stored or kept.
+
+---
+
+### `GEO` files
+
+Intermediate product of L2 processing, not stored or kept.
+
+---
+
+### `L2`
+
+#### Description
+
+Atmospherically corrected data at the original sensor resolution. Includes reflectances (different for every sensor), PAR, SST, SST4, NSST, all in one file. Going from `L1A` to `L2` is the most computationally expensive step, it is therefore only once. Ancillary data is required, fetched automatically by the `multilevel_processor.py` script. When processing in near real time mode, these data are often not available, a consolidation re-processing is therefore required once ancillary data become available.
+
+#### Program used
+
+`l2gen` via the `multilevel_processor.py`. The number of output file equals the number of input (does not mosaic files).
+
+Example par file for modis (day only):
+
+```sh
+[main]
+ifile=file1.L1A.sub,file2.L1A.sub
+use_nrt_anc=1
+overwrite=1 # or 0 if 
+
+[l2gen]
+l2prod=Rrs_412 Rrs_443 Rrs_469 Rrs_488 Rrs_531 Rrs_547 Rrs_555 Rrs_645 Rrs_667 Rrs_678 Rrs_748 Rrs_859 Rrs_869 Rrs_1240 Rrs_1640 Rrs_2130 sst sst4 par ipar
+```
+
+Using `satmo`:
+
+At the moment it is not possible to produce L2 data without going all the way to `l3map`. Nevertheless L2 data is kept and stored in a separate folder
+
+```python
+import satmo
+
+# Only includes non optional arguments
+l3m = satmo.l3map('/path/to/dir')
+l3m.execute(33, 3, -72, -122, suite = ['RRS', 'SST', 'SST4', 'PAR'])
+l3m.clean()
+```
+
+The processing above will result in as many L2 files as there were L1A inputs, as well as four `L3m` files (one per suite). `L3b`, `L1B` and `GEO` intermediary files are not kept.
+
+#### Naming convention
+
+Example: `V2014004000000.L2_SNPP_SST.nc`
+
+#### Directory structure
+
+`sensor/L2/YYYY/DDD/filename`
+
+
+#### Persistence
+
+Because processing is so computationnaly expensive, data must be kept. However, one special case concerns the near real time L2 products which should be overwritten a few day after the initial processing triggered by availability of ancillary data.
+
+---
+
+### `L3b`
+
+#### Description
+
+`L3b` (level 3 binned) are product suites spatially aggregated to equal area (usually 1km2) bins. Bad quality pixels are not included (filtered by quality flags specific to every suite). These are not gridded files.
+
+#### Program used
+
+MOdis RRS example.
+
+`l2bin infile=L2_filelist ofile=filename.L3b_DAY_RRS l3bprod=Rrs_412,Rrs_443,Rrs_469,Rrs_488,Rrs_531,Rrs_547,Rrs_555,Rrs_645,Rrs_667,Rrs_678,Rrs_748,Rrs_859,Rrs_869,Rrs_1240,Rrs_1640,Rrs_2130 resolve=1 night=0`
+
+For `satmo` implementation, refer to `L2` section.
+
+#### Naming convention
+
+Example: `T2014004.L3b_DAY_RRS`
+
+#### Directory structure
+
+`sensor/L3b/YYYY/filename`
+
+#### Persistence
+
+Files are deleted immediately after processing
+
+---
+
+### `L3m`
+
+#### Description
+
+`L3m` (level 3 mapped) are warped versions of `L3b`. They are projected to a desired projection and extent.
+
+#### Program used
+
+Modis RRS example:
+
+`l3mapgen ifile=filename.L3b_DAY_RRS ofile=filename.L3m_DAY_RRS.nc resolution=1km south=3 north=33 west=-122 east=-72 projection="+proj=laea +lat_0=18 +lon_0=-97"`
+
+For `satmo` implementation, refer to `L2` section.
+
+#### Naming convention
+
+Example: `T2014004.L3m_DAY_RRS.nc`
+
+#### Directory structure
+
+`sensor/L3m/YYYY/filename`
+
+#### Persistence
+
+Must be kept (end of pre-processing chain). Overwritten during consolidation a few days after near real time processing.
+
+---
+
 ### Ocean color products
 
+TODO: Product list is yet to be defined
 
 | Abbreviation |                    Name                   | reference | Remark |
 |--------------|-------------------------------------------|-----------|--------|
@@ -37,11 +231,19 @@ This is for instance the case of near real time products, which have an immediat
 
 ### Composite products and climatologies
 
+Compositing times can be:
+
+- Daily
+- 8 days (45 composites per year + 5 days remainder on a non leap year)
+- 16 days (22 composites per year + 13 days remainder on a non leap year)
+- Monthly
+
+These composites and the associated climatologies are only computed for the ocean color and temperature products defined in the previous section; not for reflectance data.
 
 
 ### Anomalies
 
-
+Anomalies are derived in near real time by confronting newly acquired data to climatologies.
 
 ### Additional variables
 
@@ -65,7 +267,104 @@ This is for instance the case of near real time products, which have an immediat
 - Sentinel 3
 - MERIS
 
-### Spectral characteristics	
+### Spectral characteristics
+
+Spectral characteristics of every sensor are listed below.
+
+
+#### MODIS
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        645 |                250 |
+|         |        859 |                250 |
+|         |        469 |                500 |
+|         |        555 |                500 |
+|         |       1240 |                500 |
+|         |       1640 |                500 |
+|         |       2130 |                500 |
+|         |        412 |               1000 |
+|         |        443 |               1000 |
+|         |        488 |               1000 |
+|         |        531 |               1000 |
+|         |        547 |               1000 |
+|         |        667 |               1000 |
+|         |        678 |               1000 |
+| Aerosol |        748 |               1000 |
+| Aerosol |        869 |               1000 |
+|         |            |                    |
+
+By default reflectance is produced ar 1km for all bands (see `l2gen`).
+
+---
+
+#### VIIRS
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        410 |                750 |
+|         |        443 |                750 |
+|         |        486 |                750 |
+|         |        551 |                750 |
+|         |        671 |                750 |
+| Aerosol |        745 |                750 |
+| Aerosol |        862 |                750 |
+|         |       1238 |                750 |
+|         |       1601 |                750 |
+|         |       2257 |                750 |
+
+VIIRS also contains a set of 350 m resolution bands, however, seadas does not currently allow surface reflectance processing from these bands.
+
+---
+
+#### Seawifs
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        412 |               1100 |
+|         |        443 |               1100 |
+|         |        490 |               1100 |
+|         |        510 |               1100 |
+|         |        555 |               1100 |
+|         |        670 |               1100 |
+| aerosol |        765 |               1100 |
+| aerosol |        865 |               1100 |
+
+---
+
+#### MERIS
+
+|   Note  | Wavelength | Spatial resolution |
+|---------|------------|--------------------|
+|         |        413 | 1040 x 1200        |
+|         |        443 | 1040 x 1200        |
+|         |        490 | 1040 x 1200        |
+|         |        510 | 1040 x 1200        |
+|         |        560 | 1040 x 1200        |
+|         |        620 | 1040 x 1200        |
+|         |        665 | 1040 x 1200        |
+|         |        681 | 1040 x 1200        |
+|         |        709 | 1040 x 1200        |
+|         |        754 | 1040 x 1200        |
+|         |        762 | 1040 x 1200        |
+| aerosol |        779 | 1040 x 1200        |
+| aerosol |        865 | 1040 x 1200        |
+|         |        885 | 1040 x 1200        |
+|         |        900 | 1040 x 1200        |
+
+---
+
+#### Sentinel 3
+
+Spatial resolution: 300 m
+[Spectral channels](https://sentinel.esa.int/web/sentinel/user-guides/sentinel-3-olci/resolutions/radiometric)
+
+---
+
+#### Summary
+
+All sensors have different spectral and spatial characteristics, the table below (in progress) attempts to unifies them for facilitated processing.
+
 
 |  Name  | MODIS | VIIRS | MERIS | SeaWifs | Sentinel3 |
 |--------|-------|-------|-------|---------|-----------|
@@ -75,7 +374,7 @@ This is for instance the case of near real time products, which have an immediat
 | BLUE4  |   488 |   488 |       |         |           |
 | GREEN1 |   531 |       |       |         |           |
 | GREEN2 |   551 |       |       |         |           |
-| GREEN3 |   555 |   555 |       |         |           |
+| GREEN3 |   547 |   555 |       |         |           |
 | RED1   |   645 |   640 |       |         |           |
 | RED2   |   667 |   672 |       |         |           |
 | RED3   |   678 |       |       |         |           |
@@ -85,54 +384,12 @@ This is for instance the case of near real time products, which have an immediat
 | SWIR1  |  1240 |  1240 |       |         |           |
 | SWIR1  |  1640 |       |       |         |           |
 | SWIR2  |  2130 |       |       |         |           |
+ 
+References: 
 
-<!-- TODO: Make a plot (ggplot) to visualize all spectral bands of all sensors -->
-
-
-
-
-
-
-### Annex products
-
-Bathymetry, coast lines, administrative borders
-
-
-
-## Software and processing
-
-### Processing steps
-
-`multilevel_processor.py`
-
-To run:
-
-`multilevel_processor.py --output_dir=ODIR modis_SR.par
-`
-
-Content of `modis_SR.par`
-
-```
-[main]
-# ifile corresponds to input files (comma separated list)
-# Apparently files need to be unpacked first
-ifile=T2016260171500.L1A_LAC.bz2,T2016260202500.L1A_LAC.bz2,T2016260220000.L1A_LAC.bz2
-use_nrt_anc=1
-overwrite=1
-
-[l2gen]
-l2prod=Rrs_469 Rrs_555 Rrs_645 Rrs_859
-
-# SUBSETTING OPTIONS
-south=3
-north=33
-west=-122
-east=-72
-```
+- [MODIS VIIRS spectral characteristics comparison](http://www.goes-r.gov/users/comet/npoess/multispectral_topics/rgb/media/graphics/viirs_ols_modis_table.gif)
+- [MODIS VIIRS comparison](http://www.star.nesdis.noaa.gov/jpss/documents/meetings/2011/AMS_Seattle_2011/Poster/A-TRAIN%20%20Perf%20Cont%20%20MODIS%20Observa%20-%20Guenther%20-%20WPNB.pdf)
 
 ### Quality control
 
-
-
-
-## Sandbox/TODO section
+TODO

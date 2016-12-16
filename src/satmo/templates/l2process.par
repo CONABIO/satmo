@@ -1,0 +1,7 @@
+[main]
+ifile={{ file_list|join(',') }}
+use_nrt_anc=1
+overwrite={{ overwrite|int }}
+
+[l2gen]
+l2prod={{ prod_list|join(' ') }}

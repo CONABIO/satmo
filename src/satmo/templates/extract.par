@@ -1,0 +1,8 @@
+[main]
+ifile={{ file_list|join(',') }}
+#overwrite=1
+[l1aextract_{{sensor}}]
+SWlon= {{west}}
+SWlat= {{south}}
+NElon= {{east}}
+NElat= {{north}}
