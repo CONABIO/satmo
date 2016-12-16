@@ -7,6 +7,7 @@ import glob
 import warnings
 import string
 import random
+import re
 
 from .utils import super_glob, parse_file_name, make_file_path, make_file_name, is_day
 from .errors import SeadasError
@@ -309,7 +310,7 @@ class extractJob(object):
     def compress(self):
         """Compress the extracted files present in the directory with bz2
         """
-        subfiles_list = super_glob(self.input_dir, '.*L1A_\.sub$')
+        subfiles_list = super_glob(self.input_dir, '.*L1A_.*\.sub$')
         compressed_list = [bz2_compress(x, self.input_dir) for x in subfiles_list]
         return compressed_list
 
