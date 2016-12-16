@@ -18,7 +18,7 @@ def parse_file_name(id):
         dictionary: Dictionary containing information on sensor, date, level, etc
         year, month, doy, dom are integers
     """
-    pattern = re.compile(r"([A-Z])(\d{7})(\d{4})?(?:\d{2})?\.([A-Za-z1-3\-]{2,5})_(?:[A-Z]{3,4})_?(?:[A-Z]{3})?.*")
+    pattern = re.compile(r"([A-Z])(\d{7})(\d{4})?(?:\d{2})?\.([A-Za-z1-3\-]{2,5})_?(?:[A-Z]{3,4})?_?(?:[A-Z]{3})?.*")
     m = pattern.search(id)
     if m is None:
         raise ValueError('No valid data name found for %s' % id)
