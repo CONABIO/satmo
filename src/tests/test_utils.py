@@ -25,12 +25,22 @@ class TestUtils(unittest.TestCase):
                                'dom': 9,
                                'level': 'GEO',
                                'filename': 'T2012009172500.GEO.sub'}
+        none_dict = {'sensor': None,
+                     'date': None,
+                     'time': None,
+                     'year': None,
+                     'month': None,
+                     'doy': None,
+                     'dom': None,
+                     'level': None,
+                     'filename': None}
         # file name without pattern
         landsat_file_name = 'LE71640572016196SG100'
         # correct pattern, sensor doesn't exist
         file_name_key_error = 'W2002003002500.L1A_LAC.bz2'
         self.assertEqual(satmo.parse_file_name(file_name_terra), parsed_dict_terra)
         self.assertEqual(satmo.parse_file_name(file_name_geo_sub), parsed_dict_geo_sub)
+        self.assertEqual(satmo.parse_file_name(landsat_file_name, raiseError = False), none_dict)
         with self.assertRaises(ValueError):
             satmo.parse_file_name(landsat_file_name)
         with self.assertRaises(KeyError):

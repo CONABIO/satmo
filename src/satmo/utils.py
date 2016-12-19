@@ -5,7 +5,7 @@ import os
 
 from .global_variables import SENSOR_CODES, DATA_LEVELS
 
-def parse_file_name(id):
+def parse_file_name(id, raiseError = True):
     """Filename parser for modis, viirs, seawifs
 
     Identifies a typical sequence corresponding to a satelite data filename
@@ -13,6 +13,9 @@ def parse_file_name(id):
 
     Args:
         id (string) string containing a Landsat scene ID
+        raiseError (bool): Behavior when no valid pattern is found.
+        True (default) returns a ValueError, false returns a dictionnaries of
+        Nones
 
     Returns:
         dictionary: Dictionary containing information on sensor, date, level, etc
@@ -21,7 +24,19 @@ def parse_file_name(id):
     pattern = re.compile(r"([A-Z])(\d{7})(\d{4})?(?:\d{2})?\.([A-Za-z1-3\-]{2,5})_?(?:[A-Z]{3,4})?_?(?:[A-Z]{3})?.*")
     m = pattern.search(id)
     if m is None:
-        raise ValueError('No valid data name found for %s' % id)
+        if raiseError:
+            raise ValueError('No valid data name found for %s' % id)
+        else:
+            id_meta = {'sensor': None, #TODO: a KeyError will be thrown if a key is not in SENSOR_CODES, what to do with it
+                       'date': None,
+                       'time': None,
+                       'year': None,
+                       'month': None,
+                       'doy': None,
+                       'dom': None,
+                       'level': None,
+                       'filename': None}
+            return id_meta
     dt_date = datetime.strptime(m.group(2), "%Y%j")
     if m.group(3) is not None:
         dt_time = datetime.strptime(m.group(3), "%H%M").time()

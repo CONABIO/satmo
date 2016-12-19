@@ -228,7 +228,7 @@ class l3map(object):
         [os.remove(x) for x in L1_rm_list]
         L2_rm_list = glob.glob(os.path.join(self.L2_output_dir, '*'))
         # Remove L2 files from the rm list
-        L2_rm_list = [x for x in L2_rm_list if not parse_file_name(x)['level'] == 'L2']
+        L2_rm_list = [x for x in L2_rm_list if not parse_file_name(x, raiseError = False)['level'] == 'L2']
         [os.remove(x) for x in L2_rm_list]
         # TODO: this could cause problem if processing of other output (e.g. night files)
         # is happening at the same moment
