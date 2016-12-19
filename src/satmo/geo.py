@@ -38,18 +38,19 @@ def geo_dict_from_nc(nc_file, proj4string):
         >>>     dst.write_band(1, rrs_555.astype(rasterio.float32))
     """
     con = nc.Dataset(nc_file)
-    lon_0 = con.sw_point_longitude
-    lat_0 = con.sw_point_latitude
     res = float(con.spatialResolution[:-2]) * 1000
     height = con.number_of_lines
     width = con.number_of_columns
+    lon_0 = con.sw_point_longitude
+    lat_0 = con.sw_point_latitude
     # close connection
     con.close()
     # Setup pyproj object
     p = pyproj.Proj(proj4string)
     sw_coords = p(lon_0, lat_0)
+    nw_coords = (sw_coords[0], sw_coords[1] + height * res)
     # make geotransform
-    geot = affine.Affine.from_gdal(sw_coords[0], res, 0, sw_coords[1], 0, -res)
+    geot = affine.Affine.from_gdal(nw_coords[0], res, 0, nw_coords[1], 0, -res)
     out_dict = {'affine': geot,
                 'height': height,
                 'width': width}

@@ -108,7 +108,7 @@ class l3map(object):
         self.L3_output_dir = os.path.join(L3_output_basedir, make_file_path(self.file_list[0], doy = False, level = 'L3m'))
 
     def execute(self, north, south, east, west, suites = ['RRS', 'SST', 'SST4', 'PAR'], day = True, binning_resolution = 1,\
-        mapping_resolution = '1km', proj4 = '+proj=laea +lat_0=18 +lon_0=-97', overwrite = False):
+        mapping_resolution = '1000m', proj4 = '+proj=laea +lat_0=18 +lon_0=-97', overwrite = False):
         """Processes data from L1A to L3m level
 
         Args:
@@ -121,7 +121,7 @@ class l3map(object):
             day (bool): Process day or night data. Defaults to True. Enables filtering of input files and
             appropriate l2bin night argument. suite argument should be adapted accordingly if day is set to False.
             binning_resolution (int or str): Spatial binning resolution in km. Defaults to 1, use 'H' for 500 m
-            mapping_resolution (str): Resolution of output L3m file. Defaults to '1km'
+            mapping_resolution (str): Resolution of output L3m file. Defaults to '1000m'
             proj4 (str): proj4 string, see list of valid projections in l3mapgen doc.
             Defaults to '+proj=laea +lat_0=18 +lon_0=-97'
             overwrite (bool): Should existing L2 files be overwritten? Defaults to False.
