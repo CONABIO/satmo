@@ -153,8 +153,10 @@ class l3map(object):
         # Build multilevel processing arguments list
         arg_list_0 = ['multilevel_processor.py',
                       par_file,
-                      '--use_existing',
                       '--output_dir=%s' % self.L2_output_dir]
+        if not overwrite:
+            # multilevel_processor sees overwrite and use_existing as conflicting arguments
+            arg_list_0.append('--use_existing')
         status_0 = subprocess.call(arg_list_0)
         if status_0 != 0:
             raise SeadasError('Multilevel processor exited with %d during processing to L2' % status_0)
