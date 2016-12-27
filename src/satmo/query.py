@@ -10,7 +10,7 @@ import os.path
 
 
 def query_from_extent(sensors, date_begin, per, north, south, west, east, day = True,\
-                      night = True, base_url = 'http://oceancolor.gsfc.nasa.gov/cgi/browse.pl'):
+                      night = True, base_url = 'https://oceancolor.gsfc.nasa.gov/cgi/browse.pl'):
     """Query L1A data for a given period and spatial extent
 
     Uses an old school perl 'API' to get a list of filenames that intersect with a
@@ -85,7 +85,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
 
 # file_list = query_from_extent(['am'], '2007-01-01', 'MO', 33, 10, -100, -70)
 
-def make_download_url(file_name, host = 'http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/'):
+def make_download_url(file_name, host = 'https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/'):
     """Builds a download URL from a (L1A) file name
 
     Simple helper that given a filename (obtained with query_from_extent
