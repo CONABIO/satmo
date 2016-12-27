@@ -7,3 +7,4 @@
 - Lots of algorithms with formulas here http://oceancolor.gsfc.nasa.gov/cms/atbd
 - VIIRS nc files have internal compression (I think)
 - Handle sub files in download updating mode??
+- Would it be possible to symlink all drives to have a vituarl satmo root with all the data?

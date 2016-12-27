@@ -17,4 +17,6 @@ setup(name='satmo',
           'pyproj',
           'affine',
           'rasterio',
-          'netCDF4'])
+          'netCDF4'],
+      scripts=['satmo/scripts/timerange_download.py',
+               'tests/test_utils.py'])
