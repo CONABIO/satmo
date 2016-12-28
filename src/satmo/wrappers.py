@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from .query import query_from_extent, make_download_url
 from .download import download_robust
+import warnings
+from pprint import pprint
 
 
 def timerange_download(sensors, begin, end, write_dir,\
@@ -36,7 +38,12 @@ def timerange_download(sensors, begin, end, write_dir,\
     date_range = [begin + timedelta(days=x) for x in range(0, ndays)]
     local_files_list = []
     for item in date_range:
-        file_list = query_from_extent(sensors, item, 'DAY', north, south, west, east, day = day, night = night)
+        try:
+            file_list = query_from_extent(sensors, item, 'DAY', north, south, west, east, day = day, night = night)
+        except Exception as e:
+            pprint('Error encountered for %s' % item.isoformat())
+            pprint(e.message)
+            continue
         url_list = [make_download_url(x) for x in file_list]
         for url in url_list:
             local_file = download_robust(url, write_dir, overwrite = overwrite, check_integrity = check_integrity)

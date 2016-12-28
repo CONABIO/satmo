@@ -4,6 +4,8 @@ install_aliases()
 import urllib.parse
 
 import requests
+from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 import re
 from datetime import datetime
 import os.path
@@ -36,6 +38,12 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         List of filenames
 
     """
+    # Instantiate a requests session and set number of retries and pause between them
+    s = requests.Session()
+    retries = Retry(total = 15, backoff_factor = 0.1, status_forcelist = [500, 502, 503, 504])
+    s.mount('https://', HTTPAdapter(max_retries = retries))
+
+    # Collect elements to build the first request url
     if type(sensors) is not list:
         raise TypeError('sensors must be a list')
     # Seawifs special case
@@ -68,7 +76,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
               'e': east}
     # This first query will return an html page from which the order id can be retrieved
     # and used to send a second request
-    r0 = requests.get('?'.join([base_url, urllib.parse.urlencode(query0_args)]))
+    r0 = s.get('?'.join([base_url, urllib.parse.urlencode(query0_args)]))
     if r0.status_code != 200:
         raise requests.HTTPError
     # regular expression to find the orderid in the html page
@@ -77,7 +85,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     query1_args = {'sub': 'filenamelist',
                    'id': m.group(1),
                    'prm': 'TC'}
-    r1 = requests.get('?'.join([base_url, urllib.parse.urlencode(query1_args)]))
+    r1 = s.get('?'.join([base_url, urllib.parse.urlencode(query1_args)]))
     if r1.status_code != 200:
         raise requests.HTTPError
     file_list = r1.text.split('\n')
