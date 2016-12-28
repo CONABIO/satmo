@@ -9,7 +9,7 @@ from pprint import pprint
 from .utils import parse_file_name, make_file_path
 from .errors import HttpResourceNotAvailable
 
-def download_file(url, write_dir, overwrite = False, check_integrity = False):
+def download_file(url, write_dir, overwrite = False, check_integrity = False, timeout = 10):
     """Generic file download function
 
     Downloads a file from a URL, and write it to a user defined location
@@ -19,6 +19,8 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False):
         write_dir (str): Host directory to which the data will be written
         overwrite (bool): Should the file be overwritten if already existing on local host
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
+        timeout (float): How long to wait (in seconds) for the server to send data before giving up and 
+        raising a requests.ConnectionError
 
     Details:
         The function will raise a ConnectionError (via requests) if a connection cannot be established
@@ -47,7 +49,7 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False):
     # Download file
     r1 = requests.get(url, stream=True)
     with open(local_filename, 'wb') as f:
-        for chunk in r1.iter_content(chunk_size=1024):
+        for chunk in r1.iter_content(chunk_size=1024, timeout = timeout):
             if chunk:
                 f.write(chunk)
     return local_filename
