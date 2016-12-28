@@ -107,6 +107,7 @@ def download_robust(url, base_dir, n_retries = 5, pause_retries = 10, overwrite 
             return True
         except requests.ConnectionError:
             n += 1
+            overwrite = True # In case file has been partly downloaded 
             time.sleep(pause_retries)
         except HttpResourceNotAvailable:
             warnings.warn(url + ' not downloaded. Not found on server')
