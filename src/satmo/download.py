@@ -9,7 +9,7 @@ from pprint import pprint
 from .utils import parse_file_name, make_file_path
 from .errors import HttpResourceNotAvailable
 
-def download_file(url, write_dir, overwrite = False, check_integrity = False, timeout = 10):
+def download_file(url, write_dir, overwrite = False, check_integrity = False, timeout = 900):
     """Generic file download function
 
     Downloads a file from a URL, and write it to a user defined location
