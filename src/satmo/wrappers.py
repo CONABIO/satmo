@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+import itertools
 from .query import query_from_extent, make_download_url
 from .download import download_robust
+from .utils import file_path_from_sensor_date
 import warnings
 from pprint import pprint
 
@@ -14,9 +16,9 @@ def timerange_download(sensors, begin, end, write_dir,\
 
     Args:
         sensors: (list) list of strings, Valid entries are 'am' (aqua), 'tm' (terra),
+        'sw' (seawifs), 'v0' (viirs)
         begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
         end (datetime or str): End of time range. 'yyyy-mm-dd' if str
-        'sw' (seawifs), 'v0' (viirs)
         write_dir (str): Host directory to which the data will be written
         north (float): north latitude of bounding box in DD
         south (float): south latitude of bounding box in DD
@@ -51,3 +53,25 @@ def timerange_download(sensors, begin, end, write_dir,\
     return local_files_list
 
     # test = satmo.timerange_download(['tm'], '2005-01-01', '2005-01-06', '/home/loic/sandbox/dl_tests', north = 33, south = 10, west = -133, east = -110)
+def extract_wrapper(input_dir, north, south, west, east, compress, clean, pattern,\
+                    overwrite = False, keep_uncompressed = False):
+    pass
+
+def timerange_extract(sensors, data_root, begin, end,\
+                      north, south, west, east,\
+                      overwrite = False, compress = True, clean = True,\
+                      n_threads = 1):
+    """Extract spatial extent for a given time range
+
+    Wrapper around satmo.extractJob class
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    ndays = (end - begin).days + 1
+    date_range = [begin + timedelta(days=x) for x in range(0, ndays)]
+    ## Make a list of all combinations to pass as args in list comprehension
+    sensor_date_combo = list(itertools.product(sensors, date_range))
+    dir_list = [file_path_from_sensor_date(*x, data_root = data_root) for x in sensor_date_combo]
+
