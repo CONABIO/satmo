@@ -9,7 +9,7 @@ import warnings
 from .query import query_from_extent, make_download_url
 from .download import download_robust
 from .utils import file_path_from_sensor_date
-
+from .preprocessors import extractJob
 
 def timerange_download(sensors, begin, end, write_dir,\
                 north, south, west, east, day = True, night = True,\
@@ -89,7 +89,7 @@ def extract_wrapper(input_dir, north, south, west, east, compress = True, clean 
     """
     if os.path.isdir(input_dir):
         try:
-            ext = satmo.extractJob(input_dir, **init_kwargs)
+            ext = extractJob(input_dir, **init_kwargs)
             ext.extract(north=north, south=south, west=west, east=east, **extract_kwargs)
             if compress:
                 ext.compress(**compress_kwargs)
@@ -97,6 +97,7 @@ def extract_wrapper(input_dir, north, south, west, east, compress = True, clean 
                 ext.clean(**clean_kwargs)
             return {input_dir: 0}
         except Exception as e:
+            pprint(e)
             return {input_dir: 1}
     else:
         return {input_dir: 1}
