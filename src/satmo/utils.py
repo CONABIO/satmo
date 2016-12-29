@@ -102,6 +102,33 @@ def make_file_path(filename, add_file = True, doy = True, level = None):
     file_path = os.path.join(*path_elements)
     return file_path
 
+def file_path_from_sensor_date(sensor, date, data_root, level = 'L1A', doy = True):
+    """Util function to compute a path from 
+
+    Args:
+        sensor (str): 'aqua', 'terra', 'seawifs', 'viirs'
+        date (datetime or str): date for which path should be computed, 'yyyy-mm-dd' if str
+        data_root (str): Root of the data archive to which computed path will be appended
+        level (str): data level
+        doy (bool): append doy to path, defaults to True
+
+    Return:
+        File path
+    """
+    if level not in DATA_LEVELS:
+        raise ValueError("Invalid level set")
+    # levels with doy in file path
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d")
+    year = date.year
+    path_elements = [data_root, sensor, level, str(year)]
+    if doy:
+        path_elements.append(str(date.timetuple().tm_yday).zfill(3))
+    file_path = os.path.join(*path_elements)
+    return file_path
+
+
+
 def make_file_name(filename, level, suite, ext = '.nc'):
     """Jumps a filename to its corresponding filename at a higher level
 

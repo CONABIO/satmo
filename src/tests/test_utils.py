@@ -63,5 +63,16 @@ class TestUtils(unittest.TestCase):
         with self.assertRaises(ValueError):
             satmo.make_file_name(file_name, 'L3c', 'SST')
 
+    def test_file_path_from_sensor_date(self):
+        date_dt = datetime(2007, 02, 23) # doy: 54
+        date_str = '2007-02-23'
+        sensor = 'aqua'
+        data_root = '/media/user/data/test'
+        self.assertEqual(satmo.file_path_from_sensor_date('aqua', date_dt, data_root), '/media/user/data/test/aqua/L1A/2007/054')
+        self.assertEqual(satmo.file_path_from_sensor_date('aqua', date_str, data_root, 'L2'), '/media/user/data/test/aqua/L2/2007/054')
+        self.assertEqual(satmo.file_path_from_sensor_date('aqua', date_str, data_root, 'L3m', doy = False), '/media/user/data/test/aqua/L3m/2007')
+        with self.assertRaises(ValueError):
+            satmo.file_path_from_sensor_date('aqua', date_dt, data_root, 'L3')
+
 if __name__ == '__main__':
     unittest.main()
