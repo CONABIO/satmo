@@ -105,11 +105,39 @@ def extract_wrapper(input_dir, north, south, west, east, compress = True, clean 
 
 def timerange_extract(sensors, data_root, begin, end,\
                       north, south, west, east,\
-                      overwrite = False, compress = True, clean = True,\
-                      keep_uncompressed = False, n_threads = 1):
+                      compress = True, clean = True,\
+                      init_kwargs = {}, extract_kwargs = {}, compress_kwargs = {}, clean_kwargs = {},\
+                      n_threads = 1):
     """Extract spatial extent for a given time range
 
-    Wrapper around satmo.extractJob class
+    Parallel batcher for satmo.extract_wrapper()
+
+    Args:
+        sensors (list): List of sensor names for which data should be extracted
+        e.g. ['aqua', 'terra']
+        data_root (str): Root of the system local archive
+        begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
+        end (datetime or str): End of time range. 'yyyy-mm-dd' if str
+        north (float): north latitude of bounding box in DD
+        south (float): south latitude of bounding box in DD
+        west (float): west longitude of bounding box in DD
+        east (float): east longitude of bounding box in DD
+        compress (bool): Should data be recompressed after extraction, defaults to True
+        clean (bool): Should intermediary output be deleted from directory,
+        defaults to True. If compress is set to False, and clean is set to True,
+        you should probably put sonething in the clean_kwargs argument
+        init_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob class instantation
+        'pattern' is the only one at the moment
+        extract_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob.extract()
+        method. 'overwrite' is the only one at the moment
+        compress_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob.compress()
+        method. 'overwrite' is the only one at the moment
+        clean_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob.clean()
+        method. 'keep_uncompressed' is the only one at the moment
+        n_treads (int): Number of threads to use for the parallel implementation
+
+    Returns:
+        List of dicts returned by satmo.extract_wrapper()
     """
     if type(begin) is str:
         begin = datetime.strptime(begin, "%Y-%m-%d")
@@ -126,8 +154,12 @@ def timerange_extract(sensors, data_root, begin, end,\
               'east': east,
               'compress': compress,
               'clean': clean,
-              'overwrite': overwrite}
-    pool = mp.Pool(3)
+              'init_kwargs': init_kwargs,
+              'extract_kwargs': extract_kwargs,
+              'compress_kwargs': compress_kwargs,
+              'clean_kwargs': clean_kwargs}
+    pool = mp.Pool(n_threads)
     out = pool.map(functools.partial(extract_wrapper, **kwargs), dir_list)
+    return out
 
 
