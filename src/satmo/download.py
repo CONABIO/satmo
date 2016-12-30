@@ -4,6 +4,7 @@ import os.path
 import os
 import time
 import warnings
+import contextlib
 from pprint import pprint
 
 from .utils import parse_file_name, make_file_path
@@ -47,11 +48,11 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False, ti
     if not os.path.exists(write_dir):
         os.makedirs(write_dir)
     # Download file
-    r1 = requests.get(url, stream=True, timeout = timeout)
-    with open(local_filename, 'wb') as f:
-        for chunk in r1.iter_content(chunk_size=1024):
-            if chunk:
-                f.write(chunk)
+    with contextlib.closing(requests.get(url, stream=True, timeout = timeout)) as r1:
+        with open(local_filename, 'wb') as f:
+            for chunk in r1.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
     return local_filename
 
 
