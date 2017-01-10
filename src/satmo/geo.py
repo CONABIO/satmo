@@ -1,9 +1,16 @@
 import pyproj
-import affine
+from affine import Affine
+from rasterio.crs import CRS
 import netCDF4 as nc
+
 
 def geo_dict_from_nc(nc_file, proj4string):
     """Retrieves the georeferencing parameters from a netcdf file produced with l3mapgen
+
+    Details:
+        See https://oceancolor.gsfc.nasa.gov/forum/oceancolor/topic_show.pl?tid=6429
+        for justification of the approach used in this function to retrieve the projected
+        extent.
 
     Args:
         nc_file (str): Path to netcdf file
@@ -38,27 +45,28 @@ def geo_dict_from_nc(nc_file, proj4string):
         >>>     dst.write_band(1, rrs_555.astype(rasterio.float32))
     """
     con = nc.Dataset(nc_file)
-    res = float(con.spatialResolution[:-2]) * 1000
+    res = con.geospatial_lon_resolution * 1000
     height = con.number_of_lines
     width = con.number_of_columns
-    lon_0 = con.sw_point_longitude
-    lat_0 = con.sw_point_latitude
-    # close connection
+    # Dictionary representation of proj4string
+    crs = CRS.from_string(proj4string)
+    # sw longlat extent will be used to retrieve xmin
+    sw_ll = (con.westernmost_longitude, con.southernmost_latitude)
+    # Southest point of the projected extent should be at lon_0 (crs definition)/southernmost_latitude
+    # It is used to retrieve ymin
+    south_center_ll = (crs['lon_0'], con.southernmost_latitude)
     con.close()
-    # Setup pyproj object
+    # Define pyproj transformation object
     p = pyproj.Proj(proj4string)
-    sw_coords = p(lon_0, lat_0)
-    nw_coords = (sw_coords[0], sw_coords[1] + height * res)
-    # make geotransform
-    geot = affine.Affine.from_gdal(nw_coords[0], res, 0, nw_coords[1], 0, -res)
-    out_dict = {'affine': geot,
+    # Convert coordinate pairs to projected CRS
+    x_min, y_dummy = p(*sw_ll)
+    x_dummy, y_min = p(*south_center_ll)
+    y_max = y_min + height * res
+    # Build geo dict
+    geo_dict = {'affine': Affine(res, 0.0, x_min,
+                                 0.0, -res, y_max),
                 'height': height,
-                'width': width}
-    try:
-        from rasterio.crs import CRS
-        crs = CRS.from_string(proj4string)
-    except ImportError:
-        crs = proj4string
-    out_dict.update({'crs': crs})
-    return out_dict
+                'width': width,
+                'crs': crs}
+    return geo_dict
 
