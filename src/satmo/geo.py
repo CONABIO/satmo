@@ -44,18 +44,17 @@ def geo_dict_from_nc(nc_file, proj4string):
         >>> with rasterio.open('rrs_555.tif', 'w', **geo_dict) as dst:
         >>>     dst.write_band(1, rrs_555.astype(rasterio.float32))
     """
-    con = nc.Dataset(nc_file)
-    res = con.geospatial_lon_resolution * 1000
-    height = con.number_of_lines
-    width = con.number_of_columns
-    # Dictionary representation of proj4string
-    crs = CRS.from_string(proj4string)
-    # sw longlat extent will be used to retrieve xmin
-    sw_ll = (con.westernmost_longitude, con.southernmost_latitude)
-    # Southest point of the projected extent should be at lon_0 (crs definition)/southernmost_latitude
-    # It is used to retrieve ymin
-    south_center_ll = (crs['lon_0'], con.southernmost_latitude)
-    con.close()
+    with nc.Dataset(nc_file) as src:
+        res = src.geospatial_lon_resolution * 1000
+        height = src.number_of_lines
+        width = src.number_of_columns
+        # Dictionary representation of proj4string
+        crs = CRS.from_string(proj4string)
+        # sw longlat extent will be used to retrieve xmin
+        sw_ll = (src.westernmost_longitude, src.southernmost_latitude)
+        # Southest point of the projected extent should be at lon_0 (crs definition)/southernmost_latitude
+        # It is used to retrieve ymin
+        south_center_ll = (crs['lon_0'], src.southernmost_latitude)
     # Define pyproj transformation object
     p = pyproj.Proj(proj4string)
     # Convert coordinate pairs to projected CRS
