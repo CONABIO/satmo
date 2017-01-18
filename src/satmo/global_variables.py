@@ -6,7 +6,9 @@ SENSOR_CODES = {'A': 'aqua',
                 'O': 'octs',
                 'C': 'czcs',
                 'M': 'meris',
-                'H': 'hico'}
+                'H': 'hico',
+                'X': 'combined'} # 'combined' is not a sensor, but the name given to combined multisensors
+                                 # products
 
 DATA_LEVELS = ['L0', 'L1A', 'L1B', 'L2', 'L3b', 'L3m']
 
@@ -47,3 +49,17 @@ PRODUCT_SUITES = {'RRS': {'terra': ['Rrs_412','Rrs_443','Rrs_469','Rrs_488',
                           'viirs': ['nsst'],
                           'seawifs': ['nsst'],
                           'meris': ['nsst']}}
+
+# Rrc (Rayleight corrected reflectance), used by Hu are called rhos in seadas
+
+
+INDICES = {'OC3' : {'modis': {'reflectances': 'RRS',
+                              'bands': ['blue', 'green']},
+                              'RRS': {'blue': [],
+                                      'green': []}},
+                    'stretch': {'vmin': 0, 'vmax': 3}}
+
+COMPOSITES = {'DAY': 'Daily',
+              '8DAY': '8 day composite',
+              '16DAY': '16 day composite',
+              'MON': 'Monthly composite'}

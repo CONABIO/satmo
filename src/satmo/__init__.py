@@ -5,3 +5,4 @@ from .utils import make_file_path, parse_file_name, make_file_name, super_glob, 
 from .wrappers import timerange_download, timerange_extract, extract_wrapper
 from .geo import geo_dict_from_nc
 from .errors import HttpResourceNotAvailable, SeadasError
+from .visualization import make_map_title
