@@ -10,15 +10,14 @@ import re
 from datetime import datetime
 import os.path
 
-
 def query_from_extent(sensors, date_begin, per, north, south, west, east, day = True,\
-                      night = True, base_url = 'https://oceancolor.gsfc.nasa.gov/cgi/browse.pl'):
+                      night = True, product = 'L1A', base_url = 'https://oceancolor.gsfc.nasa.gov/cgi/browse.pl'):
     """Query L1A data for a given period and spatial extent
 
     Uses an old school perl 'API' to get a list of filenames that intersect with a
-    geographical area and a time period. Only L1A products are queried at the moment,
-    however, the function could easily be changed to query other collections (see prm
-    query argument)
+    geographical area and a time period. The function was initially designed to query 
+    L1A products; capability to query different L2 collection was added later and may not
+    function as well than the L1A query capability. 
 
     Args:
         sensors: (list) list of strings, Valid entries are 'am' (aqua), 'tm' (terra),
@@ -32,6 +31,8 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         east (float): east longitude of bounding box in DD
         day (bool): Order day data ?
         night (bool): Order night data ?
+        product (str): Product to order, defaults to 'L1A'. Other possible values include 
+        'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
         base_url (str): 'api' host
 
     Returns:
@@ -42,7 +43,6 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     s = requests.Session()
     retries = Retry(total = 15, backoff_factor = 0.1, status_forcelist = [500, 502, 503, 504])
     s.mount('https://', HTTPAdapter(max_retries = retries))
-
     # Collect elements to build the first request url
     if type(sensors) is not list:
         raise TypeError('sensors must be a list')
@@ -60,6 +60,10 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         dnm.append('D')
     if night is True:
         dnm.append('N')
+    if product == 'L1A':
+        prm = 'TC'
+    else:
+        prm = product # Only useful for second request
     dnm = '@'.join(dnm)
     day = (date_begin - datetime(1970, 1, 1)).days
     # BUild dictionary of arguments
@@ -84,7 +88,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     m = orderid_grep.search(r0.text)
     query1_args = {'sub': 'filenamelist',
                    'id': m.group(1),
-                   'prm': 'TC'}
+                   'prm': prm}
     r1 = s.get('?'.join([base_url, urllib.parse.urlencode(query1_args)]))
     if r1.status_code != 200:
         raise requests.HTTPError

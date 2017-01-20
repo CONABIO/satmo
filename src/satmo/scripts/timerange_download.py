@@ -14,7 +14,7 @@ import satmo
 
 
 def main(aqua, terra, seawifs, viirs, begin, end,\
-         north, south, east, west, day, night, write_dir, overwrite, check_integrity):
+         north, south, east, west, day, night, product, write_dir, overwrite, check_integrity):
     sensors = []
     if aqua:
         sensors.append('am')
@@ -27,7 +27,7 @@ def main(aqua, terra, seawifs, viirs, begin, end,\
 
     satmo.timerange_download(sensors = sensors, begin = begin, end = end, write_dir = write_dir,\
                 north = north, south = south, west = west, east = east, day = day, night = night,\
-                overwrite = overwrite, check_integrity = check_integrity)
+                product = product, overwrite = overwrite, check_integrity = check_integrity)
 
 
 if __name__ == '__main__':
@@ -37,6 +37,8 @@ if __name__ == '__main__':
               'If data extraction is to be performed on the data after download\n'
               'it is recommended to order a slightly smaller extent than the extraction inputs\n\n'
               'The download should be robust enough to handle breaking connections\n\n'
+              'Note: When ordering L2 data (see --product) it\'s important to not provide unrealistic\n'
+              'commands (e.g. -p OC without specifying --no-night)'
               '------------\n'
               'Example usage:\n'
               '------------\n'
@@ -84,7 +86,13 @@ if __name__ == '__main__':
     parser.add_argument('-west', '--west',
                         type = float,
                         required = True,
-                        help = 'Western most boundary in DD')
+                        help = 'Western most boundary in DD')    
+
+    parser.add_argument('-p', '--product',
+                        type = str,
+                        help = 'Product to download (L1A is default, other possible values,\
+                                corresponding to L2 collections are OC, SST, SST4)')
+    parser.set_defaults(product='L1A')
 
     parser.add_argument('--no-day', dest='day', action='store_false')
     parser.set_defaults(day=True)

@@ -13,7 +13,7 @@ from .preprocessors import extractJob
 
 def timerange_download(sensors, begin, end, write_dir,\
                 north, south, west, east, day = True, night = True,\
-                overwrite = False, check_integrity = False):
+                product = 'L1A', overwrite = False, check_integrity = False):
     """Queries and download data for a given timerange
 
     Wrapper around downdload and query
@@ -30,6 +30,8 @@ def timerange_download(sensors, begin, end, write_dir,\
         east (float): east longitude of bounding box in DD
         day (bool): Order day data ?
         night (bool): Order night data ?
+        product (str): Product to order, defaults to 'L1A'. Other possible values include 
+        'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
         overwrite (bool): Should existing files on the host be overwritten
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
 
@@ -45,7 +47,8 @@ def timerange_download(sensors, begin, end, write_dir,\
     local_files_list = []
     for item in date_range:
         try:
-            file_list = query_from_extent(sensors, item, 'DAY', north, south, west, east, day = day, night = night)
+            file_list = query_from_extent(sensors, item, 'DAY', north, south, west, east,
+                                          day = day, night = night, product = product)
         except Exception as e:
             pprint('Error encountered for %s' % item.isoformat())
             pprint(e.message)
