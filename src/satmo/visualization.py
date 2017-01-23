@@ -8,7 +8,7 @@ import re
 import os
 import warnings
 
-from .global_variables import SENSOR_CODES, COMPOSITES
+from .global_variables import SENSOR_CODES, COMPOSITES, INDICES
 
 file = 'T2014027.L3m_DAY_CHL.tif'
 
@@ -25,10 +25,12 @@ def make_map_title(file):
         8 day composite SST combined 2014-01-27 (date corresponds to first day of the compositing period)
         8 day composite SST Climatology January 1
         Example file names are:
-        T2014027.L3m_DAY_Chor_a.tif
-        X2014027.L3m_DAY_SST.tif
-        X2014027.L3m_8DAY_SST.tif
-        XCLIM027.L3m_8DAY_SST.tif (climatology)
+        T2014027.L3m_DAY_CHL_chlor_a_1km.tif
+        X2014027.L3m_DAY_SST_sst_1km.tif
+        X2014027.L3m_8DAY_SST_sst_1km.tif
+        XCLIM027.L3m_8DAY_SST_sst_1km.tif (climatology)
+        T2004005.L3m_DAY_CHL_chlor_a_250m.tif
+        A2007009.L3m_DAY_SST4_sst4_4km.nc
 
     Args:
         file (str): File name (usually a geoTiff)
@@ -37,7 +39,8 @@ def make_map_title(file):
         str: Figure title
     """
     file = os.path.basename(file)
-    pattern = re.compile(r"(?P<sensor>[A-Z])(?P<year>[CLIM0-9]{4})(?P<doy>\d{3})\.(?P<level>[A-Za-z1-3]{3,4})_(?P<composite>.*?)_(?P<var>.*)\.")
+    pattern = re.compile(r"(?P<sensor>[A-Z])(?P<year>[CLIM0-9]{4})(?P<doy>\d{3})\.(?P<level>[A-Za-z1-3]{3,4})" \
+                         r"_(?P<composite>.*?)_(?P<collection>[A-Z4]{3,4})_(?P<var>.*)_(?P<resolution>.*?)\.")
     m = pattern.search(file)
     if m is None:
         return file
@@ -47,23 +50,42 @@ def make_map_title(file):
     except KeyError:
         return file
     var = m.group('var')
+    resolution = m.group('resolution')
     if re.search(r'\d{4}', m.group('year')) is None: # It's CLIM
         date  = datetime.strptime(m.group('doy'), '%j').strftime("%B %d")
-        title = '%s %s climatology %s' % (composite, var, date)
+        title = '%s %s climatology %s %s' % (composite, var, date, resolution)
     else:
         date = str(datetime.strptime(m.group('year') + m.group('doy'), '%Y%j').date())
-        title = '%s %s %s %s' % (composite, var, sensor, date)
+        title = '%s %s %s %s %s' % (composite, var, sensor, date, resolution)
     return title
 
+def get_var_name(file):
+    """Retrieve variable name from filename of a L3m geotiff file
+
+    For use by make_preview only, not exported to __init__
+
+    Args:
+        file (str): File name (usually a geoTiff)
+
+    Returns:
+        str: variable name (e.g.: chlor_a)
+    """
+    file = os.path.basename(file)
+    pattern = re.compile(r"(?P<sensor>[A-Z])(?P<year>[CLIM0-9]{4})(?P<doy>\d{3})\.(?P<level>[A-Za-z1-3]{3,4})_(?P<composite>.*?)_(?P<var>.*)\.")
+    m = pattern.search(file)
+    var = m.group('var')
+    return var
 
 
-def make_preview(file, stretch_range):
+def make_preview(file):
     """
     Args:
-        file (str): Path to a raster file containing a single layer
+        file (str): Path to a raster file containing a single layer (usually a geoTiff)
         stretch_range (list or tupple): List or tupple of floats giving the upper and lower
         bounds used for color stretch
     """
+
+    INDICES['OC3']['stretch']
     
 
     with rasterio.open(file) as src:
