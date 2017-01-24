@@ -71,7 +71,8 @@ def get_var_name(file):
         str: variable name (e.g.: chlor_a)
     """
     file = os.path.basename(file)
-    pattern = re.compile(r"(?P<sensor>[A-Z])(?P<year>[CLIM0-9]{4})(?P<doy>\d{3})\.(?P<level>[A-Za-z1-3]{3,4})_(?P<composite>.*?)_(?P<var>.*)\.")
+    pattern = re.compile(r"(?P<sensor>[A-Z])(?P<year>[CLIM0-9]{4})(?P<doy>\d{3})\.(?P<level>[A-Za-z1-3]{3,4})" \
+                         r"_(?P<composite>.*?)_(?P<collection>[A-Z4]{3,4})_(?P<var>.*)_(?P<resolution>.*?)\.")
     m = pattern.search(file)
     var = m.group('var')
     return var
