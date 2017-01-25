@@ -82,12 +82,20 @@ def make_preview(file):
     """
     Args:
         file (str): Path to a raster file containing a single layer (usually a geoTiff)
-        stretch_range (list or tupple): List or tupple of floats giving the upper and lower
-        bounds used for color stretch
-    """
+        
+    Returns:
 
-    INDICES['OC3']['stretch']
-    
+    """
+    # Retrieve color stretch information of available
+    var = get_var_name(file)
+    try:
+        stretch = INDICES[var]['stretch']
+    except KeyError:
+        stretch = {}
+
+    title = make_map_title(file)
+
+    fig_name = os.path.splitext(file)[0] + '.png'
 
     with rasterio.open(file) as src:
         meta = src.meta
@@ -123,7 +131,7 @@ def make_preview(file):
     m.drawcoastlines()
     m.drawmapboundary(fill_color='darkgrey')
     m.drawlsmask(ocean_color='darkgrey')
-    m.imshow(data, origin='upper', extent = extent, vmin=0, vmax=3)
+    m.imshow(data, origin='upper', extent = extent, **stretch)
     m.colorbar()
     # fill continents, set lake color same as ocean color.
     m.fillcontinents(color='grey',lake_color='black')
@@ -133,8 +141,8 @@ def make_preview(file):
     # labels = [left,right,top,bottom]
     m.drawparallels(parallels,labels=[True,False,False,False])
     m.drawmeridians(meridians,labels=[False,False,False,True])
-    plt.title('Daily Chlor_a Aqua 2014-01-27')
-    plt.savefig('T2014027.L3m_DAY_CHL.png',dpi=100, transparent=True)
+    plt.title(title)
+    plt.savefig(fig_name, dpi=100, transparent=True)
 
 
 
