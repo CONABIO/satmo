@@ -10,8 +10,6 @@ import warnings
 
 from .global_variables import SENSOR_CODES, COMPOSITES, INDICES
 
-file = 'T2014027.L3m_DAY_CHL.tif'
-
 def make_map_title(file):
     """Generate figure title from file name
 
@@ -131,7 +129,10 @@ def make_preview(file):
     m.drawcoastlines()
     m.drawmapboundary(fill_color='darkgrey')
     m.drawlsmask(ocean_color='darkgrey')
-    m.imshow(data, origin='upper', extent = extent, **stretch)
+    if INDICES[var]['log'] is True:
+        m.imshow(data, origin='upper', extent = extent, norm=LogNorm(**stretch))
+    else:
+        m.imshow(data, origin='upper', extent = extent, **stretch)
     m.colorbar()
     # fill continents, set lake color same as ocean color.
     m.fillcontinents(color='grey',lake_color='black')

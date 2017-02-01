@@ -57,7 +57,8 @@ INDICES = {'chlor_a' : {'algorithm':{'OC3':{'modis': {'reflectances': 'RRS',
                                                      'bands': ['blue', 'green']},
                                                      'RRS': {'blue': [],
                                                           'green': []}}},
-                        'stretch': {'vmin': 0, 'vmax': 3}}}
+                        'stretch': {'vmax': 10},
+                        'log': True}}
 
 COMPOSITES = {'DAY': 'Daily',
               '8DAY': '8 day composite',
