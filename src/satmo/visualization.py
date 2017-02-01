@@ -129,7 +129,7 @@ def make_preview(file):
     m.drawcoastlines()
     m.drawmapboundary(fill_color='darkgrey')
     m.drawlsmask(ocean_color='darkgrey')
-    if INDICES[var]['log'] is True:
+    if INDICES[var]['log']:
         m.imshow(data, origin='upper', extent = extent, norm=LogNorm(**stretch))
     else:
         m.imshow(data, origin='upper', extent = extent, **stretch)
