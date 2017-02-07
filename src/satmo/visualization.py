@@ -3,6 +3,7 @@ from matplotlib.colors import LogNorm
 import numpy as np
 import rasterio
 from pyproj import Proj
+import netCDF4 as nc
 
 from datetime import datetime
 import re
@@ -10,6 +11,7 @@ import os
 import warnings
 
 from .global_variables import SENSOR_CODES, COMPOSITES, INDICES
+from .geo import geo_dict_from_nc
 
 def make_map_title(file):
     """Generate figure title from file name
@@ -96,9 +98,16 @@ def make_preview(file):
 
     fig_name = os.path.splitext(file)[0] + '.png'
 
-    with rasterio.open(file) as src:
-        meta = src.meta
-        data = src.read(1, masked=True)
+    # Handle both L3m tif and nc files
+    if file.endswith('.tif'):
+        with rasterio.open(file) as src:
+            meta = src.meta
+            data = src.read(1, masked=True)
+    elif file.endswith('.nc'):
+        meta = geo_dict_from_nc(file)
+        # Read array
+        with nc.Dataset(file) as src:
+            data = src.variables[var][:]
 
     try:
         from mpl_toolkits.basemap import Basemap
