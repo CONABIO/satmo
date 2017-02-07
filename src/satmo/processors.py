@@ -23,7 +23,7 @@ def nc2tif(file, proj4string):
     # Generate output file name
     # l3m nc products should only contain one variable, so that simply changing extension should suffice
     base = os.path.splitext(file)[0]
-    file_out = os.rename(file, base + ".tif")
+    file_out = base + ".tif"
     # Get geo dict
     geo_dict = geo_dict_from_nc(file, proj4string)
     # Retrieve var name from file name

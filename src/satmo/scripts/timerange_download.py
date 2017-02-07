@@ -38,7 +38,7 @@ if __name__ == '__main__':
               'it is recommended to order a slightly smaller extent than the extraction inputs\n\n'
               'The download should be robust enough to handle breaking connections\n\n'
               'Note: When ordering L2 data (see --product) it\'s important to not provide unrealistic\n'
-              'commands (e.g. -p OC without specifying --no-night)'
+              'commands (e.g. -p OC without specifying --no-night)\n\n'
               '------------\n'
               'Example usage:\n'
               '------------\n'

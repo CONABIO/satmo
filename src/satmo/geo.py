@@ -45,7 +45,7 @@ def geo_dict_from_nc(nc_file, proj4string):
         >>>     dst.write_band(1, rrs_555.astype(rasterio.float32))
     """
     with nc.Dataset(nc_file) as src:
-        res = src.geospatial_lon_resolution * 1000
+        res = src.geospatial_lon_resolution
         height = src.number_of_lines
         width = src.number_of_columns
         # Dictionary representation of proj4string
