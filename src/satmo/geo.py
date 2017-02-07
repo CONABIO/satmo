@@ -4,7 +4,7 @@ from rasterio.crs import CRS
 import netCDF4 as nc
 
 
-def geo_dict_from_nc(nc_file, proj4string):
+def geo_dict_from_nc(nc_file, proj4string = None):
     """Retrieves the georeferencing parameters from a netcdf file produced with l3mapgen
 
     Details:
@@ -14,7 +14,8 @@ def geo_dict_from_nc(nc_file, proj4string):
 
     Args:
         nc_file (str): Path to netcdf file
-        proj4string (str): proj4string previously passed to l3mapgen (projection=)
+        proj4string (str): Optional. proj4string previously passed to l3mapgen (projection=)
+            retrieved from the file metadata if not provided
 
     Return:
         Dictionary with georeferencing parameters
@@ -48,6 +49,8 @@ def geo_dict_from_nc(nc_file, proj4string):
         res = src.geospatial_lon_resolution
         height = src.number_of_lines
         width = src.number_of_columns
+        if proj4string is None:
+            proj4string = src.map_projection
         # Dictionary representation of proj4string
         crs = CRS.from_string(proj4string)
         # sw longlat extent will be used to retrieve xmin

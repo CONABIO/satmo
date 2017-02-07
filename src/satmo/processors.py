@@ -5,7 +5,7 @@ import rasterio
 from .geo import geo_dict_from_nc
 from .visualization import get_var_name
 
-def nc2tif(file, proj4string):
+def nc2tif(file, proj4string = None):
     """Generate geotiff from L3m netcdf array
 
     Reads an existing array from a netcdf file and writes it
@@ -13,7 +13,7 @@ def nc2tif(file, proj4string):
 
     Args:
         file (str): Path to the netcdf file containing the desired array
-        proj4string (str): Coordinate reference system
+        proj4string (str): Coordinate reference system (opional, see geo_dict_from_nc)
 
     Returns:
         The function is used for its side effect of writing a geotiff on
