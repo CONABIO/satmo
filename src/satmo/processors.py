@@ -30,10 +30,12 @@ def nc2tif(file, proj4string = None):
     var = get_var_name(file)
     # Read array
     with nc.Dataset(file) as src:
+        dtype = src.variables[var].dtype
+        nodata = src.variables[var]._FillValue
         array = src.variables[var][:]
     # Update geo_dict
     # TODO: Check if dtype and nodata are constant across products, otherwise retrieve from nc metadata
-    geo_dict.update(driver = u'GTiff', dtype = rasterio.float32, count = 1, nodata = -32767)
+    geo_dict.update(driver = u'GTiff', dtype = dtype, count = 1, nodata = nodata, compress='lzw')
     # Write file
     with rasterio.open(file_out, 'w', **geo_dict) as dst:
         dst.write_band(1, array.astype(rasterio.float32))
