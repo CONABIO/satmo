@@ -1,6 +1,7 @@
 import os
 import netCDF4 as nc
 import numpy as np
+import numpy.ma as ma
 import rasterio
 from .geo import geo_dict_from_nc
 from .visualization import get_var_name
@@ -41,3 +42,35 @@ def nc2tif(file, proj4string = None):
         dst.write_band(1, array.astype(rasterio.float32))
     # Return output filename
     return file_out
+
+def compose_mean(filename, *args):
+    """Mean value compositing function
+
+    Takes n input raster files (geotiff), computes a mean value composite
+    and writes the result back to file.
+    Shape and extent of all input files should match perfectly
+
+    Args:
+        filename (str): Output file name
+        *args (str): Input file names
+
+    Returns:
+        In addition to writing a file to disk the function returns the
+        output filename
+    """
+    # Define reading function to use in list comprehension
+    def read_masked_array(file):
+        with rasterio.open(file) as src:
+            array = src.read(1, masked=True)
+            return array
+    # Get meta to use for output array
+    with rasterio.open(args[0]) as src:
+        meta = src.meta
+    # Get list of masked arrays
+    array_list = [read_masked_array(x) for x in args]
+    # Reduce
+    array_out = np.mean(ma.array(array_list), axis=0)
+    # Write to file
+    with rasterio.open(filename, 'w', **meta) as dst:
+        dst.write(array_out.astype(meta['dtype']), 1)
+    return filename
