@@ -43,34 +43,73 @@ def nc2tif(file, proj4string = None):
     # Return output filename
     return file_out
 
-def compose_mean(filename, *args):
-    """Mean value compositing function
 
-    Takes n input raster files (geotiff), computes a mean value composite
-    and writes the result back to file.
-    Shape and extent of all input files should match perfectly
+class Composer(object):
+    """Compose arrays with min, max, median, max
+    For inheritance only, not exported to package __init__"""
+    def __init__(self, *args):
+        """Instantiate Composer class
 
-    Args:
-        filename (str): Output file name
-        *args (str): Input file names
+        Args:
+            *args: numpy arrays (typically 2D) of similar shape
+        """
+        self.array_list = args
+        self.composed_array = None
+    def mean(self):
+        self.composed_array = np.mean(ma.array(self.array_list), axis=0)
+    def median(self):
+        self.composed_array = np.median(ma.array(self.array_list), axis=0)
+    def max(self):
+        self.composed_array = np.amax(ma.array(self.array_list), axis=0)
+    def min(self):
+        self.composed_array = np.amin(ma.array(self.array_list), axis=0)
 
-    Returns:
-        In addition to writing a file to disk the function returns the
-        output filename
+# Compose time 
+
+class FileComposer(Composer):
+    """Class to compose multiple raster files into one (with methods inherited
+    from the Composer class), and write the output to a file
+
+    Example usage:
+        >>> import satmo
+        >>> file1 = 'aqua/L2/2015/001/A2015001.L3m_DAY_CHL_chlor_a_1km.tif'
+        >>> file2 = 'terra/L2/2015/001/T2015001.L3m_DAY_CHL_chlor_a_1km.tif'
+        >>> file3 = 'viirs/L2/2015/001/V2015001.L3m_DAY_CHL_chlor_a_1km.tif'
+        >>> compose_class = satmo.FileComposer(file1, file2, file3)
+        >>> compose_class.mean()
+        >>> compose_class.to_file('combined/X2015001.L3m_DAY_CHL_chlor_a_1km_2.tif')
     """
-    # Define reading function to use in list comprehension
-    def read_masked_array(file):
+    def _read_masked_array(self, file):
+        """Util function to read a single layer raster file as masked np array
+
+        Args:
+            file (str): Input file name
+        """
         with rasterio.open(file) as src:
             array = src.read(1, masked=True)
             return array
-    # Get meta to use for output array
-    with rasterio.open(args[0]) as src:
-        meta = src.meta
-    # Get list of masked arrays
-    array_list = [read_masked_array(x) for x in args]
-    # Reduce
-    array_out = np.mean(ma.array(array_list), axis=0)
-    # Write to file
-    with rasterio.open(filename, 'w', **meta) as dst:
-        dst.write(array_out.astype(meta['dtype']), 1)
-    return filename
+
+    def __init__(self, *args):
+        """Instantiate FileComposer class
+
+        Args:
+            *args: Filenames pointing to raster files
+        """
+        self.file_list = args
+        with rasterio.open(args[0]) as src:
+            self.meta = src.meta
+        array_list = [self._read_masked_array(x) for x in args]
+        super(FileComposer, self).__init__(*array_list)
+        
+    def to_file(self, filename):
+        """Write the composed array to file
+
+        Args:
+            filename (str): Name of file to which array has to be written
+        """
+        # One of the method of the child class must have been ran before
+        # running this method
+        with rasterio.open(filename, 'w', **self.meta) as dst:
+            dst.write(self.composed_array.astype(self.meta['dtype']), 1)
+        return filename
+
