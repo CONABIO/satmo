@@ -216,17 +216,31 @@ Must be kept (end of pre-processing chain). Overwritten during consolidation a f
 
 ### Ocean color products
 
-TODO: Product list is yet to be defined
+The table below gives an overview of the 'final' product that will be generated from MODIS sensors by the SATMO system.
 
-| Abbreviation |                    Name                   | reference | Remark |
-|--------------|-------------------------------------------|-----------|--------|
-| Chl\_OC3     | chlorophyll band-ratio model oc3          |           |        |
-| FLH          | fluorescence line height                  |           |        |
-| TSM          | total suspended matter concentration      |           |        |
-| Kd(490)      | diffuse attenuation coefficient at 490 nm |           |        |
-| SST          | Sea Surface Temperature                   |           |        |
-| NSST         | Night Sea Surface Temperature             |           |        |
-| SST4         | Short Waves Sea Surface Temperature       |           |        |
+|   Abr    |                    Name                   |     ref     | Easy | Max Res | Input bands | Input type |
+|----------|-------------------------------------------|-------------|------|---------|-------------|------------|
+| Chl\_OC3 | chlorophyll band-ratio model oc3          |             | Yes  | 1000    | 443/488 547 | Rrs        |
+| FLH      | fluorescence line height                  |             | Yes  | 1000    | 667 678 748 | nLw        |
+| TSM      | total suspended matter concentration      |             |      |         |             |            |
+| Kd(490)  | diffuse attenuation coefficient at 490 nm |             | Yes  | 1000    | 488 547     | Rrs        |
+| PAR      | Photosynthetically Available Radiation    |             | No   | 500?    |             |            |
+| iPAR     | Instantaneous PAR                         |             | No   | 500?    |             |            |
+| SST      | Sea Surface Temperature                   |             |      | 1000    |             |            |
+| NSST     | Night Sea Surface Temperature             |             |      | 1000    |             |            |
+| SST4     | Short Waves Sea Surface Temperature       |             |      | 1000    |             |            |
+| FAI      | Floating Algae Index                      |             |      | 250     |             |            |
+| AFAI     | Alternative Floating Algae Index          |             |      | 1000    |             |            |
+| MCI      | Maximum chlorophyll index                 |             |      |         |             |            |
+| NDVI     | Normalized Difference Vegetation Index    |             |      | 250     |             |            |
+| NDAI     | Normalized Difference Algae index         |             |      |         |             |            |
+| SAI      | scaled algae index                        | Garcia 2013 |      | 250     |             | NDVI/FAI   |
+|          |                                           |             |      |         |             |            |
+
+- Abr: Abreviation
+- Easy: Is it easy to compute (using numpy)
+- Max res: Maximum achievable resolution for MODIS
+- Input type: Whether spectral bands should be reflectance (Rrs), Rayleigh corrected (Rrc, or Rhos in seadas), Water leaving radiances (nLw)
 
 
 ### Composite products and climatologies
@@ -253,6 +267,7 @@ Anomalies are derived in near real time by confronting newly acquired data to cl
 | Salinity             | SMOS-MIRAS          | CATDS? ESA?                                            |
 | (Dynamic) topography | OSTM/Jason-2        |                                                        |
 | Ocean currents       |                     | [NOAA](https://www.nodc.noaa.gov/General/current.html) |
+|                      |                     | [HYCOM](https://hycom.org/)                            |
 |                      |                     |                                                        |
 
 

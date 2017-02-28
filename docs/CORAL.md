@@ -40,6 +40,8 @@ apt-get install libgdal-dev gdal-bin
 
 ```sh
 apt-get install python-pip python-scipy python-numpy
+# Some stuff for matplotlib
+apt-get install python-tk
 ```
 
 - virtualenv
@@ -48,6 +50,13 @@ apt-get install python-pip python-scipy python-numpy
 ```sh
 mkvirtualenv --system-site-packages satmo-dev
 ```
+
+### Data root
+
+I initiated a dataroot at `/export/isilon/datos2/satmo2_data/`
+
+Permissions and ownership cannot be changed on this drive therefore for now seadas has to be operated as `xtuser`.
+
 
 ### Notes
 

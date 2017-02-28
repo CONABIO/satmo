@@ -8,3 +8,4 @@
 - VIIRS nc files have internal compression (I think)
 - Handle sub files in download updating mode??
 - Would it be possible to symlink all drives to have a vituarl satmo root with all the data?
+- `matplotlib.basemap` installed for testing (131 MB package) using `pip install https://github.com/matplotlib/basemap/archive/v1.0.7rel.tar.gz`
