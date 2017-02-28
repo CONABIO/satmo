@@ -54,6 +54,27 @@ def parse_file_name(id, raiseError = True):
     return id_meta
 
 
+def OC_filename_parser(filename, raiseError = True):
+    # Attempt to make a global file parser for all Ocean color products
+    # sensor
+    # date
+    # time
+    # year
+    # month
+    # doy
+    # dom
+    # level
+    # filename
+    # climatology
+    # Anomaly
+    # resolution
+    # Variable
+    # Collection
+    # Composite
+    pass
+
+
+
 # 'A2004003000000.L1A_LAC.bz2' Aqua L1A
 # T2002003002500.L1A_LAC.bz2 Terra L1A
 # V2012005001200.L1A_SNPP.nc Viirs L1A

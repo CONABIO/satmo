@@ -166,3 +166,6 @@ def timerange_extract(sensors, data_root, begin, end,\
     return out
 
 
+def make_daily_composite(date, variable, sensors = 'all', filename = None):
+    # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
+    pass
