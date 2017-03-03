@@ -56,21 +56,56 @@ def parse_file_name(id, raiseError = True):
 
 def OC_filename_parser(filename, raiseError = True):
     # Attempt to make a global file parser for all Ocean color products
-    # sensor
-    # date
-    # time
-    # year
-    # month
-    # doy
-    # dom
-    # level
-    # filename
-    # climatology
-    # Anomaly
-    # resolution
-    # Variable
-    # Collection
-    # Composite
+    # sensor (str)
+    # date (datetime.datetime)
+    # time (datetime.time)
+    # year (int)
+    # month (int)
+    # doy (int)
+    # dom (int)
+    # level (str)
+    # filename (str)
+    # climatology (bool)
+    # Anomaly (bool)
+    # resolution (int)
+    # Variable (str)
+    # Collection (str)
+    # Composite (str) (DAY, 8DAY, ...)
+    pattern_0 = re.compile(r'(?P<sensor_code>CLIM\.|ANOM\.|[A-Z]{1})(?P<time_info>\d{3}\.|\d{7}\.|\d{13}\.)(?P<level>L0|L1A|L1B|GEO|L2|L3b|L3m)_.*')
+    m = pattern_0.search(filename)
+    if m is None:
+        if raiseError:
+            raise ValueError('No valid data name found for %s' % filename)
+        else:
+            meta_dict = {'sensor': None,
+                       'date': None,
+                       'time': None,
+                       'year': None,
+                       'month': None,
+                       'doy': None,
+                       'dom': None,
+                       'level': None,
+                       'filename': None,
+                       'climatology': None,
+                       'anomaly': None,
+                       'resolution': None,
+                       'variable': None,
+                       'collection': None,
+                       'composite': None}
+            return meta_dict
+    if m['sensor_code'] == 'CLIM.':
+    elif m['sensor_code'] == 'ANOM.':
+    elif m['level'] == 'L0':
+    elif m['level'] == 'L1A':
+    elif m['level'] == 'L1B':
+    elif m['level'] == 'GEO':
+    elif m['level'] == 'L2':
+    elif m['level'] == 'L3b':
+    elif m['level'] == 'L3m':
+
+
+def OC_path_builder(filename, add_file = True):
+    # Universal path builder for Ocean color files
     pass
 
 
