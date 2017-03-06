@@ -12,6 +12,7 @@ import warnings
 
 from .global_variables import SENSOR_CODES, COMPOSITES, INDICES
 from .geo import geo_dict_from_nc
+from .utils import OC_filename_parser
 
 def make_map_title(file):
     """Generate figure title from file name
@@ -39,44 +40,24 @@ def make_map_title(file):
     Returns:
         str: Figure title
     """
-    file = os.path.basename(file)
-    pattern = re.compile(r"(?P<sensor>[A-Z])(?P<year>[CLIM0-9]{4})(?P<doy>\d{3})\.(?P<level>[A-Za-z1-3]{3,4})" \
-                         r"_(?P<composite>.*?)_(?P<collection>[A-Z4]{3,4})_(?P<var>.*)_(?P<resolution>.*?)\.")
-    m = pattern.search(file)
-    if m is None:
-        return file
     try:
-        sensor = SENSOR_CODES[m.group('sensor')]
-        composite = COMPOSITES[m.group('composite')]
+        meta_dict = OC_filename_parser(file, raiseError = True)
+    except:
+        return os.path.basename(file)
+    try:
+        sensor = meta_dict['sensor']
+        composite = COMPOSITES[meta_dict['composite']]
     except KeyError:
-        return file
-    var = m.group('var')
-    resolution = m.group('resolution')
-    if re.search(r'\d{4}', m.group('year')) is None: # It's CLIM
-        date  = datetime.strptime(m.group('doy'), '%j').strftime("%B %d")
+        return os.path.basename(file)
+    var = meta_dict['variable']
+    resolution = meta_dict['resolution']
+    if meta_dict['climatology']:
+        date  = datetime.strptime(str(meta_dict['doy']), '%j').strftime("%B %d")
         title = '%s %s climatology %s %s' % (composite, var, date, resolution)
     else:
-        date = str(datetime.strptime(m.group('year') + m.group('doy'), '%Y%j').date())
+        date = str(meta_dict['date'])
         title = '%s %s %s %s %s' % (composite, var, sensor, date, resolution)
     return title
-
-def get_var_name(file):
-    """Retrieve variable name from filename of a L3m geotiff file
-
-    For use by make_preview only, not exported to __init__
-
-    Args:
-        file (str): File name (usually a geoTiff)
-
-    Returns:
-        str: variable name (e.g.: chlor_a)
-    """
-    file = os.path.basename(file)
-    pattern = re.compile(r"(?P<sensor>[A-Z])(?P<year>[CLIM0-9]{4})(?P<doy>\d{3})\.(?P<level>[A-Za-z1-3]{3,4})" \
-                         r"_(?P<composite>.*?)_(?P<collection>[A-Z4]{3,4})_(?P<var>.*)_(?P<resolution>.*?)\.")
-    m = pattern.search(file)
-    var = m.group('var')
-    return var
 
 
 def make_preview(file):
@@ -88,7 +69,7 @@ def make_preview(file):
 
     """
     # Retrieve color stretch information of available
-    var = get_var_name(file)
+    var = OC_filename_parser(file)['variable']
     try:
         stretch = INDICES[var]['stretch']
     except KeyError:

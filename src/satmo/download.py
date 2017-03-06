@@ -7,7 +7,7 @@ import warnings
 import contextlib
 from pprint import pprint
 
-from .utils import parse_file_name, make_file_path
+from .utils import make_file_path
 from .errors import HttpResourceNotAvailable
 
 def download_file(url, write_dir, overwrite = False, check_integrity = False, timeout = 15):

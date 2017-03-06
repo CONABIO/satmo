@@ -4,7 +4,7 @@ import numpy as np
 import numpy.ma as ma
 import rasterio
 from .geo import geo_dict_from_nc
-from .visualization import get_var_name
+from .utils import OC_filename_parser
 
 def nc2tif(file, proj4string = None):
     """Generate geotiff from L3m netcdf array
@@ -28,7 +28,7 @@ def nc2tif(file, proj4string = None):
     # Get geo dict
     geo_dict = geo_dict_from_nc(file, proj4string)
     # Retrieve var name from file name
-    var = get_var_name(file)
+    var = OC_filename_parser(file)['variable']
     # Read array
     with nc.Dataset(file) as src:
         dtype = src.variables[var].dtype

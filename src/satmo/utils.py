@@ -5,54 +5,6 @@ import os
 
 from .global_variables import SENSOR_CODES, DATA_LEVELS
 
-def parse_file_name(id, raiseError = True):
-    """Filename parser for modis, viirs, seawifs
-
-    Identifies a typical sequence corresponding to a satelite data filename
-    and parses it to return a dictonary with sensor, level, date, etc
-
-    Args:
-        id (string) string containing a Landsat scene ID
-        raiseError (bool): Behavior when no valid pattern is found.
-        True (default) returns a ValueError, false returns a dictionnaries of
-        Nones
-
-    Returns:
-        dictionary: Dictionary containing information on sensor, date, level, etc
-        year, month, doy, dom are integers
-    """
-    pattern = re.compile(r"([A-Z])(\d{7})(\d{4})?(?:\d{2})?\.([A-Za-z1-3\-]{2,5})_?(?:[A-Z]{3,4})?_?(?:[A-Z]{3})?.*")
-    m = pattern.search(id)
-    if m is None:
-        if raiseError:
-            raise ValueError('No valid data name found for %s' % id)
-        else:
-            id_meta = {'sensor': None, #TODO: a KeyError will be thrown if a key is not in SENSOR_CODES, what to do with it
-                       'date': None,
-                       'time': None,
-                       'year': None,
-                       'month': None,
-                       'doy': None,
-                       'dom': None,
-                       'level': None,
-                       'filename': None}
-            return id_meta
-    dt_date = datetime.strptime(m.group(2), "%Y%j")
-    if m.group(3) is not None:
-        dt_time = datetime.strptime(m.group(3), "%H%M").time()
-    else:
-        dt_time = None
-    id_meta = {'sensor': SENSOR_CODES[m.group(1)], #TODO: a KeyError will be thrown if a key is not in SENSOR_CODES, what to do with it
-               'date': dt_date.date(),
-               'time': dt_time,
-               'year': dt_date.year,
-               'month': dt_date.month,
-               'doy': dt_date.timetuple().tm_yday,
-               'dom': dt_date.timetuple().tm_mday,
-               'level': m.group(4),
-               'filename': m.group(0)}
-    return id_meta
-
 
 def OC_filename_parser(filename, raiseError = True):
     """File parser for ocean color products
@@ -106,7 +58,7 @@ def OC_filename_parser(filename, raiseError = True):
                          'doy': None,
                          'dom': None,
                          'level': None,
-                         'filename': None,
+                         'filename': os.path.basename(filename),
                          'climatology': None,
                          'anomaly': None,
                          'resolution': None,
@@ -311,7 +263,7 @@ def make_file_path(filename, add_file = True, doy = True, level = None):
     Return:
         File path.
     """
-    file_meta = parse_file_name(filename)
+    file_meta = OC_filename_parser(filename)
     if level is None:
         level = file_meta['level']
     else:
@@ -367,7 +319,7 @@ def make_file_name(filename, level, suite, ext = '.nc'):
     """
     if level not in DATA_LEVELS:
         raise ValueError("Invalid level set")
-    input_dict = parse_file_name(filename)
+    input_dict = OC_filename_parser(filename)
     out_name = '%s.%s_DAY_%s%s' % (input_dict['filename'][:8], level, suite, ext)
     return out_name
 
@@ -401,7 +353,7 @@ def is_day(filename):
     Returns:
         Boolean, True if day file, False otherwise
     """
-    dt_time = parse_file_name(filename)['time']
+    dt_time = OC_filename_parser(filename)['time']
     # 12pm threshold validated against a full year for aqua, terra, viirs
     if dt_time > time(12, 0): 
         return True

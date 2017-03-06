@@ -9,7 +9,7 @@ import string
 import random
 import re
 
-from .utils import super_glob, parse_file_name, make_file_path, make_file_name, is_day
+from .utils import super_glob, OC_filename_parser, make_file_path, make_file_name, is_day
 from .errors import SeadasError
 from .global_variables import PRODUCT_SUITES
 
@@ -99,7 +99,7 @@ class l3map(object):
             self.file_list = super_glob(input_dir, r'\d{13}\.L1A_.*(?<!\.bz2)$')
         else:
             self.file_list = super_glob(input_dir, r'\d{13}\.L1A_.*')
-        self.sensor = parse_file_name(self.file_list[0])['sensor']
+        self.sensor = OC_filename_parser(self.file_list[0])['sensor']
         if L2_output_basedir is None:
             L2_output_basedir = string.replace(input_dir, make_file_path(self.file_list[0], add_file = False), '')
         if L3_output_basedir is None:
@@ -167,7 +167,7 @@ class l3map(object):
         if not os.path.exists(self.L3_output_dir):
             os.makedirs(self.L3_output_dir)
         # Write L2 file list to text file to use as input
-        L2_0_meta = parse_file_name(L2_file_list[0])
+        L2_0_meta = OC_filename_parser(L2_file_list[0])
         # Make unique filename
         L2_file_list_file = os.path.join(self.L3_output_dir, 'L2_file_list_%d%03d_%d' % \
                                         (L2_0_meta['year'], L2_0_meta['doy'], random.randint(1,9999)))
@@ -186,7 +186,7 @@ class l3map(object):
                                   'infile=%s' % L2_file_list_file,
                                   'resolve=' + str(binning_resolution),
                                   'ofile=%s' % ofile,
-                                  'night=%d' % int(not day)]
+                                  'night=%d' % int(not day)] # TODO: add prodtype = 'regional' argument, although it should not differ much from the default, there can be a small difference, particularly at night
                 status_1 = subprocess.call(l2bin_arg_list)
                 l2b_l3m_status_list.append(status_1)
             # l3mapgen
@@ -230,7 +230,7 @@ class l3map(object):
         [os.remove(x) for x in L1_rm_list]
         L2_rm_list = glob.glob(os.path.join(self.L2_output_dir, '*'))
         # Remove L2 files from the rm list
-        L2_rm_list = [x for x in L2_rm_list if not parse_file_name(x, raiseError = False)['level'] == 'L2']
+        L2_rm_list = [x for x in L2_rm_list if not OC_filename_parser(x, raiseError = False)['level'] == 'L2']
         [os.remove(x) for x in L2_rm_list]
         # TODO: this could cause problem if processing of other output (e.g. night files)
         # is happening at the same moment
@@ -259,7 +259,7 @@ class extractJob(object):
         ext = os.path.splitext(self.file_list[0])[1]
         if not all(os.path.splitext(x)[1] == ext for x in self.file_list):
             raise ValueError('Input filenames are inconsistent')
-        meta = parse_file_name(self.file_list[0])
+        meta = OC_filename_parser(self.file_list[0])
         if (meta['sensor'] == 'aqua') or (meta['sensor'] == 'terra'):
             self.sensor = 'modis'
         elif meta['sensor'] in ['seawifs', 'viirs']:

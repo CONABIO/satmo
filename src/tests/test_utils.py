@@ -4,48 +4,6 @@ from datetime import datetime, date, time
 
 class TestUtils(unittest.TestCase):
 
-    def test_parse(self):
-        file_name_terra = 'random/textT2002003002500.L1A_LAC.bz2'
-        file_name_geo_sub = '/test_data/terra/L2/2012/009/T2012009172500.GEO.sub'
-        parsed_dict_terra = {'sensor': 'terra',
-                       'date': date(2002, 1, 3),
-                       'time': time(0, 25),
-                       'year': 2002,
-                       'month': 1,
-                       'doy': 3,
-                       'dom': 3,
-                       'level': 'L1A',
-                       'filename': 'T2002003002500.L1A_LAC.bz2'}
-        parsed_dict_geo_sub = {'sensor': 'terra',
-                               'date': date(2012, 1, 9),
-                               'time': time(17, 25),
-                               'year': 2012,
-                               'month': 1,
-                               'doy': 9,
-                               'dom': 9,
-                               'level': 'GEO',
-                               'filename': 'T2012009172500.GEO.sub'}
-        none_dict = {'sensor': None,
-                     'date': None,
-                     'time': None,
-                     'year': None,
-                     'month': None,
-                     'doy': None,
-                     'dom': None,
-                     'level': None,
-                     'filename': None}
-        # file name without pattern
-        landsat_file_name = 'LE71640572016196SG100'
-        # correct pattern, sensor doesn't exist
-        file_name_key_error = 'W2002003002500.L1A_LAC.bz2'
-        self.assertEqual(satmo.parse_file_name(file_name_terra), parsed_dict_terra)
-        self.assertEqual(satmo.parse_file_name(file_name_geo_sub), parsed_dict_geo_sub)
-        self.assertEqual(satmo.parse_file_name(landsat_file_name, raiseError = False), none_dict)
-        with self.assertRaises(ValueError):
-            satmo.parse_file_name(landsat_file_name)
-        with self.assertRaises(KeyError):
-            satmo.parse_file_name(file_name_key_error)
-
     def test_OC_filename_parser(self):
         f1 = 'getfile/A2005004002500.L1A_LAC.bz2'
         d1 = {'anomaly': False,

@@ -6,7 +6,7 @@ class TestUtils(unittest.TestCase):
     file_1 = 'T2014027.L3m_DAY_CHL_chlor_a_250m.tif'
     file_2 = 'X2014027.L3m_DAY_SST_sst_1km.tif'
     file_3 = '/path/to/file/X2014027.L3m_8DAY_SST_sst_1km.tif'
-    file_4 = 'XCLIM027.L3m_8DAY_SST4_sst4_1km.tif'
+    file_4 = 'CLIM.027.L3m_8DAY_SST_sst4_1km_2000_2015.tif'
     file_5 = 'Z2003027.L3m_8DAY_SST_sst_1km.tif' # Invalid
 
     def test_make_map_title(self):
@@ -20,13 +20,13 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.make_map_title(self.file_4), title_4)
         self.assertEqual(satmo.make_map_title(self.file_5), self.file_5)
 
-    def test_var_name_extraction(self):
-        # Helper function not exported to satmo __init__
-        self.assertEqual(satmo.visualization.get_var_name(self.file_1), 'chlor_a')
-        self.assertEqual(satmo.visualization.get_var_name(self.file_2), 'sst')
-        self.assertEqual(satmo.visualization.get_var_name(self.file_3), 'sst')
-        self.assertEqual(satmo.visualization.get_var_name(self.file_4), 'sst4')
-        self.assertEqual(satmo.visualization.get_var_name(self.file_5), 'sst')
+    # def test_var_name_extraction(self):
+    #     # Helper function not exported to satmo __init__
+    #     self.assertEqual(satmo.visualization.get_var_name(self.file_1), 'chlor_a')
+    #     self.assertEqual(satmo.visualization.get_var_name(self.file_2), 'sst')
+    #     self.assertEqual(satmo.visualization.get_var_name(self.file_3), 'sst')
+    #     self.assertEqual(satmo.visualization.get_var_name(self.file_4), 'sst4')
+    #     self.assertEqual(satmo.visualization.get_var_name(self.file_5), 'sst')
 
 
 if __name__ == '__main__':
