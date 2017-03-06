@@ -4,6 +4,7 @@
 
 |     Product type     |                Example filename               |         parser         | builder |           Directory           |
 |----------------------|-----------------------------------------------|------------------------|---------|-------------------------------|
+| L1A                  | `A2005004002500.L1A_LAC.bz2`                  | `OC_filename_parser()` |         | `aqua/L1A/2005/004`           |
 | L2                   | `A2008085203500.L2_LAC_OC.nc`                 | `OC_filename_parser()` |         | `aqua/L2/2008/085`            |
 | L3b                  | `A2004005.L3b_DAY_CHL.nc`                     | `OC_filename_parser()` |         | `aqua/L3b/2004/005`           |
 | L3m ncdf             | `A2007009.L3m_DAY_SST4_sst4_1km.nc`           | `OC_filename_parser()` |         | `aqua/L3m/Daily/2007/009`     |
