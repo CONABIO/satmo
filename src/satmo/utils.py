@@ -120,13 +120,13 @@ def OC_filename_parser(filename, raiseError = True):
                      'begin_year': None,
                      'end_year': None}
     elif m_0.group('level') in ['L1A', 'L1B']:
-        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{4})\d{2}\.(?P<level>[A-Za-z1-3]{3,4})_.*')
+        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{6})\.(?P<level>[A-Za-z1-3]{3,4})_.*')
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
                      'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
-                     'time': datetime.strptime(m.group('time'), "%H%M").time(),
+                     'time': datetime.strptime(m.group('time'), "%H%M%S").time(),
                      'year': dt_date.year,
                      'month': dt_date.month,
                      'doy': dt_date.timetuple().tm_yday,
@@ -142,13 +142,13 @@ def OC_filename_parser(filename, raiseError = True):
                      'begin_year': None,
                      'end_year': None}
     elif m_0.group('level') == 'GEO':
-        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{4})\d{2}\..*')
+        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{6})\..*')
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
                      'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
-                     'time': datetime.strptime(m.group('time'), "%H%M").time(),
+                     'time': datetime.strptime(m.group('time'), "%H%M%S").time(),
                      'year': dt_date.year,
                      'month': dt_date.month,
                      'doy': dt_date.timetuple().tm_yday,
@@ -164,13 +164,13 @@ def OC_filename_parser(filename, raiseError = True):
                      'begin_year': None,
                      'end_year': None}
     elif m_0.group('level') == 'L2':
-        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{4})\d{2}\.(?P<level>L2)_(.*?)_(?P<suite>.*)\..*')
+        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{6})\.(?P<level>L2)_(.*?)_(?P<suite>.*)\..*')
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
                      'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
-                     'time': datetime.strptime(m.group('time'), "%H%M").time(),
+                     'time': datetime.strptime(m.group('time'), "%H%M%S").time(),
                      'year': dt_date.year,
                      'month': dt_date.month,
                      'doy': dt_date.timetuple().tm_yday,

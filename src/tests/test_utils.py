@@ -21,7 +21,7 @@ class TestUtils(unittest.TestCase):
              'sensor': 'aqua',
              'sensor_code': 'A',
              'suite': None,
-             'time': time(0, 25),
+             'time': time(0, 25, 00),
              'variable': None,
              'year': 2005}
 
@@ -41,7 +41,7 @@ class TestUtils(unittest.TestCase):
              'sensor': 'aqua',
              'sensor_code': 'A',
              'suite': 'OC',
-             'time': time(20, 35),
+             'time': time(20, 35, 00),
              'variable': None,
              'year': 2008}
 
