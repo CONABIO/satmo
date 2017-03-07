@@ -26,6 +26,7 @@ def OC_filename_parser(filename, raiseError = True):
     Returns:
         A dictionnary with the following keys:
         sensor (str)
+        sensor_code (str)
         date (datetime.date)
         time (datetime.time)
         year (int)
@@ -51,6 +52,7 @@ def OC_filename_parser(filename, raiseError = True):
             raise ValueError('No valid data name found for %s' % filename)
         else:
             meta_dict = {'sensor': None,
+                         'sensor_code': None,
                          'date': None,
                          'time': None,
                          'year': None,
@@ -76,6 +78,7 @@ def OC_filename_parser(filename, raiseError = True):
                              r'_(?P<suite>.*?)_(?P<variable>.*)_(?P<resolution>.*?)_(?P<begin_year>\d{4})_(?P<end_year>\d{4})\..*')
         m = pattern.search(filename)
         meta_dict = {'sensor': None,
+                     'sensor_code': None,
                      'date': None,
                      'time': None,
                      'year': None,
@@ -99,6 +102,7 @@ def OC_filename_parser(filename, raiseError = True):
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': None,
+                     'sensor_code': None,
                      'date': dt_date.date(),
                      'time': None,
                      'year': dt_date.year,
@@ -120,6 +124,7 @@ def OC_filename_parser(filename, raiseError = True):
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
+                     'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
                      'time': datetime.strptime(m.group('time'), "%H%M").time(),
                      'year': dt_date.year,
@@ -141,6 +146,7 @@ def OC_filename_parser(filename, raiseError = True):
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
+                     'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
                      'time': datetime.strptime(m.group('time'), "%H%M").time(),
                      'year': dt_date.year,
@@ -162,6 +168,7 @@ def OC_filename_parser(filename, raiseError = True):
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
+                     'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
                      'time': datetime.strptime(m.group('time'), "%H%M").time(),
                      'year': dt_date.year,
@@ -183,6 +190,7 @@ def OC_filename_parser(filename, raiseError = True):
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
+                     'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
                      'time': None,
                      'year': dt_date.year,
@@ -205,6 +213,7 @@ def OC_filename_parser(filename, raiseError = True):
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
+                     'sensor_code': m.group('sensor'),
                      'date': dt_date.date(),
                      'time': None,
                      'year': dt_date.year,
