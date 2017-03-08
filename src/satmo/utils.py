@@ -232,9 +232,71 @@ def OC_filename_parser(filename, raiseError = True):
                      'end_year': None}
     return meta_dict
 
+def OC_filename_builder(level, filename = None, suite = None, variable = None, sensor_code = None, date = None,
+                        time = None, year = None, doy = None, composite = None, resolution = None, climatology = False, 
+                        anomaly = False, begin_year = None, end_year = None, nc = False, full_path = False, data_root = None):
+    # TODO: consider def OC_filename_builder(**kwargs):
+    """Utility to build valid ocean color filenames for every level
 
-def OC_path_builder(filename, add_file = True):
+    Args:
+        time (str or int): e.g.: 132200 or '132200'
+        nc (bool): Is the file produced a netcdf? (Only useful for L3m level, to distinguish between
+        tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
+    """
+    # 
+    if level not in DATA_LEVELS:
+        raise ValueError("Invalid level set")
+    if level == 'L2':
+        # A2008085203500.L2_LAC_OC.nc
+        # filename and suite (OC, SST, SST4) OR sensor, date, time, sensor, suite, 
+        if filename is not None:
+            input_meta = OC_filename_parser(filename)
+            sensor_code = input_meta['sensor_code']
+            year = input_meta['year']
+            doy = input_meta['doy']
+            time = input_meta['time'].strftime('%H%M%S')
+        filename_elements = [sensor_code, year, str(doy).zfill(3), time, '.', level, '_', 'LAC', '_', suite, '.nc']
+    elif level == 'L3b':
+        # A2004005.L3b_DAY_CHL.nc
+        # filename and suite OR sensor, date, suite
+        if filename is not None:
+            input_meta = OC_filename_parser(filename)
+            sensor_code = input_meta['sensor_code']
+            year = input_meta['year']
+            doy = input_meta['doy']
+        filename_elements = [sensor_code, year, str(doy).zfill(3), '.', level, '_', 'DAY', '_', suite, '.nc']
+    elif level == 'L3m' and climatology:
+        # CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif
+        filename_elements = ['CLIM.', str(doy).zfill(3), '.', level, '_', composite, '_', suite, '_', variable, '_', resolution, '_', begin_year, '_', end_year, '.tif']
+    elif level == 'L3m' and anomaly:
+        # ANOM.2014027.L3m_8DAY_SST_sst_1km.tif
+        if filename is not None:
+            year = 
+            doy = 
+            composite = 
+            resolution = 
+    elif level == 'L3m':
+        # filename, composite, suite, variable, resolution, nc OR sensor, date, composite, nc
+        # X2014027.L3m_8DAY_SST_sst_1km.tif
+    # Join filename elements
+    filename_out = ''.join(str(x) for x in filename_elements)
+    if full_path:
+        filename_out = OC_path_builder(filename_out, data_root = data_root, add_file = True)
+    return filename_out
+
+    
+
+def OC_path_builder(filename, data_root = None, add_file = True):
     # Universal path builder for Ocean color files
+    pass
+
+def OC_path_navigator():
+    # Build a file path using level, date, sensor, (and eventually), compositing period
+    pass
+
+def OC_file_finder(data_root,):
+    # Finds an existing file on the system from meta information (date, level, collection, variable, sensor)
+    # Returns the filename if the file exists, False otherwise
     pass
 
 
