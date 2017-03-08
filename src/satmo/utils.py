@@ -232,52 +232,171 @@ def OC_filename_parser(filename, raiseError = True):
                      'end_year': None}
     return meta_dict
 
-def OC_filename_builder(level, filename = None, suite = None, variable = None, sensor_code = None, date = None,
-                        time = None, year = None, doy = None, composite = None, resolution = None, climatology = False, 
-                        anomaly = False, begin_year = None, end_year = None, nc = False, full_path = False, data_root = None):
-    # TODO: consider def OC_filename_builder(**kwargs):
+def OC_filename_builder(level, climatology = False, anomaly = False, full_path = False, data_root = None, **kwargs):
     """Utility to build valid ocean color filenames for every level
 
     Args:
-        time (str or int): e.g.: 132200 or '132200'
-        nc (bool): Is the file produced a netcdf? (Only useful for L3m level, to distinguish between
-        tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
+        Positional arguments:
+            level (str): the data level of the desired filename
+        keywork arguments:
+            climatology (bool): Does the filename correspond to climatology data
+            anomaly (bool): Does the filename correspond to anomaly data
+            full_path (bool): Should file path be computed (using OC_path_builder)
+            data_root (str): To be used in combination with full_path = True, see OC_path_builder()
+            doc for more details
+        kwargs:
+            General kwargs:
+                None
+            level specific kwargs (See details section to know which kwargs are required for each chosen level):
+                filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)
+                suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)
+                sensor_code (str): e.g.: 'A', 'V', 'X'
+                date (datetime.datetime or str). IN the case of climatologies the year is ignored so that '1970-05-01' can
+                be specified for example
+                time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))
+                doy (str or int): Day of the year
+                composite (str): e.g. DAY, 8DAY, 16DAY, etc
+                variable (str)
+                resolution (str): e.g. '1km'
+                begin_year (int or str): for climatologies, see CONVENTIONS.md
+                end_year (int or str): for climatologies, see CONVENTIONS.md
+                nc (bool): Should extension be '.nc' (instead of '.tif') (Only useful for L3m level, to distinguish between
+                tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
+
+                
+    Details:
+        Each level= chosen requires different kwargs.
+        'L2':
+            filename and suite OR sensor_code, date, and time
+        'L3b':
+            filename and suite OR sensor_code, date, suite
+        'L3m' climatology:
+            (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter
+        'L3m' anomaly:
+            filename OR date, composite, suite, variable, resolution
+        'L3m':
+            filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)
+
+    Example usage:
+        > import satmo
+        > from datetime import datetime, time
+        >
+        > satmo.OC_filename_builder('L2', filename = 'T2001117063500.L1A_LAC.bz2', suite = 'OC', full_path = True, data_root = '/export/isilon/datos2/satmo2_data')
+        > satmo.OC_filename_builder('L2', sensor_code = 'T', date = '1987-11-21', time = time(6, 35, 0), suite = 'OC')
+
+    Returns:
+        str: a syntactically ocean color filename
     """
-    # 
     if level not in DATA_LEVELS:
         raise ValueError("Invalid level set")
+    # Convert kwargs['date'] to datetime if it exists and is of type str
+    try:
+        if type(kwargs['date']) is str:
+            kwargs['date'] = datetime.strptime(kwargs['date'], "%Y-%m-%d")
+    except:
+        pass
+    #####
+    # L2
+    #####
     if level == 'L2':
         # A2008085203500.L2_LAC_OC.nc
         # filename and suite (OC, SST, SST4) OR sensor, date, time, sensor, suite, 
-        if filename is not None:
+        if 'filename' in kwargs:
+            filename = kwargs['filename']
             input_meta = OC_filename_parser(filename)
             sensor_code = input_meta['sensor_code']
             year = input_meta['year']
             doy = input_meta['doy']
             time = input_meta['time'].strftime('%H%M%S')
+        else: # Assumes sensor_code, date, time and suite are provided
+            year = kwargs['date'].year
+            doy = kwargs['date'].timetuple().tm_yday
+            time = kwargs['time'].strftime('%H%M%S')
+            sensor_code = kwargs['sensor_code']
+        suite = kwargs['suite']
         filename_elements = [sensor_code, year, str(doy).zfill(3), time, '.', level, '_', 'LAC', '_', suite, '.nc']
+    #####
+    # L3b
+    #####
     elif level == 'L3b':
         # A2004005.L3b_DAY_CHL.nc
         # filename and suite OR sensor, date, suite
-        if filename is not None:
+        if 'filename' in kwargs:
+            filename = kwargs['filename']
             input_meta = OC_filename_parser(filename)
             sensor_code = input_meta['sensor_code']
             year = input_meta['year']
             doy = input_meta['doy']
+        else:
+            year = kwargs['date'].year
+            doy = kwargs['date'].timetuple().tm_yday
+            sensor_code = kwargs['sensor_code']
+        suite = kwargs['suite']
         filename_elements = [sensor_code, year, str(doy).zfill(3), '.', level, '_', 'DAY', '_', suite, '.nc']
+    #####
+    # L3m CLIM
+    #####
     elif level == 'L3m' and climatology:
         # CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif
+        if 'date' in kwargs:
+            doy = kwargs['date'].timetuple().tm_yday
+        else:
+            doy = kwargs['doy']
+        composite = kwargs['composite']
+        suite = kwargs['suite']
+        variable = kwargs['variable']
+        resolution = kwargs['resolution']
+        begin_year = kwargs['begin_year']
+        end_year = kwargs['end_year']
         filename_elements = ['CLIM.', str(doy).zfill(3), '.', level, '_', composite, '_', suite, '_', variable, '_', resolution, '_', begin_year, '_', end_year, '.tif']
+    #####
+    # L3m ANOM
+    #####
     elif level == 'L3m' and anomaly:
         # ANOM.2014027.L3m_8DAY_SST_sst_1km.tif
-        if filename is not None:
-            year = 
-            doy = 
-            composite = 
-            resolution = 
+        if 'filename' in kwargs:
+            filename = kwargs['filename']
+            input_meta = OC_filename_parser(filename)
+            year = input_meta['year']
+            doy = input_meta['doy']
+            composite = input_meta['composite']
+            resolution = input_meta['resolution']
+            suite = input_meta['suite']
+            variable = input_meta['variable']
+        else:
+            year = kwargs['date'].year
+            doy = kwargs['date'].timetuple().tm_yday
+            composite = kwargs['composite']
+            suite = kwargs['suite']
+            variable = kwargs['variable']
+            resolution = kwargs['resolution']
+        filename_elements = ['ANOM.', year, str(doy).zfill(3), '.', level, '_', composite, '_', suite, '_', variable, '_', resolution, '.tif']
     elif level == 'L3m':
         # filename, composite, suite, variable, resolution, nc OR sensor, date, composite, nc
         # X2014027.L3m_8DAY_SST_sst_1km.tif
+        # X2014027.L3m_8DAY_SST_sst_1km.nc
+        ext = '.tif'
+        try:
+            if kwargs['nc']:
+                ext = '.nc'
+        except:
+            pass
+        if 'filename' in kwargs:
+            filename = kwargs['filename']
+            input_meta = OC_filename_parser(filename)
+            year = input_meta['year']
+            doy = input_meta['doy']
+            sensor_code = input_meta['sensor_code']
+            suite = input_meta['suite']
+        else:
+            year = kwargs['date'].year
+            doy = kwargs['date'].timetuple().tm_yday
+            sensor_code = kwargs['sensor_code']
+            suite = kwargs['suite']
+        composite = kwargs['composite']
+        variable = kwargs['variable']
+        resolution = kwargs['resolution']
+        filename_elements = [sensor_code, year, str(doy).zfill(3), '.', level, '_', composite, '_', suite, '_', variable, '_', resolution, ext]
     # Join filename elements
     filename_out = ''.join(str(x) for x in filename_elements)
     if full_path:
