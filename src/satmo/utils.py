@@ -406,8 +406,35 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
     
 
 def OC_path_builder(filename, data_root = None, add_file = True):
-    # Universal path builder for Ocean color files
-    pass
+    """Universal path builder for Ocean color files
+
+    Builds a file path from its filename
+
+    Args:
+        filename (str): syntactically correct ocean color file filename
+        data_root (str): OPtional root folder prepended to generated path
+        defaults to None
+        add_file (bool): append filename to generated path? Defaults to False
+
+    Returns:
+        str: path associated to filename
+    """
+    file_meta = OC_filename_parser(filename)
+    if file_meta['level'] == 'L3m':
+        if file_meta['climatology']:
+            path_elements = ['combined', file_meta['level'], '%s_clim' % file_meta['composite'], str(file_meta['doy']).zfill(3)]
+        elif file_meta['anomaly']:
+            path_elements = ['combined', file_meta['level'], '%s_anom' % file_meta['composite'], str(file_meta['year']), str(file_meta['doy']).zfill(3)]
+        else:
+            path_elements = [file_meta['sensor'], file_meta['level'], file_meta['composite'], str(file_meta['year']), str(file_meta['doy']).zfill(3)]
+    else:
+        path_elements = [file_meta['sensor'], file_meta['level'], str(file_meta['year']), str(file_meta['doy']).zfill(3)]
+    if add_file:
+        path_elements.append(file_meta['filename'])
+    if data_root is not None:
+        path_elements.insert(0, data_root)
+    file_path = os.path.join(*path_elements)
+    return file_path
 
 def OC_path_navigator():
     # Build a file path using level, date, sensor, (and eventually), compositing period

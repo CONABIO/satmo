@@ -11,7 +11,7 @@
 | L3m sensor composite | `X2014027.L3m_DAY_SST_sst_1km.tif`            | `OC_filename_parser()` |         | `combined/L3m/Daily/2014/027` |
 | L3m time composite   | `X2014027.L3m_8DAY_SST_sst_1km.tif`           | `OC_filename_parser()` |         | `combined/L3m/8Day/2014/027`  |
 | L3m climatology      | `CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif` | `OC_filename_parser()` |         | `combined/L3m/8Day_clim/027`  |
-| L3m anomalies        | `ANOM.2014027.L3m_8DAY_SST_sst_1km.tif`       | `OC_filename_parser()` |         | `combined/L3m/8Day_anom/027`  |
+| L3m anomalies        | `ANOM.2014027.L3m_8DAY_SST_sst_1km.tif`       | `OC_filename_parser()` |         | `combined/L3m/8Day_anom/2014/027`  |
 | preview              | `X2014027.L3m_DAY_SST_sst_1km.png`            | `OC_filename_parser()` |         |                               |
 |                      |                                               |                        |         |                               |
 | ??L3m Cumulative     | `X2014027.L3m_8DAY_SST_sst_1km.tif`?          |                        |         |                               |
