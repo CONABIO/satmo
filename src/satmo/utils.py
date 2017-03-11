@@ -267,7 +267,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
     Details:
         Each level= chosen requires different kwargs.
         'L2':
-            filename and suite OR sensor_code, date, and time
+            filename and suite OR sensor_code, suite, date, and time
         'L3b':
             filename and suite OR sensor_code, date, suite
         'L3m' climatology:

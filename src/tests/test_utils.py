@@ -174,6 +174,40 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_filename_parser(f7), d7)
         self.assertEqual(satmo.OC_filename_parser(f8), d8)
 
+    def test_OC_filename_builder(self):
+
+        d1_0 = {'level': 'L2', 'filename': 'A2008085203500.L1A_LAC.bz2', 'suite': 'OC'}
+        d1_1 = {'level': 'L2', 'sensor_code': 'A', 'date': datetime(2008, 03, 25), 'time': time(20, 35, 00), 'suite': 'OC'}
+        d1_2 = {'level': 'L2', 'sensor_code': 'A', 'date': '2008-03-25', 'time': time(20, 35, 00), 'suite': 'OC'}
+        f1 = 'A2008085203500.L2_LAC_OC.nc'
+        d2_0 = {'level': 'L2', 'filename': 'A2008085203500.L1A_LAC.bz2', 'suite': 'OC', 'full_path': True}
+        f2 = 'aqua/L2/2008/085/A2008085203500.L2_LAC_OC.nc'
+        d3_0 = {'level': 'L2', 'filename': 'A2008085203500.L1A_LAC.bz2', 'suite': 'OC', 'full_path': True, 'data_root': '/media/system/satmo/'}
+        f3 = '/media/system/satmo/aqua/L2/2008/085/A2008085203500.L2_LAC_OC.nc'
+        d4_0 = {'level': 'L3b', 'filename': 'A2004005203500.L2_LAC_OC.nc', 'suite': 'CHL'}
+        d4_1 = {'level': 'L3b', 'sensor_code': 'A', 'date': datetime(2004, 01, 5), 'suite': 'CHL'}
+        f4 = 'A2004005.L3b_DAY_CHL.nc'
+        d5_0 = {'level': 'L3b', 'sensor_code': 'A', 'date': datetime(2004, 01, 5), 'suite': 'CHL', 'full_path': True}
+        f5 = 'aqua/L3b/2004/005/A2004005.L3b_DAY_CHL.nc'
+        d6_0 = {'level': 'L3m', 'climatology': True, 'doy': 27, 'composite': '8DAY', 'suite': 'SST', 'variable': 'sst', 'resolution': '1km',
+                'begin_year': 2000, 'end_year': 2015}
+        d6_1 = {'level': 'L3m', 'climatology': True, 'date': datetime(1970, 01, 27), 'composite': '8DAY', 'suite': 'SST', 'variable': 'sst', 'resolution': '1km',
+                'begin_year': 2000, 'end_year': 2015}
+        f6 = 'CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif'
+
+
+        self.assertEqual(satmo.OC_filename_builder(**d1_0), f1)
+        self.assertEqual(satmo.OC_filename_builder(**d1_1), f1)
+        self.assertEqual(satmo.OC_filename_builder(**d1_2), f1)
+        self.assertEqual(satmo.OC_filename_builder(**d2_0), f2)
+        self.assertEqual(satmo.OC_filename_builder(**d3_0), f3)
+        self.assertEqual(satmo.OC_filename_builder(**d4_0), f4)
+        self.assertEqual(satmo.OC_filename_builder(**d4_1), f4)
+        self.assertEqual(satmo.OC_filename_builder(**d5_0), f5)
+        self.assertEqual(satmo.OC_filename_builder(**d6_0), f6)
+        self.assertEqual(satmo.OC_filename_builder(**d6_1), f6)
+
+
     def test_make_path(self):
         file_name = 'T2013001043500.L1A_LAC'
         self.assertEqual(satmo.make_file_path(file_name), 'terra/L1A/2013/001/T2013001043500.L1A_LAC')
