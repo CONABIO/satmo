@@ -272,6 +272,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
             filename and suite OR sensor_code, date, suite
         'L3m' climatology:
             (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter
+            # TODO: There could be a problem with the leap year when using date
         'L3m' anomaly:
             filename OR date, composite, suite, variable, resolution
         'L3m':

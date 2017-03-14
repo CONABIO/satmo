@@ -125,7 +125,7 @@ class TestUtils(unittest.TestCase):
              'variable': 'sst',
              'year': 2014}
 
-        f7 = 'CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif'
+        f7 = 'CLIM.027.L3m_8DAY_CHL_chlor_a_1km_2000_2015.tif'
         d7 = {'anomaly': False,
              'begin_year': 2000,
              'climatology': True,
@@ -134,15 +134,15 @@ class TestUtils(unittest.TestCase):
              'dom': None,
              'doy': 27,
              'end_year': 2015,
-             'filename': 'CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif',
+             'filename': 'CLIM.027.L3m_8DAY_CHL_chlor_a_1km_2000_2015.tif',
              'level': 'L3m',
              'month': None,
              'resolution': '1km',
              'sensor': None,
              'sensor_code': None,
-             'suite': 'SST',
+             'suite': 'CHL',
              'time': None,
-             'variable': 'sst',
+             'variable': 'chlor_a',
              'year': None}
 
         f8 = 'ANOM.2014027.L3m_8DAY_SST_sst_1km.tif'
@@ -194,6 +194,21 @@ class TestUtils(unittest.TestCase):
         d6_1 = {'level': 'L3m', 'climatology': True, 'date': datetime(1970, 01, 27), 'composite': '8DAY', 'suite': 'SST', 'variable': 'sst', 'resolution': '1km',
                 'begin_year': 2000, 'end_year': 2015}
         f6 = 'CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif'
+        d7_0 = {'level': 'L3m', 'climatology': True, 'date': datetime(1970, 01, 27), 'composite': '8DAY', 'suite': 'SST', 'variable': 'sst', 'resolution': '1km',
+                'begin_year': 2000, 'end_year': 2015, 'full_path': True}
+        f7 = 'combined/L3m/8DAY_clim/027/CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif'
+        d8_0 = {'level': 'L3m', 'anomaly': True, 'filename': 'X2014027.L3m_8DAY_SST_sst_1km.tif'}
+        d8_1 = {'level': 'L3m', 'anomaly': True, 'date': datetime(2014, 1, 27), 'composite': '8DAY', 'suite': 'SST', 'variable': 'sst', 'resolution': '1km'}
+        f8 = 'ANOM.2014027.L3m_8DAY_SST_sst_1km.tif'
+        d9_0 = {'level': 'L3m', 'anomaly': True, 'filename': 'X2014027.L3m_8DAY_SST_sst_1km.tif', 'full_path': True}
+        f9 = 'combined/L3m/8DAY_anom/2014/027/ANOM.2014027.L3m_8DAY_SST_sst_1km.tif'
+        d10_0 = {'level': 'L3m', 'filename': 'A2004005.L3b_DAY_CHL.nc', 'composite': 'DAY', 'variable': 'chlor_a', 'resolution': '1km', 'nc': True}
+        d10_1 = {'level': 'L3m', 'date': datetime(2004, 01, 5), 'sensor_code': 'A', 'suite': 'CHL', 'composite': 'DAY', 'variable': 'chlor_a', 'resolution': '1km', 'nc': True}
+        f10 = 'A2004005.L3m_DAY_CHL_chlor_a_1km.nc'
+        d11_0 = {'level': 'L3m', 'filename': 'A2004005.L3b_DAY_CHL.nc', 'composite': 'DAY', 'variable': 'chlor_a', 'resolution': '1km'}
+        f11 = 'A2004005.L3m_DAY_CHL_chlor_a_1km.tif'
+        d12_0 = {'level': 'L3m', 'filename': 'A2004005.L3b_DAY_CHL.nc', 'composite': 'DAY', 'variable': 'chlor_a', 'resolution': '1km', 'full_path': True}
+        f12 = 'aqua/L3m/DAY/2004/005/A2004005.L3m_DAY_CHL_chlor_a_1km.tif'
 
 
         self.assertEqual(satmo.OC_filename_builder(**d1_0), f1)
@@ -206,6 +221,14 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_filename_builder(**d5_0), f5)
         self.assertEqual(satmo.OC_filename_builder(**d6_0), f6)
         self.assertEqual(satmo.OC_filename_builder(**d6_1), f6)
+        self.assertEqual(satmo.OC_filename_builder(**d7_0), f7)
+        self.assertEqual(satmo.OC_filename_builder(**d8_0), f8)
+        self.assertEqual(satmo.OC_filename_builder(**d8_1), f8)
+        self.assertEqual(satmo.OC_filename_builder(**d9_0), f9)
+        self.assertEqual(satmo.OC_filename_builder(**d10_0), f10)
+        self.assertEqual(satmo.OC_filename_builder(**d10_1), f10)
+        self.assertEqual(satmo.OC_filename_builder(**d11_0), f11)
+        self.assertEqual(satmo.OC_filename_builder(**d12_0), f12)
 
 
     def test_make_path(self):
