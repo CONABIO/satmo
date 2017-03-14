@@ -230,6 +230,31 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_filename_builder(**d11_0), f11)
         self.assertEqual(satmo.OC_filename_builder(**d12_0), f12)
 
+    def test_OC_path_builder(self):
+
+        d1 = {'filename': 'A2005004002500.L1A_LAC.bz2', 'add_file': False}
+        p1 = 'aqua/L1A/2005/004'
+        d2 = {'filename': 'A2008085203500.L2_LAC_OC.nc', 'data_root': '/export/isilon/data2/satmo_data', 'add_file': False}
+        p2 = '/export/isilon/data2/satmo_data/aqua/L2/2008/085'
+        d3 = {'filename': 'A2004005.L3b_DAY_CHL.nc', 'data_root': '/export/isilon/data2/satmo_data', 'add_file': True}
+        p3 = '/export/isilon/data2/satmo_data/aqua/L3b/2004/005/A2004005.L3b_DAY_CHL.nc'
+        d4 = {'filename': 'X2014027.L3m_DAY_SST_sst_1km.tif', 'add_file': False}
+        p4 = 'combined/L3m/DAY/2014/027'
+        d5 = {'filename': 'X2014027.L3m_8DAY_SST_sst_1km.tif', 'add_file': False}
+        p5 = 'combined/L3m/8DAY/2014/027'
+        d6 = {'filename': 'CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif', 'add_file': False}
+        p6 = 'combined/L3m/8DAY_clim/027'
+        d7 = {'filename': 'ANOM.2014027.L3m_8DAY_SST_sst_1km.tif', 'add_file': False}
+        p7 = 'combined/L3m/8DAY_anom/2014/027'
+
+        self.assertEqual(satmo.OC_path_builder(**d1), p1)
+        self.assertEqual(satmo.OC_path_builder(**d2), p2)
+        self.assertEqual(satmo.OC_path_builder(**d3), p3)
+        self.assertEqual(satmo.OC_path_builder(**d4), p4)
+        self.assertEqual(satmo.OC_path_builder(**d5), p5)
+        self.assertEqual(satmo.OC_path_builder(**d6), p6)
+        self.assertEqual(satmo.OC_path_builder(**d7), p7)
+
 
     def test_make_path(self):
         file_name = 'T2013001043500.L1A_LAC'
