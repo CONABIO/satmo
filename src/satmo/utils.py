@@ -437,7 +437,7 @@ def OC_path_builder(filename, data_root = None, add_file = True):
     file_path = os.path.join(*path_elements)
     return file_path
 
-def OC_path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology = False):
+def OC_path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology = False, search = True):
     """Builds and find existing paths from meta information
 
     Builds a pseudo path name using provided metadata and runs glob.glob on it
@@ -450,6 +450,8 @@ def OC_path_finder(data_root, date, level, sensor_code = None, composite = None,
         composite (str): Composite period of the directory to find (only for L3m, climatologies and anomalies)
         anomaly (bool): Are we looking for a directory of anomalies
         climatology (bool): Are we looking for a directory of climatologies
+        search (bool): Should the function return the output of glob.glob() on the generated. Otherwise the glob pattern
+        itself is returned. Defaults to True
 
     Details:
         if composite or anomaly is True, you only need to provide composite and date
@@ -472,8 +474,10 @@ def OC_path_finder(data_root, date, level, sensor_code = None, composite = None,
     else:
         path_elements = [data_root, sensor, level, date.year, str(date.timetuple().tm_yday).zfill(3)]
     path_pattern = os.path.join(*[str(x) for x in path_elements])
-    path_list = glob.glob(path_pattern)
-    return path_list
+    if search:
+        path_list = glob.glob(path_pattern)
+        return path_list
+    return path_pattern
 
 
 def OC_file_finder(data_root):
