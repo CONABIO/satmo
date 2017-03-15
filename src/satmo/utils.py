@@ -437,7 +437,7 @@ def OC_path_builder(filename, data_root = None, add_file = True):
     file_path = os.path.join(*path_elements)
     return file_path
 
-def OC_path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology, False):
+def OC_path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology = False):
     """Builds and find existing paths from meta information
 
     Builds a pseudo path name using provided metadata and runs glob.glob on it
@@ -476,7 +476,7 @@ def OC_path_finder(data_root, date, level, sensor_code = None, composite = None,
     return path_list
 
 
-def OC_file_finder(data_root,):
+def OC_file_finder(data_root):
     # Finds an existing file on the system from meta information (date, level, collection, variable, sensor)
     # Returns the filename(s) if the file(s) exist(s), False otherwise
     # Can be used for several files (e.g. by omiting sensor to create composite products)
