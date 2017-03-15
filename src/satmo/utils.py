@@ -437,13 +437,49 @@ def OC_path_builder(filename, data_root = None, add_file = True):
     file_path = os.path.join(*path_elements)
     return file_path
 
-def OC_path_navigator():
-    # Build a file path using level, date, sensor, (and eventually), compositing period
-    pass
+def OC_path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology, False):
+    """Builds and find existing paths from meta information
+
+    Builds a pseudo path name using provided metadata and runs glob.glob on it
+
+    Args:
+        data_root (str): Root of the data archive
+        date (str or datetime): Date of the directory to find
+        level (str): Data level
+        sensor_code (str): Sensor of the directory to find. If None (default), is replaced by * in a glob search
+        composite (str): Composite period of the directory to find (only for L3m, climatologies and anomalies)
+        anomaly (bool): Are we looking for a directory of anomalies
+        climatology (bool): Are we looking for a directory of climatologies
+
+    Details:
+        if composite or anomaly is True, you only need to provide composite and date
+
+    Returns:
+        A list of existing paths matching the 'query'
+    """
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d")
+    if sensor_code is not None:
+        sensor = SENSOR_CODES[sensor_code]
+    else:
+        sensor = '*'
+    if climatology:
+        path_elements = [data_root, 'combined', 'L3m', '%s_clim' % composite, str(date.timetuple().tm_yday).zfill(3)]
+    elif anomaly:
+        path_elements = [data_root, 'combined', 'L3m', '%s_anom' % composite, date.year, str(date.timetuple().tm_yday).zfill(3)]
+    elif level == 'L3m':
+        path_elements = [data_root, sensor, level, composite, date.year, str(date.timetuple().tm_yday).zfill(3)]
+    else:
+        path_elements = [data_root, sensor, level, date.year, str(date.timetuple().tm_yday).zfill(3)]
+    path_pattern = os.path.join(*[str(x) for x in path_elements])
+    path_list = glob.glob(path_pattern)
+    return path_list
+
 
 def OC_file_finder(data_root,):
     # Finds an existing file on the system from meta information (date, level, collection, variable, sensor)
-    # Returns the filename if the file exists, False otherwise
+    # Returns the filename(s) if the file(s) exist(s), False otherwise
+    # Can be used for several files (e.g. by omiting sensor to create composite products)
     pass
 
 
