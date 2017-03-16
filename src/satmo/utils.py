@@ -480,12 +480,51 @@ def OC_path_finder(data_root, date, level, sensor_code = None, composite = None,
     return path_pattern
 
 
-def OC_file_finder(data_root):
-    # Finds an existing file on the system from meta information (date, level, collection, variable, sensor)
-    # Returns the filename(s) if the file(s) exist(s), False otherwise
-    # Can be used for several files (e.g. by omiting sensor to create composite products)
-    pass
+def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor_code = None, resolution = None, composite = None):
+    """Finds existing files on the system from meta information (date, level, variable, sensor_code, ...)
 
+    Builds a glob pattern from the provided information and runs glob.glob on it
+
+    Args:
+        data_root (str): Root of the data archive
+        date (str or datetime): Date of the directory to find
+        level (str): Data level
+        suite (str): Product suite (e.g. 'OC', 'CHL', 'SST')
+        variable (str): Product variable (e.g. 'sst', 'chlor_a')
+        sensor_code (str): Sensor code (e.g. 'A', 'T', 'V') of the files to query. If None (default), is replaced by * in a glob search
+        resolution (str): e.g. '1km'
+        composite (str): Composite period of the files to query
+
+    Details:
+        Required arguments differ depending on the level set. See list below:
+        - 'L1A':
+            data_root, date, level, (sensor_code)
+        - 'L2':
+            data_root, date, level, suite, (sensor_code)
+        - 'L3m':
+            data_root, date, level, suite, variable, sensor_code, resolution, composite
+
+    Returns:
+        A list of filenames (empty if no matches)
+        
+    """
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d")
+    path_pattern = OC_path_finder(data_root = data_root, level = level, date = date, composite = composite, search = False, sensor_code = sensor_code)
+    if sensor_code is None:
+        sensor_code = '*'
+    if level == 'L1A':
+        file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '*.', level, '*'])
+    if level == 'L2':
+        file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '*.', level, '*', suite, '.nc'])
+    if level == 'L3m':
+        file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
+                                composite, '_', suite, '_', variable, '_', resolution, '*'])
+    else:
+        ValueError('Unsuported data level')
+    full_pattern = os.path.join(path_pattern, file_pattern)
+    file_list = glob.glob(full_pattern)
+    return file_list
 
 
 # 'A2004003000000.L1A_LAC.bz2' Aqua L1A
