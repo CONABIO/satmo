@@ -483,7 +483,10 @@ def OC_path_finder(data_root, date, level, sensor_code = None, composite = None,
 def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor_code = None, resolution = None, composite = None):
     """Finds existing files on the system from meta information (date, level, variable, sensor_code, ...)
 
-    Builds a glob pattern from the provided information and runs glob.glob on it
+    Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly
+    targetted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:
+        - list all L2 files required to produce a L3b binned product (don't forget filtering using isDay() as well)
+        - list all L3m files from a same date but from different sensors in order to produce cross sensor composites
 
     Args:
         data_root (str): Root of the data archive
@@ -502,7 +505,7 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
         - 'L2':
             data_root, date, level, suite, (sensor_code)
         - 'L3m':
-            data_root, date, level, suite, variable, sensor_code, resolution, composite
+            data_root, date, level, suite, variable, (sensor_code), resolution, composite
 
     Returns:
         A list of filenames (empty if no matches)
@@ -515,9 +518,9 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
         sensor_code = '*'
     if level == 'L1A':
         file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '*.', level, '*'])
-    if level == 'L2':
+    elif level == 'L2':
         file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '*.', level, '*', suite, '.nc'])
-    if level == 'L3m':
+    elif level == 'L3m':
         file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
                                 composite, '_', suite, '_', variable, '_', resolution, '*'])
     else:
