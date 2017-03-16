@@ -524,23 +524,12 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
         file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
                                 composite, '_', suite, '_', variable, '_', resolution, '*'])
     else:
-        ValueError('Unsuported data level')
+        raise ValueError('Unsuported data level')
     full_pattern = os.path.join(path_pattern, file_pattern)
     file_list = glob.glob(full_pattern)
     return file_list
 
 
-# 'A2004003000000.L1A_LAC.bz2' Aqua L1A
-# T2002003002500.L1A_LAC.bz2 Terra L1A
-# V2012005001200.L1A_SNPP.nc Viirs L1A
-# V2012005001800.GEO-M_SNPP.nc Viirs L1A GEO
-# V2014004000000.L2_SNPP_IOP.nc
-# V2014004000000.L2_SNPP_OC.nc
-# V2014004000000.L2_SNPP_SST.nc
-# V2014004000000.L2_SNPP_SST3.nc
-# S2001005025918.L1A_GAC.Z
-# S2001005025918.L1A_MLAC.bz2
-# http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/A2005047193000.L2_LAC_IOP.nc
 
 def make_file_path(filename, add_file = True, doy = True, level = None):
     """Generate file path from its name
