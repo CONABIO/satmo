@@ -9,7 +9,7 @@ import string
 import random
 import re
 
-from .utils import super_glob, OC_filename_parser, make_file_path, make_file_name, is_day
+from .utils import super_glob, OC_filename_parser, make_file_path, make_file_name, is_day, OC_filename_builder
 from .errors import SeadasError
 from .global_variables import STANDARD_L3_SUITES
 
@@ -339,17 +339,60 @@ class extractJob(object):
         return keep_list
 
 
-def OC_L2bin(file_list, l3b_suite, resolution = 1, night = False, filename):
+def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = None, data_root = None):
+    """Run l2bin for a list of L2 files
+
+    Details:
+        This is a simple no filter python wrapper around the seadas l2bin utility.
+        
+    Args:
+        file_list (list): list of L2 files (full paths)
+        L3b_suite (str): Product suite to bin (see global variable STANDARD_L3_SUITES
+        for corresponding variables)
+        resolution (int or str): See resolve argument in l2bin doc
+        night (bool): Is that night products
+        filename (str): Optional full path of output filename (L3b). If not provided, a 
+        filename is automatically generated.
+        data_root (str): Root of the data archive. Mandatory if filename is not provided
+        ignored otherwise
+
+    Returns:
+        str: The filename argument
+
+    Example usage:
+        >>> import satmo, glob
+
+        >>> infiles = glob.glob('/home/ldutrieux/sandbox/satmo2_data/aqua/L2/2016/001/*L2*nc')
+        >>> satmo.OC_l2bin(infiles, 'CHL', data_root = '/home/ldutrieux/sandbox/satmo2_data')
+    """
     input_meta = OC_filename_parser(file_list[0])
-    l3bprod = STANDARD_L3_SUITES[l3b_suite][input_meta['sensor']]
+    # Generate filename if it hasn't been provided
+    if filename is None:
+        if data_root is None:
+            raise ValueError('data_root argument must be provided if filename is left empty (None)')
+        filename = OC_filename_builder(level = 'L3b', full_path = True, data_root = data_root, suite = L3b_suite, filename = file_list[0])
+    L3b_dir = os.path.dirname(filename)
+    # Create directory if not already exists
+    if not os.path.exists(L3b_dir):
+        os.makedirs(L3b_dir)
+    # Create text file with input L2 files
+    file_list_file = os.path.join(L3b_dir, 'L2_file_list_%d%03d_%d' % \
+                                 (input_meta['year'], input_meta['doy'], random.randint(1,9999)))
+    with open(file_list_file, 'w') as dst:
+        for item in file_list:
+            dst.write(item + '\n')
+    # Get the standards products from the global variable
+    l3bprod = STANDARD_L3_SUITES[L3b_suite][input_meta['sensor']]
+    # BUild l3b command
     l2bin_arg_list = ['l2bin',
                       'l3bprod=%s' % ','.join(l3bprod),
-                      'infile=%s' % file_list, # TODO cam be a file
+                      'infile=%s' % file_list_file, # TODO cam be a file
                       'resolve=' + str(resolution),
                       'ofile=%s' % filename,
                       'night=%d' % int(night),
-                      'prodtype = regional']
+                      'prodtype=regional']
+    # Execute command
     status = subprocess.call(l2bin_arg_list)
     if status == 1:
-        raise SeadasError('l2bin or l3mapgen exited with status 1')
+        raise SeadasError('l2bin exited with status 1')
     return filename
