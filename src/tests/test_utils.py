@@ -255,6 +255,11 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_path_builder(**d6), p6)
         self.assertEqual(satmo.OC_path_builder(**d7), p7)
 
+    def test_to_km(self):
+        self.assertEqual(satmo.to_km('1000m'), '1km')
+        self.assertEqual(satmo.to_km('2000m'), '2km')
+        self.assertEqual(satmo.to_km('1km'), '1km')
+
 
     def test_make_path(self):
         file_name = 'T2013001043500.L1A_LAC'

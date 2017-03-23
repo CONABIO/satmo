@@ -2,8 +2,12 @@ import re
 import glob
 from datetime import datetime, time
 import os
+from pint import UnitRegistry
 
 from .global_variables import SENSOR_CODES, DATA_LEVELS
+
+# unit database for pint
+ureg = UnitRegistry()
 
 
 def OC_filename_parser(filename, raiseError = True):
@@ -648,3 +652,15 @@ def is_day(filename):
         return True
     else:
         return False
+
+def to_km(x):
+    """Convert distance string to its km equivalent
+
+    Args:
+        x (str): A distance (resolution) string with unit (e.g.: '1000m')
+
+    Return:
+        str: A string of the form 'xxkm'
+    """
+    resolution_km = ureg(x).to(ureg.km)
+    return '%dkm' % int(resolution_km.magnitude)
