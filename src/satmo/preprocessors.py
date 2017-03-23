@@ -9,7 +9,7 @@ import string
 import random
 import re
 
-from .utils import super_glob, OC_filename_parser, make_file_path, make_file_name, is_day, OC_filename_builder
+from .utils import super_glob, OC_filename_parser, make_file_path, make_file_name, is_day, OC_filename_builder, to_km
 from .errors import SeadasError
 from .global_variables import STANDARD_L3_SUITES
 
@@ -396,3 +396,32 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
     if status == 1:
         raise SeadasError('l2bin exited with status 1')
     return filename
+
+
+def OC_l3mapgen(ifile, variable, resolution = '1000m', filename = None, south = None, north = None, west = None, east = None, projection = None, data_root = None):
+    # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147" oformat=tiff
+    input_meta = OC_filename_parser(ifile)
+    # Handle projection options
+    if projection is None:
+        if None not in [south, north, east, west]:
+            lat_0 = (south + north) / 2.0
+            lon_0 = (east + west) / 2.0
+            projection = '"+proj=laea +lat_0=%.1f +lon_0=%.1f"' % (lat_0, lon_0)
+        else:
+            projection = '"+proj=eqc +lat_0=18"'
+    # build file if it doesn't yet exist
+    if filename is None:
+        if data_root is None:
+            raise ValueError('data_root argument must be provided if filename is left empty (None)')
+        filename = OC_filename_builder(level = 'L3m', full_path = True, nc = True, data_root = data_root, filename = ifile, composite = 'DAY',\
+                                       variable = variable, resolution = to_km(resolution))
+        # filename, composite, variable, resolution, (nc)
+        l3map_arg_list = ['l3mapgen',
+                          'product=%s' % variable,
+                          'l3bprod=%s' % ','.join(l3bprod),
+                          'infile=%s' % file_list_file, # TODO cam be a file
+                          'resolve=' + str(resolution),
+                          'ofile=%s' % filename,
+                          'night=%d' % int(night),
+                          'prodtype=regional']
+
