@@ -39,7 +39,7 @@ def nc2tif(file, proj4string = None):
     geo_dict.update(driver = u'GTiff', dtype = dtype, count = 1, nodata = nodata, compress='lzw')
     # Write file
     with rasterio.open(file_out, 'w', **geo_dict) as dst:
-        dst.write_band(1, array.astype(rasterio.float32))
+        dst.write_band(1, array.astype(dtype))
     # Return output filename
     return file_out
 
