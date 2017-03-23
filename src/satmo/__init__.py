@@ -4,7 +4,7 @@ from .query import make_download_url, query_from_extent
 from .utils import make_file_path, make_file_name, super_glob, is_day, file_path_from_sensor_date, to_km
 from .utils import OC_filename_parser, OC_filename_builder, OC_path_builder, OC_path_finder, OC_file_finder
 from .wrappers import timerange_download, timerange_extract, extract_wrapper
-from .geo import geo_dict_from_nc
+from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError
 from .visualization import make_map_title, make_preview
 from .processors import nc2tif, FileComposer

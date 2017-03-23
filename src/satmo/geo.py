@@ -1,7 +1,12 @@
+import os
+
 import pyproj
 from affine import Affine
 from rasterio.crs import CRS
+import rasterio
 import netCDF4 as nc
+
+from .utils import OC_filename_parser
 
 
 def geo_dict_from_nc(nc_file, proj4string = None):
@@ -71,4 +76,35 @@ def geo_dict_from_nc(nc_file, proj4string = None):
                 'width': width,
                 'crs': crs}
     return geo_dict
+
+def get_raster_meta(x, **kwargs):
+    """Retrieve a full meta dict as required by rasterio from a nc or tiff file
+
+    Args:
+        x (str): Level L3m filename (tif or netcdf). Must comply with OC standards defined in CONVENTIONS.md
+        **kwargs:
+            proj4string (str): OPtional, passed to geo_dict_from_nc()
+
+    Returns:
+        A dictionary as used by rasterio
+    
+    Details:
+        driver is always assigned geoTiff, and lzw tiff compression is enabled
+    """
+    _, ext = os.path.splitext(x)
+    if ext == '.nc':
+        var = OC_filename_parser(x)['variable']
+        # Get spatial elements from ncdf file
+        meta = geo_dict_from_nc(x, **kwargs)
+        # Get geophysical variable specific elements
+        with nc.Dataset(x) as src:
+            dtype = str(src.variables[var].dtype)
+            nodata = src.variables[var]._FillValue
+        meta.update(driver = u'GTiff', dtype = dtype, count = 1, nodata = nodata)
+    else:
+        with rasterio.open(x) as src:
+            meta = src.meta
+    meta.update(compress='lzw')
+    return meta
+
 
