@@ -357,7 +357,10 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
         ignored otherwise
 
     Returns:
-        str: The filename argument
+        str: The output filename
+
+    Raises:
+        satmo.SeadasError if the seadas command exists with status 1 
 
     Example usage:
         >>> import satmo, glob
@@ -398,30 +401,67 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
     return filename
 
 
-def OC_l3mapgen(ifile, variable, resolution = '1000m', filename = None, south = None, north = None, west = None, east = None, projection = None, data_root = None):
-    # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147" oformat=tiff
+def OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, resolution = '1000m', projection = None, data_root = None):
+    """Run l3mapgen from a l3b file
+
+    Args:
+        ifile (str): Path to input L3b file
+        variable (str): variable to warp (should exist in the L3b file) (e.g.: sst, chlor_a, Rrs_555, ...)
+        south (int or float): south latitude of mapped file extent
+        north (int or float): north latitude of mapped file extent
+        west (int or float): west longitude of mapped file extent
+        east (int or float): east longitude of mapped file extent
+        filename (str): Optional full path of output filename (L3m). If not provided, a 
+        filename is automatically generated.
+        resolution (str): MApping resolution in the form of e.g.'1000m'. Defaults to '1000m'
+        projection (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+        on the provided extent is used.
+        data_root (str): Root of the data archive. Mandatory if filename is not provided
+        ignored otherwise
+
+    Returns:
+        str: The output filename
+
+    Raises:
+        satmo.SeadasError if the seadas command exists with status 1 
+
+    Example usage:
+        >>> import satmo, glob
+
+        >>> ifile = glob.glob('/home/ldutrieux/sandbox/satmo2_data/aqua/L3b/2016/001/*L3b_CHL*nc')
+        >>> satmo.OC_l3mapgen(ifile[0], 'chlor_a', data_root = '/home/ldutrieux/sandbox/satmo2_data', south = 3, north = 33, west = -122, east = -72)
+
+    """
+    # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
     input_meta = OC_filename_parser(ifile)
     # Handle projection options
     if projection is None:
-        if None not in [south, north, east, west]:
-            lat_0 = (south + north) / 2.0
-            lon_0 = (east + west) / 2.0
-            projection = '"+proj=laea +lat_0=%.1f +lon_0=%.1f"' % (lat_0, lon_0)
-        else:
-            projection = '"+proj=eqc +lat_0=18"'
+        lat_0 = (south + north) / 2.0
+        lon_0 = (east + west) / 2.0
+        projection = '+proj=laea +lat_0=%.1f +lon_0=%.1f' % (lat_0, lon_0)
     # build file if it doesn't yet exist
     if filename is None:
         if data_root is None:
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
         filename = OC_filename_builder(level = 'L3m', full_path = True, nc = True, data_root = data_root, filename = ifile, composite = 'DAY',\
                                        variable = variable, resolution = to_km(resolution))
-        # filename, composite, variable, resolution, (nc)
-        l3map_arg_list = ['l3mapgen',
-                          'product=%s' % variable,
-                          'l3bprod=%s' % ','.join(l3bprod),
-                          'infile=%s' % file_list_file, # TODO cam be a file
-                          'resolve=' + str(resolution),
-                          'ofile=%s' % filename,
-                          'night=%d' % int(night),
-                          'prodtype=regional']
+    # Create directory if not already exists
+    L3m_dir = os.path.dirname(filename)
+    if not os.path.exists(L3m_dir):
+        os.makedirs(L3m_dir)
+    # filename, composite, variable, resolution, (nc)
+    l3map_arg_list = ['l3mapgen',
+                      'ifile=%s' % ifile,
+                      'ofile=%s' % filename,
+                      'resolution=%s' % resolution,
+                      'south=%.1f' % south,
+                      'north=%.1f' % north,
+                      'west=%.1f' % west,
+                      'east=%.1f' % east,
+                      'product=%s' % variable,
+                      'projection="%s"' % projection]
+    status = subprocess.call(l3map_arg_list)
+    if status == 1:
+        raise SeadasError('l3mapgen exited with status 1 for input file %s' % ifile)
+    return filename
 
