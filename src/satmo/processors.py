@@ -31,7 +31,7 @@ def nc2tif(file, proj4string = None):
     var = OC_filename_parser(file)['variable']
     # Read array
     with nc.Dataset(file) as src:
-        dtype = src.variables[var].dtype
+        dtype = str(src.variables[var].dtype)
         nodata = src.variables[var]._FillValue
         array = src.variables[var][:]
     # Update geo_dict
