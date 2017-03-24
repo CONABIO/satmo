@@ -3,7 +3,7 @@ import netCDF4 as nc
 import numpy as np
 import numpy.ma as ma
 import rasterio
-from .geo import geo_dict_from_nc
+from .geo import geo_dict_from_nc, get_raster_meta
 from .utils import OC_filename_parser
 
 def nc2tif(file, proj4string = None):
@@ -70,6 +70,10 @@ class FileComposer(Composer):
     """Class to compose multiple raster files into one (with methods inherited
     from the Composer class), and write the output to a file
 
+    Details:
+        Typically designed to produce composites from L3m files.
+        Can be used with single band geoTiff or single band netcdf files
+
     Example usage:
         >>> import satmo
         >>> file1 = 'aqua/L2/2015/001/A2015001.L3m_DAY_CHL_chlor_a_1km.tif'
@@ -85,9 +89,16 @@ class FileComposer(Composer):
         Args:
             file (str): Input file name
         """
-        with rasterio.open(file) as src:
-            array = src.read(1, masked=True)
-            return array
+        _, ext = os.path.splitext(file)
+        if ext == '.nc':
+            var = OC_filename_parser(file)['variable']
+            # Read array
+            with nc.Dataset(file) as src:
+                array = src.variables[var][:]
+        else:
+            with rasterio.open(file) as src:
+                array = src.read(1, masked=True)
+        return array
 
     def __init__(self, *args):
         """Instantiate FileComposer class
@@ -96,8 +107,7 @@ class FileComposer(Composer):
             *args: Filenames pointing to raster files
         """
         self.file_list = args
-        with rasterio.open(args[0]) as src:
-            self.meta = src.meta
+        self.meta = get_raster_meta(args[0])
         array_list = [self._read_masked_array(x) for x in args]
         super(FileComposer, self).__init__(*array_list)
         
