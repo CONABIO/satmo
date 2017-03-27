@@ -339,7 +339,7 @@ class extractJob(object):
         return keep_list
 
 
-def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = None, data_root = None):
+def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = None, data_root = None, overwrite = False):
     """Run l2bin for a list of L2 files
 
     Details:
@@ -355,6 +355,7 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
         filename is automatically generated.
         data_root (str): Root of the data archive. Mandatory if filename is not provided
         ignored otherwise
+        overwrite (bool): Overwrite file if already exists? Defaults to False
 
     Returns:
         str: The output filename
@@ -374,34 +375,35 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
         if data_root is None:
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
         filename = OC_filename_builder(level = 'L3b', full_path = True, data_root = data_root, suite = L3b_suite, filename = file_list[0])
-    L3b_dir = os.path.dirname(filename)
-    # Create directory if not already exists
-    if not os.path.exists(L3b_dir):
-        os.makedirs(L3b_dir)
-    # Create text file with input L2 files
-    file_list_file = os.path.join(L3b_dir, 'L2_file_list_%d%03d_%d' % \
-                                 (input_meta['year'], input_meta['doy'], random.randint(1,9999)))
-    with open(file_list_file, 'w') as dst:
-        for item in file_list:
-            dst.write(item + '\n')
-    # Get the standards products from the global variable
-    l3bprod = STANDARD_L3_SUITES[L3b_suite][input_meta['sensor']]
-    # BUild l3b command
-    l2bin_arg_list = ['l2bin',
-                      'l3bprod=%s' % ','.join(l3bprod),
-                      'infile=%s' % file_list_file, # TODO cam be a file
-                      'resolve=' + str(resolution),
-                      'ofile=%s' % filename,
-                      'night=%d' % int(night),
-                      'prodtype=regional']
-    # Execute command
-    status = subprocess.call(l2bin_arg_list)
-    if status == 1:
-        raise SeadasError('l2bin exited with status 1')
+    if not (os.path.isfile(filename) and not overwrite):
+        L3b_dir = os.path.dirname(filename)
+        # Create directory if not already exists
+        if not os.path.exists(L3b_dir):
+            os.makedirs(L3b_dir)
+        # Create text file with input L2 files
+        file_list_file = os.path.join(L3b_dir, 'L2_file_list_%d%03d_%d' % \
+                                     (input_meta['year'], input_meta['doy'], random.randint(1,9999)))
+        with open(file_list_file, 'w') as dst:
+            for item in file_list:
+                dst.write(item + '\n')
+        # Get the standards products from the global variable
+        l3bprod = STANDARD_L3_SUITES[L3b_suite][input_meta['sensor']]
+        # BUild l3b command
+        l2bin_arg_list = ['l2bin',
+                          'l3bprod=%s' % ','.join(l3bprod),
+                          'infile=%s' % file_list_file, # TODO cam be a file
+                          'resolve=' + str(resolution),
+                          'ofile=%s' % filename,
+                          'night=%d' % int(night),
+                          'prodtype=regional']
+        # Execute command
+        status = subprocess.call(l2bin_arg_list)
+        if status == 1:
+            raise SeadasError('l2bin exited with status 1')
     return filename
 
 
-def OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, resolution = '1000m', projection = None, data_root = None):
+def OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, resolution = '1000m', projection = None, data_root = None, overwrite = False):
     """Run l3mapgen from a l3b file
 
     Args:
@@ -418,6 +420,7 @@ def OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, reso
         on the provided extent is used.
         data_root (str): Root of the data archive. Mandatory if filename is not provided
         ignored otherwise
+        overwrite (bool): Overwrite file if already exists? Defaults to False
 
     Returns:
         str: The output filename
@@ -434,34 +437,35 @@ def OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, reso
     """
     # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
     input_meta = OC_filename_parser(ifile)
-    # Handle projection options
-    if projection is None:
-        lat_0 = (south + north) / 2.0
-        lon_0 = (east + west) / 2.0
-        projection = '+proj=laea +lat_0=%.1f +lon_0=%.1f' % (lat_0, lon_0)
     # build file if it doesn't yet exist
     if filename is None:
         if data_root is None:
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
         filename = OC_filename_builder(level = 'L3m', full_path = True, nc = True, data_root = data_root, filename = ifile, composite = 'DAY',\
                                        variable = variable, resolution = to_km(resolution))
-    # Create directory if not already exists
-    L3m_dir = os.path.dirname(filename)
-    if not os.path.exists(L3m_dir):
-        os.makedirs(L3m_dir)
-    # filename, composite, variable, resolution, (nc)
-    l3map_arg_list = ['l3mapgen',
-                      'ifile=%s' % ifile,
-                      'ofile=%s' % filename,
-                      'resolution=%s' % resolution,
-                      'south=%.1f' % south,
-                      'north=%.1f' % north,
-                      'west=%.1f' % west,
-                      'east=%.1f' % east,
-                      'product=%s' % variable,
-                      'projection="%s"' % projection]
-    status = subprocess.call(l3map_arg_list)
-    if status == 1:
-        raise SeadasError('l3mapgen exited with status 1 for input file %s' % ifile)
+    if not (os.path.isfile(filename) and not overwrite):
+        # Handle projection options
+        if projection is None:
+            lat_0 = (south + north) / 2.0
+            lon_0 = (east + west) / 2.0
+            projection = '+proj=laea +lat_0=%.1f +lon_0=%.1f' % (lat_0, lon_0)
+        # Create directory if not already exists
+        L3m_dir = os.path.dirname(filename)
+        if not os.path.exists(L3m_dir):
+            os.makedirs(L3m_dir)
+        # filename, composite, variable, resolution, (nc)
+        l3map_arg_list = ['l3mapgen',
+                          'ifile=%s' % ifile,
+                          'ofile=%s' % filename,
+                          'resolution=%s' % resolution,
+                          'south=%.1f' % south,
+                          'north=%.1f' % north,
+                          'west=%.1f' % west,
+                          'east=%.1f' % east,
+                          'product=%s' % variable,
+                          'projection="%s"' % projection]
+        status = subprocess.call(l3map_arg_list)
+        if status == 1:
+            raise SeadasError('l3mapgen exited with status 1 for input file %s' % ifile)
     return filename
 
