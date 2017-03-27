@@ -121,9 +121,9 @@ def make_preview(file):
     m.drawmapboundary(fill_color='darkgrey')
     m.drawlsmask(ocean_color='darkgrey')
     if INDICES[var]['log']:
-        m.imshow(data[::5,::5], origin='upper', extent = extent, interpolation = "none", norm=LogNorm(**stretch))
+        m.imshow(data[::5,::5], origin='upper', extent = extent, interpolation = "none", norm=LogNorm(**stretch), cmap = 'jet')
     else:
-        m.imshow(data[::5,::5], origin='upper', extent = extent, interpolation = "none", **stretch)
+        m.imshow(data[::5,::5], origin='upper', extent = extent, interpolation = "none", cmap = 'jet', **stretch)
     m.colorbar()
     # fill continents, set lake color same as ocean color.
     m.fillcontinents(color='grey',lake_color='black')
