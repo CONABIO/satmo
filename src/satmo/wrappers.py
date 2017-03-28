@@ -169,3 +169,10 @@ def timerange_extract(sensors, data_root, begin, end,\
 def make_daily_composite(date, variable, sensors = 'all', filename = None):
     # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
     pass
+
+def l2_to_l3m_wrapper(date, sensor, suite, variable, south, north, west, east, night = False, data_root, use_existing = True, overwrite = False):
+    """Process from L2 to L3m for a given date and sensor
+    """
+    pass
+    OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = None, data_root = None, overwrite = not(use_existing))
+    OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, resolution = '1000m', projection = None, data_root = None, overwrite = overwrite)
