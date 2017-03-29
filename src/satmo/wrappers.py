@@ -9,7 +9,7 @@ import warnings
 from .query import query_from_extent, make_download_url
 from .download import download_robust
 from .utils import file_path_from_sensor_date, OC_file_finder, is_day, is_night
-from .preprocessors import extractJob
+from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import L2_L3_SUITES_CORRESPONDENCES
 
@@ -202,7 +202,7 @@ def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, ea
     """
     # list files 
     L2_suite = L2_L3_SUITES_CORRESPONDENCES[suite]
-    L2_file_list = satmo.OC_file_finder(data_root = data_root, date = date, level = 'L2', suite = L2_suite, sensor_code = sensor_code)
+    L2_file_list = OC_file_finder(data_root = data_root, date = date, level = 'L2', suite = L2_suite, sensor_code = sensor_code)
     L2_file_list = [x for x in L2_file_list if is_night(x) == night]
     if len(L2_file_list) == 0:
         raise IOError('No L2 files found')
