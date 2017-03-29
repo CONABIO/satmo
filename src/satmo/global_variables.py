@@ -61,7 +61,17 @@ STANDARD_L3_SUITES = {'RRS': {'terra': ['Rrs_412','Rrs_443','Rrs_469','Rrs_488',
                                     'terra': ['nflh', 'ipar']}}
 
 # Rrc (Rayleight corrected reflectance), used by Hu are called rhos in seadas
-# 
+
+L2_L3_SUITES_CORRESPONDENCES = {'RRS': 'OC',
+                                'SST': 'SST',
+                                'NSST': 'SST',
+                                'SST4': 'SST4',
+                                'PAR': 'OC',
+                                'CHL': 'OC',
+                                'KD490': 'OC',
+                                'FLH': 'OC'}
+
+ 
 
 
 INDICES = {'chlor_a' : {'algorithm':{'OC3':{'modis': {'reflectances': 'RRS',

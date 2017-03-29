@@ -8,8 +8,10 @@ import warnings
 
 from .query import query_from_extent, make_download_url
 from .download import download_robust
-from .utils import file_path_from_sensor_date
+from .utils import file_path_from_sensor_date, OC_file_finder, is_day, is_night
 from .preprocessors import extractJob
+
+from .global_variables import L2_L3_SUITES_CORRESPONDENCES
 
 def timerange_download(sensors, begin, end, write_dir,\
                 north, south, west, east, day = True, night = True,\
@@ -170,9 +172,42 @@ def make_daily_composite(date, variable, sensors = 'all', filename = None):
     # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
     pass
 
-def l2_to_l3m_wrapper(date, sensor, suite, variable, south, north, west, east, night = False, data_root, use_existing = True, overwrite = False):
+def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, east, data_root, night = False,
+                      binning_resolution = 1, mapping_resolution = '1000m', projection = None, use_existing = True, overwrite = False):
     """Process from L2 to L3m for a given date and sensor
+
+    Args:
+        date (str or datetime): Date to be processed
+        sensor_code (str): Sensor code of the data to be processed (e.g. 'A' for aqua)
+        suite (str): L3m suite to obtain (e.g. 'CHL')
+        variable (str): L3m variable to process (e.g. 'chlor_a')
+        north (float): north latitude of bounding box in DD
+        south (float): south latitude of bounding box in DD
+        west (float): west longitude of bounding box in DD
+        east (float): east longitude of bounding box in DD
+        data_root (str): Root of the data archive
+        night (bool): Is this night data or not. Defaults to False
+        binning_resolution (int or str): See resolve argument in l2bin doc. Defaults to 1
+        mapping_resolution (str): MApping resolution in the form of e.g.'1000m'. Defaults to '1000m'
+        projection (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+        on the provided extent is used.
+        use_existing (bool): Use L3b file if already exist? Defaults to True
+        overwrite (bool): Overwrite existing L3m file. Defaults to False
+
+    Raises:
+        IOError: When no input files can be found for the provided date - sensor - day/night combination
+
+    Returns:
+        str: The filename of the L3m file produced
     """
-    pass
-    OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = None, data_root = None, overwrite = not(use_existing))
-    OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, resolution = '1000m', projection = None, data_root = None, overwrite = overwrite)
+    # list files 
+    L2_suite = L2_L3_SUITES_CORRESPONDENCES[suite]
+    L2_file_list = satmo.OC_file_finder(data_root = data_root, date = date, level = 'L2', suite = L2_suite, sensor_code = sensor_code)
+    L2_file_list = [x for x in L2_file_list if is_night(x) == night]
+    if len(L2_file_list) == 0:
+        raise IOError('No L2 files found')
+    L3b_filename = OC_l2bin(file_list = L2_file_list, L3b_suite = suite, resolution = binning_resolution, night = night,
+                            data_root = data_root, overwrite = not(use_existing))
+    L3m_filename = OC_l3mapgen(ifile = L3b_filename, variable = variable, south = south, north = north, west = west, east = east,
+                            resolution = mapping_resolution, projection = projection, data_root = data_root, overwrite = overwrite)
+    return L3m_filename
