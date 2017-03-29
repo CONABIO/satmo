@@ -667,7 +667,7 @@ def is_night(filename):
     Returns:
         Boolean, True if night file, False otherwise
     """
-    return not is_night(filename)
+    return not is_day(filename)
 
 def to_km(x):
     """Convert distance string to its km equivalent
