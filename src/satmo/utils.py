@@ -653,6 +653,22 @@ def is_day(filename):
     else:
         return False
 
+def is_night(filename):
+    """Logical function to check whether a file is a night or a day file
+
+    Details:
+        Because time reported in file names are GMT times and not local
+        times, this function has been customized for the satmo project area
+        and is only valid for that area
+
+    Args:
+        filename (str): file name of a dataset
+
+    Returns:
+        Boolean, True if night file, False otherwise
+    """
+    return not is_night(filename)
+
 def to_km(x):
     """Convert distance string to its km equivalent
 

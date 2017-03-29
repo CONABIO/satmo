@@ -3,5 +3,5 @@ class HttpResourceNotAvailable(Exception):
     pass
 
 class SeadasError(Exception):
-	"""Custom exception for when seadas does not exit with status 0"""
-	pass
+    """Custom exception for when seadas does not exit with status 0"""
+    pass
