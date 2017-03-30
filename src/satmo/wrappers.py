@@ -168,10 +168,6 @@ def timerange_extract(sensors, data_root, begin, end,\
     return out
 
 
-def make_daily_composite(date, variable, sensors = 'all', filename = None):
-    # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
-    pass
-
 def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, east, data_root, night = False,
                       binning_resolution = 1, mapping_resolution = '1000m', projection = None, use_existing = True, overwrite = False):
     """Process from L2 to L3m for a given date and sensor
@@ -211,3 +207,51 @@ def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, ea
     L3m_filename = OC_l3mapgen(ifile = L3b_filename, variable = variable, south = south, north = north, west = west, east = east,
                             resolution = mapping_resolution, projection = projection, data_root = data_root, overwrite = overwrite)
     return L3m_filename
+
+
+def timerange_l2_to_l3m(sensors, suite, variable, data_root, begin, end, south, north, west, east, night = False, **kwargs):
+    """Processes L3m data from L2 for a given list of dates and a list of sensor codes
+
+    Args:
+        sensors (list): List of sensor codes to process (e.g.: ['A', 'T', 'V'])
+        suite (str): L3m suite to obtain (e.g. 'CHL')
+        variable (str): L3m variable to process (e.g. 'chlor_a')
+        data_root (str): Root of the data archive
+        begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
+        end (datetime or str): End of time range. 'yyyy-mm-dd' if str
+        north (float): north latitude of bounding box in DD
+        south (float): south latitude of bounding box in DD
+        west (float): west longitude of bounding box in DD
+        east (float): east longitude of bounding box in DD
+        night (bool): Is this night data or not. Defaults to False
+        **kwargs: Additional arguments passed to l2_to_l3m_wrapper()
+
+    Returns:
+        This function is used for its side effects of batch processing ocean color data
+        to level L3m; it doesn't return anything
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    ndays = (end - begin).days + 1
+    date_range = [begin + timedelta(days=x) for x in range(0, ndays)]
+    for day in date_range:
+        for sensor in sensors:
+            try:
+                l2_to_l3m_wrapper(date = day, sensor_code = sensor, suite = suite, variable = variable,
+                                  south = south, north = north, west = west, east = east, data_root = data_root, night = night, **kwargs)
+            except IOError as e:
+                pprint('date %s, sensor %s could not be processed, raison: %s' % (str(day), str(sensor), str(e)))
+                pass
+            except Exception as e:
+                pprint('date %s, sensor %s could not be processed, raison: %s' % (str(day), str(sensor), str(e)))
+                pass
+            except KeyboardInterrupt:
+                raise
+
+
+
+def make_daily_composite(date, variable, sensors = 'all', filename = None):
+    # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
+    pass
