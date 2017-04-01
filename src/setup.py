@@ -24,6 +24,7 @@ setup(name='satmo',
       scripts=['satmo/scripts/timerange_download.py',
                'satmo/scripts/timerange_extract.py',
                'satmo/scripts/nc2tif.py',
+               'satmo/scripts/geo_bin.py',
                'satmo/scripts/make_preview.py'],
       package_data={'satmo': ['templates/*']},
       test_suite="tests")
