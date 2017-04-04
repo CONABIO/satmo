@@ -12,7 +12,7 @@ from glob import glob
 from math import floor
 
 
-def bin_map_numpy(file_list, variable, south, north, west, east, resolution, proj4string, filename):
+def bin_map_numpy(file_list, variable, bit_mask, south, north, west, east, resolution, proj4string, filename):
     """Performs binning and mapping of a list of level 2 Ocean color files
 
     Attempt to reproduce the behaviour of seadas l2bin + l3mapgen
@@ -20,6 +20,7 @@ def bin_map_numpy(file_list, variable, south, north, west, east, resolution, pro
     Args:
         file_list (list): List of input (level 2) file names
         variable (str): Geophysical variable to process (Must be contained in the files under the 'geophysical_data' group)
+        bit_mask (int): Bit mask, most preferably expressed in hex form (e.g.: 0xC1 if you want to mask bits 0, 6 and 7 (1100 0001))
         south (float): Southern border of output extent (in DD)
         north (float): Northern border of output extent (in DD)
         west (float): Western border of output extent (in DD)
@@ -34,6 +35,7 @@ def bin_map_numpy(file_list, variable, south, north, west, east, resolution, pro
     lon_dd = np.array([])
     lat_dd = np.array([])
     var = np.array([])
+    flag_array = np.array([])
 
     # Ingest all the L2 data their coordinates in a flattened form
     for file in file_list:
@@ -41,7 +43,10 @@ def bin_map_numpy(file_list, variable, south, north, west, east, resolution, pro
             lon_dd = np.append(lon_dd, src.groups['navigation_data'].variables['longitude'][:].flatten())
             lat_dd = np.append(lat_dd, src.groups['navigation_data'].variables['latitude'][:].flatten())
             var = np.append(var, src.groups['geophysical_data'].variables[variable][:].flatten())
-            # TODO: Include the flags as well and perform cleaning
+            flag_array = np.append(flag_array, src.groups['geophysical_data'].variables['l2_flags'][:].flatten())
+
+    # Flag masking
+    var = var[np.bitwise_and(flag_array, np.array([bit_mask])) == 0]
 
     # Instantiate proj object
     p = Proj(proj4string)
