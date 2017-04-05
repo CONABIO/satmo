@@ -23,7 +23,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         sensors: (list) list of strings, Valid entries are 'am' (aqua), 'tm' (terra),
         'sw' (seawifs), 'v0' (viirs)
         date_begin (datetime or str): date of the first day of the period queried
-        use 'yyyy-mm-dd' format if passing it as a string
+            use 'yyyy-mm-dd' format if passing it as a string
         per (str): The period queried. One of 'DAY', 'MO', 'YR'
         north (float): north latitude of bounding box in DD
         south (float): south latitude of bounding box in DD
@@ -32,7 +32,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         day (bool): Order day data ?
         night (bool): Order night data ?
         product (str): Product to order, defaults to 'L1A'. Other possible values include 
-        'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
+            'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
         base_url (str): 'api' host
 
     Returns:

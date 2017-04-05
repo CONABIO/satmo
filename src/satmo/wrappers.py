@@ -119,7 +119,7 @@ def timerange_extract(sensors, data_root, begin, end,\
 
     Args:
         sensors (list): List of sensor names for which data should be extracted
-        e.g. ['aqua', 'terra']
+            e.g. ['aqua', 'terra']
         data_root (str): Root of the system local archive
         begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
         end (datetime or str): End of time range. 'yyyy-mm-dd' if str
@@ -129,16 +129,16 @@ def timerange_extract(sensors, data_root, begin, end,\
         east (float): east longitude of bounding box in DD
         compress (bool): Should data be recompressed after extraction, defaults to True
         clean (bool): Should intermediary output be deleted from directory,
-        defaults to True. If compress is set to False, and clean is set to True,
-        you should probably put sonething in the clean_kwargs argument
+            defaults to True. If compress is set to False, and clean is set to True,
+            you should probably put sonething in the clean_kwargs argument
         init_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob class instantation
-        'pattern' is the only one at the moment
+            'pattern' is the only one at the moment
         extract_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob.extract()
-        method. 'overwrite' is the only one at the moment
+            method. 'overwrite' is the only one at the moment
         compress_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob.compress()
-        method. 'overwrite' is the only one at the moment
+            method. 'overwrite' is the only one at the moment
         clean_kwargs (dict): dictionary of arguments passed as **kwargs to the extractJob.clean()
-        method. 'keep_uncompressed' is the only one at the moment
+            method. 'keep_uncompressed' is the only one at the moment
         n_treads (int): Number of threads to use for the parallel implementation
 
     Returns:
@@ -186,7 +186,7 @@ def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, ea
         binning_resolution (int or str): See resolve argument in l2bin doc. Defaults to 1
         mapping_resolution (str): MApping resolution in the form of e.g.'1000m'. Defaults to '1000m'
         projection (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
-        on the provided extent is used.
+            on the provided extent is used.
         use_existing (bool): Use L3b file if already exist? Defaults to True
         overwrite (bool): Overwrite existing L3m file. Defaults to False
 
