@@ -21,7 +21,7 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False, ti
         overwrite (bool): Should the file be overwritten if already existing on local host
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
         timeout (float): How long to wait (in seconds) for the server to send data before giving up and 
-        raising a requests.ConnectionError
+            raising a requests.ConnectionError
 
     Details:
         The function will raise a ConnectionError (via requests) if a connection cannot be established

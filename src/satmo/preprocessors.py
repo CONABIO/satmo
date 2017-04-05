@@ -24,7 +24,7 @@ def bz2_unpack(source, destination, overwrite = False):
     Args:
         source (str): the filename of the archive
         destination (str): the destination directory, filename will be
-        set automatically
+            set automatically
         overwrite (bool): If false, check whether file already exists and returns its name
 
     Returns:
@@ -49,7 +49,7 @@ def bz2_compress(source, destination, compresslevel = 3, overwrite = False):
     Args:
         source (str): the filename to compress
         destination (str): the destination directory, filename will be
-        set automatically
+            set automatically
         compresslevel (int): Compression level
         overwrite (bool): If false, check whether file already exists and returns its name
 
@@ -245,7 +245,7 @@ class extractJob(object):
  
     Args:
         input_dir (str): location of the files to extract, ideally the directory should
-        not contain any other files, otherwise there is a risk they get deleted
+            not contain any other files, otherwise there is a risk they get deleted
         pattern (str): regex pattern to match input files
     """
     template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('extract.par')
@@ -278,7 +278,7 @@ class extractJob(object):
             west (float): west longitude of bounding box in DD
             east (float): east longitude of bounding box in DD
             overwrite (bool): Should existing .sub files be overwritten. Usefull
-            to differentiate archive updating vs re-processing.
+                to differentiate archive updating vs re-processing.
 
         Details:
             It is safe to apply a buffer (larger extent, e.g. 2 extra degrees on each side) around
@@ -324,7 +324,7 @@ class extractJob(object):
 
         Args:
             keep_uncompressed (bool): Should uncompressed files (input to seadas processors)
-            be kept?
+                be kept?
         """
         full_list = glob.glob(os.path.join(self.input_dir, '*'))
         if keep_uncompressed:
@@ -348,13 +348,13 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
     Args:
         file_list (list): list of L2 files (full paths)
         L3b_suite (str): Product suite to bin (see global variable STANDARD_L3_SUITES
-        for corresponding variables)
+            for corresponding variables)
         resolution (int or str): See resolve argument in l2bin doc
         night (bool): Is that night products
         filename (str): Optional full path of output filename (L3b). If not provided, a 
-        filename is automatically generated.
+            filename is automatically generated.
         data_root (str): Root of the data archive. Mandatory if filename is not provided
-        ignored otherwise
+            ignored otherwise
         overwrite (bool): Overwrite file if already exists? Defaults to False
 
     Returns:
@@ -414,12 +414,12 @@ def OC_l3mapgen(ifile, variable, south, north, west, east, filename = None, reso
         west (int or float): west longitude of mapped file extent
         east (int or float): east longitude of mapped file extent
         filename (str): Optional full path of output filename (L3m). If not provided, a 
-        filename is automatically generated.
+            filename is automatically generated.
         resolution (str): MApping resolution in the form of e.g.'1000m'. Defaults to '1000m'
         projection (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
-        on the provided extent is used.
+            on the provided extent is used.
         data_root (str): Root of the data archive. Mandatory if filename is not provided
-        ignored otherwise
+            ignored otherwise
         overwrite (bool): Overwrite file if already exists? Defaults to False
 
     Returns:

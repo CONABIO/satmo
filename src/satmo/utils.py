@@ -19,7 +19,7 @@ def OC_filename_parser(filename, raiseError = True):
         filename (str): String containing an ocean color file filename
         raiseError (bool): Behavior when no valid pattern is found.
         True (default) returns a ValueError, false returns a dictionnaries of
-        Nones
+            Nones
 
     Details:
         The parser will probably fail for the following products:
@@ -247,7 +247,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
             anomaly (bool): Does the filename correspond to anomaly data
             full_path (bool): Should file path be computed (using OC_path_builder)
             data_root (str): To be used in combination with full_path = True, see OC_path_builder()
-            doc for more details
+                doc for more details
         kwargs:
             General kwargs:
                 None
@@ -265,7 +265,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
                 begin_year (int or str): for climatologies, see CONVENTIONS.md
                 end_year (int or str): for climatologies, see CONVENTIONS.md
                 nc (bool): Should extension be '.nc' (instead of '.tif') (Only useful for L3m level, to distinguish between
-                tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
+                    tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
 
                 
     Details:
@@ -418,7 +418,7 @@ def OC_path_builder(filename, data_root = None, add_file = True):
     Args:
         filename (str): syntactically correct ocean color file filename
         data_root (str): OPtional root folder prepended to generated path
-        defaults to None
+            defaults to None
         add_file (bool): append filename to generated path? Defaults to False
 
     Returns:
@@ -455,7 +455,7 @@ def OC_path_finder(data_root, date, level, sensor_code = None, composite = None,
         anomaly (bool): Are we looking for a directory of anomalies
         climatology (bool): Are we looking for a directory of climatologies
         search (bool): Should the function return the output of glob.glob() on the generated. Otherwise the glob pattern
-        itself is returned. Defaults to True
+            itself is returned. Defaults to True
 
     Details:
         if composite or anomaly is True, you only need to provide composite and date
@@ -545,9 +545,9 @@ def make_file_path(filename, add_file = True, doy = True, level = None):
         filename (str): Filename or string containing the filename (e.g. Download url)
         add_file (bool): Path alone, or with filename appended
         doy (bool): Should doy (day of the year) be part of the path (otherwise)
-        it finishes by year/(filename)
+            it finishes by year/(filename)
         level (str): allows to build a path for a different level (useful to set output dir
-        when processing higher levels with seadas).
+            when processing higher levels with seadas).
 
     Details:
         If set, the level argument is checked against a database of valid data levels and automatically
