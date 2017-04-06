@@ -46,7 +46,11 @@ def bin_map_numpy(file_list, variable, bit_mask, south, north, west, east, resol
             flag_array = np.append(flag_array, src.groups['geophysical_data'].variables['l2_flags'][:].flatten())
 
     # Flag masking
-    var = var[np.bitwise_and(flag_array, np.array([bit_mask])) == 0]
+    # Make bool array
+    mask = np.bitwise_and(np.uint32(flag_array), np.array([bit_mask])) == 0
+    var = var[mask]
+    lat_dd = lat_dd[mask]
+    lon_dd = lon_dd[mask]
 
     # Instantiate proj object
     p = Proj(proj4string)
@@ -97,8 +101,9 @@ def bin_map_numpy(file_list, variable, bit_mask, south, north, west, east, resol
 
 
 # Function to pass to argparse
-def main(file_list, variable, south, north, west, east, resolution, proj4string, filename, plot = False, vmax = 10):
-    array = bin_map_numpy(file_list, variable, south, north, west, east, resolution, proj4string, filename)
+def main(file_list, variable, bit_mask, south, north, west, east, resolution, proj4string, filename, plot = False, vmax = 10):
+    bit_mask = int(bit_mask, 16)
+    array = bin_map_numpy(file_list, variable, bit_mask, south, north, west, east, resolution, proj4string, filename)
     if plot:
         import matplotlib.pyplot as plt
         from matplotlib.colors import LogNorm
@@ -123,10 +128,10 @@ if __name__ == '__main__':
               'wget https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/A2016007210000.L2_LAC_OC.nc\n'
               'wget https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/A2016007210500.L2_LAC_OC.nc\n\n'
               '# Generate binned file in Lambert Azimuthal Equal Area at 2 km resolution\n'
-              './geo_bin.py -infiles A2016007*.L2_LAC_OC.nc -var chlor_a -north 33 -south 3 -west -122 -east -72'
+              'geo_bin.py -infiles A2016007*.L2_LAC_OC.nc -var chlor_a -bit 0x0669D73B -north 33 -south 3 -west -122 -east -72 '
               '-res 2000 -proj "+proj=laea +lat_0=18 +lon_0=-100" -filename A2016007.L3m_DAY_CHL_chlor_a_2km.tif\n\n'
               '# If you have matplotlib installed, you can visualized the file created\n'
-              './geo_bin.py -infiles A2016007*.L2_LAC_OC.nc -var chlor_a -north 33 -south 3 -west -122 -east -72'
+              'geo_bin.py -infiles A2016007*.L2_LAC_OC.nc -var chlor_a -bit 0x0669D73B -north 33 -south 3 -west -122 -east -72 '
               '-res 2000 -proj "+proj=laea +lat_0=18 +lon_0=-100" -filename A2016007.L3m_DAY_CHL_chlor_a_2km.tif --plot\n\n'
               '\n ')
 
@@ -138,6 +143,10 @@ if __name__ == '__main__':
     parser.add_argument('-var', '--variable',
                         required = True,
                         help = 'L3m variable')
+    parser.add_argument('-bit', '--bit_mask',
+                        required = True,
+                        type = str,
+                        help = 'Bit maskused for invalid data filtering expressed in hex form (e.g.: 0xC1 if you want to mask bits 0, 6 and 7 (1100 0001))')
     
     parser.add_argument('-north', '--north',
                         type = float,
