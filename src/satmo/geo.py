@@ -5,6 +5,8 @@ from affine import Affine
 from rasterio.crs import CRS
 import rasterio
 import netCDF4 as nc
+from pint import UnitRegistry
+ureg = UnitRegistry()
 
 from .utils import OC_filename_parser
 
@@ -51,7 +53,8 @@ def geo_dict_from_nc(nc_file, proj4string = None):
         >>>     dst.write_band(1, rrs_555.astype(rasterio.float32))
     """
     with nc.Dataset(nc_file) as src:
-        res = src.geospatial_lon_resolution
+        res_str = src.groups['processing_control']['input_parameters'].resolution
+        res = ureg(res_str).to(ureg.m).magnitude
         height = src.number_of_lines
         width = src.number_of_columns
         if proj4string is None:
