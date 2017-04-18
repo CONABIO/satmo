@@ -1,8 +1,15 @@
 import os
-import netCDF4 as nc
+from glob import glob
+
 import numpy as np
 import numpy.ma as ma
+
+import netCDF4 as nc
 import rasterio
+from rasterio.crs import CRS
+from pyproj import Proj
+from affine import Affine
+
 from .geo import geo_dict_from_nc, get_raster_meta
 from .utils import OC_filename_parser
 
@@ -124,16 +131,6 @@ class FileComposer(Composer):
         return filename
 
 
-import netCDF4 as nc
-import numpy as np
-from pyproj import Proj
-from affine import Affine
-import rasterio
-from rasterio.crs import CRS
-
-from glob import glob
-from math import floor
-
 class BasicBinMap(object):
     """ Class to produce daily gridded data for a given date/variable from L2 files
 
@@ -188,7 +185,7 @@ class BasicBinMap(object):
 
     def _read_band(self, file, var):
         """Internal function to read a band as a numpy array
-            
+
         Args:
             file (str): File name to read the variable from
             var (str): Name of the variable/band to read
@@ -205,7 +202,7 @@ class BasicBinMap(object):
 
         Args:
             file (str): File name to read the variable from
-            
+
         Return:
             np.array: flattened numpy arrays representing long
         """
@@ -218,14 +215,14 @@ class BasicBinMap(object):
 
         Args:
             file (str): File name to read the variable from
-            
+
         Return:
             np.array: flattened numpy arrays representing lat
         """
         with nc.Dataset(file) as src:
             lat = src.groups['navigation_data'].variables['longitude'][:].flatten()
         return lat
-    
+
     def set_variable(self, x):
         """Setter for variable to bin 
         
@@ -237,12 +234,125 @@ class BasicBinMap(object):
             raise ValueError('Dimension missmatch')
         self.var_array = x
 
-    def apply_mask(self, bit_mask):
+    def apply_mask(self, bit_mask = 0x0669D73B):
+        """Method to mask data using information from the flag array
+
+        Args:
+            bit_mask (int): The mask to use for selecting active flags from the flag array
+                The array is coded bitwise so that the mask has to be built as a bit mask too.
+                It's generally more convenient to use hexadecimal to define the mask, for example
+                if you want to activate flags 0, 3 and 5, you can pass 0x29 (0010 1001).
+                The mask defaults to 0x0669D73B, which is the defaults value for seadas l2bin.
+                TODO: Provide more mask options from the l2bin defaults for different products (e.g. FLH)
+
+        Details:
+            Below the table of flag signification for modis, viirs and seawifs
+
+            | Flag Name Modis/viirs | Flag Name Seawifs | Bit number |
+            |=======================|===================|============|
+            | ATMFAIL               | ATMFAIL           |          0 |
+            | LAND                  | LAND              |          1 |
+            | PRODWARN              | PRODWARN          |          2 |
+            | HIGLINT               | HIGLINT           |          3 |
+            | HILT                  | HILT              |          4 |
+            | HISATZEN              | HISATZEN          |          5 |
+            | COASTZ                | COASTZ            |          6 |
+            | SPARE                 | SPARE             |          7 |
+            | STRAYLIGHT            | STRAYLIGHT        |          8 |
+            | CLDICE                | CLDICE            |          9 |
+            | COCCOLITH             | COCCOLITH         |         10 |
+            | TURBIDW               | TURBIDW           |         11 |
+            | HISOLZEN              | HISOLZEN          |         12 |
+            | SPARE                 | SPARE             |         13 |
+            | LOWLW                 | LOWLW             |         14 |
+            | CHLFAIL               | CHLFAIL           |         15 |
+            | NAVWARN               | NAVWARN           |         16 |
+            | ABSAER                | ABSAER            |         17 |
+            | SPARE                 | SPARE             |         18 |
+            | MAXAERITER            | MAXAERITER        |         19 |
+            | MODGLINT              | MODGLINT          |         20 |
+            | CHLWARN               | CHLWARN           |         21 |
+            | ATMWARN               | ATMWARN           |         22 |
+            | SPARE                 | SPARE             |         23 |
+            | SEAICE                | SEAICE            |         24 |
+            | NAVFAIL               | NAVFAIL           |         25 |
+            | FILTER                | FILTER            |         26 |
+            | SPARE                 | SPARE             |         27 |
+            | BOWTIEDEL             | SPARE             |         28 |
+            | HIPOL                 | HIPOL             |         29 |
+            | PRODFAIL              | PRODFAIL          |         30 |
+            | SPARE                 | SPARE             |         31 |
+
+
+
+        """
         if self.var_array is None:
             raise ValueError('A variable needs to be set or selected before masking')
-        
+        # Create mask
+        mask_array = np.bitwise_and(self.flag_array, np.array([bit_mask])) == 0
+        # Apply mask to various arrays
+        self.var_array = self.var_array[mask_array]
+        self.lon_dd = self.lon_dd[mask_array]
+        self.lat_dd = self.lat_dd[mask_array]
 
- 
+    def bin_to_grid(self, south, north, west, east, resolution, proj4string):
+        """Method for binning data to a defined grid
+
+        A grid is defined by its extent (north, south, east, west), resolution, and
+            projection (proj4string).
+
+        Args:
+            south (float): Southern border of output extent (in DD)
+            north (float): Northern border of output extent (in DD)
+            west (float): Western border of output extent (in DD)
+            east (float): Eastern border of output extent (in DD)
+            resolution (float): Output resolution (in the unit of the output coordinate reference system)
+            proj4string (str): Coordinate reference system of the output in proj4 format
+
+        """
+        p = Proj(proj4string)
+
+        # Find output corner coordinates in bining grid CRS
+        # Note that this does not account for the extent deformation induced by the projection
+        top_left = p(west, north)
+        bottom_right = p(east, south)
+
+        # Define output array shape
+        destination_shape = ( int( abs(top_left[1] - bottom_right[1]) / float(resolution)), int( abs(top_left[0] - bottom_right[0]) / float(resolution)) )
+        # Define affine transform and the inverse transform
+        aff = Affine(resolution, 0.0, top_left[0], 0.0, -resolution, top_left[1])
+        ffa = ~aff
+
+        # Convert the lat and lon arrays to projected coordinates
+        lon_proj, lat_proj = p(self.lon_dd, self.lat_dd)
+
+        # Convert projected coordinates to destination array indices
+        destination_ids = ffa * (lon_proj, lat_proj)
+
+        # Perform 2d data binning (to average all input coordinates falling withing the same outut pixel)
+        # 1 Sum up within each bin
+        dst_array, _, _ = np.histogram2d(destination_ids[1], destination_ids[0], bins=(range(0, destination_shape[0] + 1, 1), range(0, destination_shape[1] + 1, 1)), weights=self.var_array, normed=False)
+        # Retrieve count per bin
+        counts, _, _ = np.histogram2d(destination_ids[1], destination_ids[0], bins=(range(0, destination_shape[0] + 1, 1), range(0, destination_shape[1] + 1, 1)))
+        # Compute average value per bin
+        dst_array = dst_array / counts
+        dst_array = np.ma.masked_invalid(dst_array)
+        # Write array to slot
+        self.output_array = dst_array
+        # Build geodict and write it to a slot of the object
+        geo_dict = {'crs': CRS.from_string(proj4string),
+                    'affine': aff,
+                    'height': destination_shape[0],
+                    'width': destination_shape[1],
+                    'driver': u'GTiff',
+                    'dtype': rasterio.float32,
+                    'count': 1,
+                    'nodata': 0}
+
+        self.geo_dict = geo_dict
+
+
+
 class Process(BasicBinMap):
     """Class to put the functions to compute, inherits from BasicBinMap so that
         computing a new variable from reflectance bands is an optional step before
