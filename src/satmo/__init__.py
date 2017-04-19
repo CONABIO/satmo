@@ -8,4 +8,4 @@ from .wrappers import timerange_download, timerange_extract, extract_wrapper, l2
 from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError
 from .visualization import make_map_title, make_preview
-from .processors import nc2tif, FileComposer
+from .processors import nc2tif, FileComposer, BasicBinMap

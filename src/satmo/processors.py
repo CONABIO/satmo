@@ -11,7 +11,7 @@ from pyproj import Proj
 from affine import Affine
 
 from .geo import geo_dict_from_nc, get_raster_meta
-from .utils import OC_filename_parser
+from .utils import OC_filename_parser, OC_file_finder, is_day
 
 def nc2tif(file, proj4string = None):
     """Generate geotiff from L3m netcdf array
@@ -117,7 +117,7 @@ class FileComposer(Composer):
         self.meta = get_raster_meta(args[0])
         array_list = [self._read_masked_array(x) for x in args]
         super(FileComposer, self).__init__(*array_list)
-        
+
     def to_file(self, filename):
         """Write the composed array to file
 
@@ -137,7 +137,9 @@ class BasicBinMap(object):
     The class is instantiated with a list of L2 files. The methods give the option to
         processed new variables from reflectance layers present in the L2 file, extract an existing
         one, mask the invalid observations and bin the resulting cleaned variable to a regular grid.
-    
+        All the methods of this class are exposed in the L3mProcess class so
+        that there shouldn't be any need to use this class directly.
+
     Args:
         file_list (list): List of L2 files (they should all belong to the same collection/day/etc)
         var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
@@ -148,8 +150,8 @@ class BasicBinMap(object):
         lat_dd: 1D Np array containing latitude coordinates
         flag_array: 1D np array containing flag values
         var_array: 1D np array containing variable to bin
-        
-
+        output_array: a 2D np array containing binned variable
+        geo_dict: A dictionary used to write the output_array using rasterio
     """
     def __init__(self, file_list, var = None):
         self.file_list = file_list
@@ -157,31 +159,35 @@ class BasicBinMap(object):
         self.lat_dd = np.array([])
         self.flag_array = np.array([])
         self.var_array = None
+        self.output_array = None
+        self.geo_dict = None
         for file in self.file_list:
-            self.lon_dd = np.append(self.lon_dd, _get_lon(file))
-            self.lat_dd = np.append(self.lat_dd, _get_lat(file))
-            self.flag_array = np.append(self.flag_array, _read_band(file, 'l2_flags'))
+            self.lon_dd = np.append(self.lon_dd, self._get_lon(file))
+            self.lat_dd = np.append(self.lat_dd, self._get_lat(file))
+            self.flag_array = np.append(self.flag_array, self._read_band(file, 'l2_flags'))
+        self.flag_array = np.uint32(self.flag_array)
         if var is not None:
             var_array = np.array([])
             for file in file_list:
-                var_array = np.append(var_array, _read_band(file, var))
-                set_variable(var_array)
+                var_array = np.append(var_array, self._read_band(file, var))
+                self.var_array = var_array
 
     @classmethod
-    def from_sensor_date(cls, sensor_code, date, day, suite, data_root):
+    def from_sensor_date(cls, sensor_code, date, day, suite, data_root, var = None):
         """Alternative class buider that builds automatically the right file list
 
         Args:
-            sensor_code (str): Sensor code (e.g. 'A', 'T', 'V') of the files to query. 
+            sensor_code (str): Sensor code (e.g. 'A', 'T', 'V') of the files to query.
             date (str or datetime): Date of the data to find
             day (bool): Are we looking for day data
             suite (str): L2 suite of input files (e.g. OC, SST, SST4, SST3)
             data_root (str): Root of the data archive
+            var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
         """
         file_list = OC_file_finder(data_root, date, level = 'L2', suite = suite, sensor_code = sensor_code)
         file_list = [x for x in file_list if is_day == day]
-        bin_class = cls(file_list)
-        return bin_class 
+        bin_class = cls(file_list, var = var)
+        return bin_class
 
     def _read_band(self, file, var):
         """Internal function to read a band as a numpy array
@@ -224,8 +230,8 @@ class BasicBinMap(object):
         return lat
 
     def set_variable(self, x):
-        """Setter for variable to bin 
-        
+        """Setter for variable to bin
+
         Args:
             x (np.array): A flattened numpy array that should match with the self.lon_dd
                 self.lat_dd, self.flags_array
@@ -243,7 +249,6 @@ class BasicBinMap(object):
                 It's generally more convenient to use hexadecimal to define the mask, for example
                 if you want to activate flags 0, 3 and 5, you can pass 0x29 (0010 1001).
                 The mask defaults to 0x0669D73B, which is the defaults value for seadas l2bin.
-                TODO: Provide more mask options from the l2bin defaults for different products (e.g. FLH)
 
         Details:
             Below the table of flag signification for modis, viirs and seawifs
@@ -283,6 +288,12 @@ class BasicBinMap(object):
             | PRODFAIL              | PRODFAIL          |         30 |
             | SPARE                 | SPARE             |         31 |
 
+            Default l2bin mask values for:
+                General: 0x669d73b (includes Chlorophyl algorithms, Rrs, etc)
+                FLH: 0x679d73f
+                PAR: 0x600000a
+                SST: 0x1002
+                NSST/SST4: 0x2
 
 
         """
@@ -347,13 +358,28 @@ class BasicBinMap(object):
                     'driver': u'GTiff',
                     'dtype': rasterio.float32,
                     'count': 1,
+                    'compress':'lzw',
                     'nodata': 0}
 
         self.geo_dict = geo_dict
 
+    def to_file(self, filename):
+        """Writes a binned grid to a georeferenced tif file
+
+        Args:
+            filename (str): Name of a tif file to write the frid to
+
+        """
+        if self.output_array is None or self.geo_dict is None: 
+            raise ValueError('The class does not contain the binned array \
+                             and/or the geo_dict, You probably have to run the \
+                             bin_to_grid method')
+        with rasterio.open(filename, 'w', **self.geo_dict) as dst:
+            dst.write_band(1, self.output_array.astype(rasterio.float32))
 
 
-class Process(BasicBinMap):
+
+class L3mProcess(BasicBinMap):
     """Class to put the functions to compute, inherits from BasicBinMap so that
         computing a new variable from reflectance bands is an optional step before
         binning
