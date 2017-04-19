@@ -289,5 +289,10 @@ class TestUtils(unittest.TestCase):
         with self.assertRaises(ValueError):
             satmo.file_path_from_sensor_date('aqua', date_dt, data_root, 'L3')
 
+    def test_bit_pos_to_hex(self):
+        self.assertEqual(satmo.bit_pos_to_hex([7, 4, 0, 1, 8]), int(0x193))
+        self.assertEqual(satmo.bit_pos_to_hex([7, 4, 0, 1]), int(0x93))
+
+
 if __name__ == '__main__':
     unittest.main()

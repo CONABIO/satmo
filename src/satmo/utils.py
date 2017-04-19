@@ -680,3 +680,25 @@ def to_km(x):
     """
     resolution_km = ureg(x).to(ureg.km)
     return '%dkm' % int(resolution_km.magnitude)
+
+
+def bit_pos_to_hex(x):
+    """Takes a list containing bit positions and returns the corresponding
+    integer
+
+    Args:
+        x (list): A list of bit position (e.g.: [0,3] for 1001, aka 9)
+
+    Return:
+        The integer corresponding to the list of bit position provided in the
+        list
+    """
+    bit_list = [0] * (max(x) + 1)
+    for i in x:
+        bit_list[i] = 1
+    out = 0
+    for bit in bit_list[::-1]:
+        out = (out << 1) | bit
+    return out
+
+
