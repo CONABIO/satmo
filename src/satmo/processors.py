@@ -185,8 +185,8 @@ class BasicBinMap(object):
             var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
         """
         file_list = OC_file_finder(data_root, date, level = 'L2', suite = suite, sensor_code = sensor_code)
-        file_list = [x for x in file_list if is_day == day]
-        bin_class = cls(file_list, var = var)
+        file_list = [x for x in file_list if is_day(x) == day]
+        bin_class = cls(file_list, var)
         return bin_class
 
     def _read_band(self, file, var):
