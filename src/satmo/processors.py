@@ -152,6 +152,23 @@ class BasicBinMap(object):
         var_array: 1D np array containing variable to bin
         output_array: a 2D np array containing binned variable
         geo_dict: A dictionary used to write the output_array using rasterio
+
+    Exemples:
+        >>> import satmo
+
+        >>> # Instantiate class using factory classmethod
+        >>> bin_class = satmo.BasicBinMap.from_sensor_date('A', date = '2016-01-01', day = True, suite = 'OC',
+                                                           data_root = '/home/ldutrieux/sandbox/satmo2_data',
+                                                           var = 'chlor_a')
+        >>> # Apply mask with default parameters
+        >>> bin_class.apply_mask()
+
+        >>> # Bin the data to a 2 km resolution grid in a chosen resolution and extent
+        >>> bin_class.bin_to_grid(south = 3, north = 33, west = -122, east = -72,
+                                  resolution = 2000, proj4string = "+proj=laea +lat_0=20 +lon_0=-100")
+
+        >>> # Write grid with binned data to a georeferenced file
+        >>> bin_class.to_file('/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif')
     """
     def __init__(self, file_list, var = None):
         self.file_list = file_list
@@ -226,7 +243,7 @@ class BasicBinMap(object):
             np.array: flattened numpy arrays representing lat
         """
         with nc.Dataset(file) as src:
-            lat = src.groups['navigation_data'].variables['longitude'][:].flatten()
+            lat = src.groups['navigation_data'].variables['latitude'][:].flatten()
         return lat
 
     def set_variable(self, x):
