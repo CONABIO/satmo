@@ -219,6 +219,21 @@ class BasicBinMap(object):
         with nc.Dataset(file) as src:
             out = src.groups['geophysical_data'].variables[var][:].flatten()
         return out
+    def _read_band_all(self, var):
+        """Utility to read a variable as a flattened numpy array from all files
+            contained in self.file_list
+
+        Args:
+            var (str): Name of a variable present in all the netcdf files of
+                self.file_list
+
+        Return:
+            np.array: A flattened numpy array
+        """
+        out = np.array([])
+        for file in self.file_list:
+            out = np.append(out, self._read_band(file, var)
+        return out
 
     def _get_lon(self, file):
         """Internal function to retrieve geolocation arrays from a L2 file
@@ -387,7 +402,7 @@ class BasicBinMap(object):
             filename (str): Name of a tif file to write the frid to
 
         """
-        if self.output_array is None or self.geo_dict is None: 
+        if self.output_array is None or self.geo_dict is None:
             raise ValueError('The class does not contain the binned array \
                              and/or the geo_dict, You probably have to run the \
                              bin_to_grid method')
@@ -400,6 +415,50 @@ class L3mProcess(BasicBinMap):
     """Class to put the functions to compute, inherits from BasicBinMap so that
         computing a new variable from reflectance bands is an optional step before
         binning
+
+    Example:
+        >>> import satmo
+        >>> import numpy as np
+
+        >>> # Instantiate class using factory classmethod
+        >>> bin_class = satmo.L3mProcess.from_sensor_date('A', date = '2016-01-01', day = True, suite = 'OC',
+                                                           data_root = '/home/ldutrieux/sandbox/satmo2_data')
+
+        >>> # Compute a new variable using the calc method
+        >>> def add_bands(x, y):
+        >>>     return np.add(x, y)
+
+        >>> bin_class.calc(['Rrs_555', 'Rrs_645'], add_bands)
+
+        >>> # Apply mask with default parameters
+        >>> bin_class.apply_mask()
+
+        >>> # Bin the data to a 2 km resolution grid in a chosen resolution and extent
+        >>> bin_class.bin_to_grid(south = 3, north = 33, west = -122, east = -72,
+                                  resolution = 2000, proj4string = "+proj=laea +lat_0=20 +lon_0=-100")
+
+        >>> # Write grid with binned data to a georeferenced file
+        >>> bin_class.to_file('/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif')
     """
-    def __init__():
-        pass
+    def __init__(self, file_list, var = None):
+        super(BasicBinMap, self).__init__(file_list, var)
+
+    def calc(band_list, fun):
+        """Generic band math method
+
+        Applies an abitrary function to a set of arrays present in the netcdf
+        file.
+
+        Args:
+            band_list (list): A list of bands/variables present in the file
+                (e.g.: ['Rrs_555', 'Rrs_645'])
+            fun (function): A function that takes len(band_list) arguments (all
+            them must be numpy array of the same dimension) performs some
+            element wise calculation on them and returns a single numpy array
+            with the same dimension than each input array.
+        """
+        # Read the bands from band_list with a list comprehension
+        array_list = [self._read_band_all(x) for x in band_list]
+        # Pass the list of numpy arrays as *args to fun
+        out_array = fun(*array_list)
+        self.set_variable(out_array)
