@@ -232,7 +232,7 @@ class BasicBinMap(object):
         """
         out = np.array([])
         for file in self.file_list:
-            out = np.append(out, self._read_band(file, var)
+            out = np.append(out, self._read_band(file, var))
         return out
 
     def _get_lon(self, file):
@@ -268,7 +268,7 @@ class BasicBinMap(object):
             x (np.array): A flattened numpy array that should match with the self.lon_dd
                 self.lat_dd, self.flags_array
         """
-        if x.shape != self.lat_dd:
+        if x.shape != self.lat_dd.shape:
             raise ValueError('Dimension missmatch')
         self.var_array = x
 
@@ -409,6 +409,9 @@ class BasicBinMap(object):
         with rasterio.open(filename, 'w', **self.geo_dict) as dst:
             dst.write_band(1, self.output_array.astype(rasterio.float32))
 
+    def to_scidb(self):
+        pass
+
 
 
 class L3mProcess(BasicBinMap):
@@ -441,9 +444,9 @@ class L3mProcess(BasicBinMap):
         >>> bin_class.to_file('/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif')
     """
     def __init__(self, file_list, var = None):
-        super(BasicBinMap, self).__init__(file_list, var)
+        super(L3mProcess, self).__init__(file_list, var)
 
-    def calc(band_list, fun):
+    def calc(self, band_list, fun):
         """Generic band math method
 
         Applies an abitrary function to a set of arrays present in the netcdf
