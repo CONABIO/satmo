@@ -267,7 +267,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
                 nc (bool): Should extension be '.nc' (instead of '.tif') (Only useful for L3m level, to distinguish between
                     tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
 
-                
+
     Details:
         Each level= chosen requires different kwargs.
         'L2':
@@ -681,6 +681,18 @@ def to_km(x):
     resolution_km = ureg(x).to(ureg.km)
     return '%dkm' % int(resolution_km.magnitude)
 
+def resolution_to_km_str(x):
+    """Builds a string with unit in km from an int (resolution in m)
+
+    Args:
+        x (str): Typically a resolution in meters
+
+    Return:
+        str: A string of the form 'xxkm'
+    """
+    resolution_m = x * ureg.meter
+    resolution_km = resolution_m.to(ureg.km)
+    return '%dkm' % int(resolution_km.magnitude)
 
 def bit_pos_to_hex(x):
     """Takes a list containing bit positions and returns the corresponding

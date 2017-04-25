@@ -293,6 +293,9 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.bit_pos_to_hex([7, 4, 0, 1, 8]), int(0x193))
         self.assertEqual(satmo.bit_pos_to_hex([7, 4, 0, 1]), int(0x93))
 
+    def test_resolution_to_km_str(self):
+        self.assertEqual(satmo.resolution_to_km_str(1000), '1km')
+        self.assertEqual(satmo.resolution_to_km_str(3000), '3km')
 
 if __name__ == '__main__':
     unittest.main()
