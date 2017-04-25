@@ -8,7 +8,8 @@ import warnings
 
 from .query import query_from_extent, make_download_url
 from .download import download_robust
-from .utils import file_path_from_sensor_date, OC_file_finder, is_day, is_night
+from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
+                    is_night, resolution_to_km_str)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import L2_L3_SUITES_CORRESPONDENCES
@@ -170,7 +171,8 @@ def timerange_extract(sensors, data_root, begin, end,\
 
 def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, east, data_root, night = False,
                       binning_resolution = 1, mapping_resolution = '1000m', projection = None, use_existing = True, overwrite = False):
-    """Process from L2 to L3m for a given date and sensor
+    """Process from L2 to L3m for a given date and sensor using seadas (l2bin +
+        l3mapgen)
 
     Args:
         date (str or datetime): Date to be processed
@@ -210,7 +212,8 @@ def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, ea
 
 
 def timerange_l2_to_l3m(sensors, suite, variable, data_root, begin, end, south, north, west, east, night = False, **kwargs):
-    """Processes L3m data from L2 for a given list of dates and a list of sensor codes
+    """Processes L3m data from L2 for a given list of dates and a list of
+        sensor codes using seadas (l2bin + l3mapgen)
 
     Args:
         sensors (list): List of sensor codes to process (e.g.: ['A', 'T', 'V'])
@@ -255,3 +258,70 @@ def timerange_l2_to_l3m(sensors, suite, variable, data_root, begin, end, south, 
 def make_daily_composite(date, variable, sensors = 'all', filename = None):
     # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
     pass
+
+def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
+                     data_root, resolution, day=True, bit_mask = 0x0669D73B, proj4string=None, overwrite=False,
+                     fun=None, band_list=None):
+    """Wrapper to easily run generate L3m files (implicitely from L2)
+
+    Args:
+        date (str or datetime): Date to be processed
+        sensor_code (str): Sensor code of the data to be processed (e.g. 'A' for aqua)
+        suite (str): L3m suite to obtain (e.g. 'CHL')
+        var (str): L3m variable to process (e.g. 'chlor_a'). if a fun= and
+            band_list= arguments are not provided, the variable must already exist
+            in the input L2 files
+        bit_mask (int): The mask to use for selecting active flags from the flag array
+            See the help of apply_mask for further details
+        north (float): north latitude of bounding box in DD
+        south (float): south latitude of bounding box in DD
+        west (float): west longitude of bounding box in DD
+        east (float): east longitude of bounding box in DD
+        data_root (str): Root of the data archive
+        day (bool): Is this day data or not. Defaults to True
+        resolution (int): Outout resolution in the unit of the output
+            coordinate reference system.
+        proj4string (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+            on the provided extent is used.
+        overwrite (bool): Overwrite existing L3m file. Defaults to False
+    """
+    # Build proj4string if not provided
+    if proj4string is None:
+        lat_0 = (south + north) / 2.0
+        lon_0 = (east + west) / 2.0
+        proj4string = '+proj=laea +lat_0=%.1f +lon_0=%.1f' % (lat_0, lon_0)
+
+    # Generate output filename 
+    resolution_str = resolution_to_km_str(resolution)
+    filename = OC_filename_builder(level='L3m', full_path=True, nc=False,
+                                   data_root=data_root, date=date,
+                                   sensor_code=sensor_code, suite=suite,
+                                   variable=var, composite='DAY',
+                                   resolution=resolution_str)
+    # Create directory if not already exists
+    L3m_dir = os.path.dirname(filename)
+    if not os.path.exists(L3m_dir):
+        os.makedirs(L3m_dir)
+    # Process the data (only if file does not yet exist, unless overwrite set
+    # to True
+    if not (os.path.isfile(filename) and not overwrite):
+        # Instantiate L3mProcessing class
+        if fun is None or band_list is None:
+            # The var exists in the L2 files
+            bin_class = L3mProcess.from_sensor_date(sensor_code=sensor_code,
+                                                    date=date, day=day,
+                                                    suite=L2_L3_SUITES_CORRESPONDENCES[suite],
+                                                    data_root=data_root,
+                                                    var=var)
+        else:
+            bin_class = L3mProcess.from_sensor_date(sensor_code=sensor_code,
+                                                    date=date, day=day,
+                                                    suite=L2_L3_SUITES_CORRESPONDENCES[suite],
+                                                    data_root=data_root)
+            bin_class.calc(band_list=band_list, fun=fun)
+
+        bin_class.apply_mask(bit_mask)
+        bin_class.bin_to_grid(south=south, north=north, west=west, east=east,
+                              resolution=resolution, proj4string=proj4string)
+        bin_class.to_file(filename)
+    return filename

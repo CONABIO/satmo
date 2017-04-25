@@ -71,7 +71,7 @@ L2_L3_SUITES_CORRESPONDENCES = {'RRS': 'OC',
                                 'KD490': 'OC',
                                 'FLH': 'OC'}
 
- 
+
 
 
 INDICES = {'chlor_a' : {'algorithm':{'OC3':{'modis': {'reflectances': 'RRS',

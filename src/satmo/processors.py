@@ -203,6 +203,8 @@ class BasicBinMap(object):
         """
         file_list = OC_file_finder(data_root, date, level = 'L2', suite = suite, sensor_code = sensor_code)
         file_list = [x for x in file_list if is_day(x) == day]
+        if len(file_list) == 0:
+            raise IOError('No L2 files found')
         bin_class = cls(file_list, var)
         return bin_class
 
