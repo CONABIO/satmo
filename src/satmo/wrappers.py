@@ -351,3 +351,28 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
             make_preview(filename)
 
     return filename
+
+def timerange_auto_L3m_process():
+    # sensor_code can be a list
+    # Support multicore processing
+    # Only one variable though
+    # Must include an error catcher for when there are no L2 files (the
+    # processing classe raises a IOError in this case
+
+    # make a list of the date/sensor combination that are supposed to get
+    # processed
+
+    # Write a wrapper with error catcher to pass to map
+
+    # Run map
+    def fun_with_error_catcher():
+        try:
+            auto_L3m_process()
+        except IOError as e:
+            pprint('date %s, sensor %s could not be processed, reason: %s' %
+                   (str(date), str(sensor_code), str(e)))
+        except Exception as e:
+            pprint('date %s, sensor %s could not be processed, reason: %s' %
+                   (str(date), str(sensor_code), str(e)))
+        except KeyboardInterrupt:
+            raise
