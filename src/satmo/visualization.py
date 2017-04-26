@@ -64,7 +64,7 @@ def make_preview(file):
     """
     Args:
         file (str): Path to a raster file containing a single layer (usually a geoTiff)
-        
+
     Returns:
 
     """
@@ -72,8 +72,10 @@ def make_preview(file):
     var = OC_filename_parser(file)['variable']
     try:
         stretch = INDICES[var]['stretch']
+        log = INDICES[var]['log']
     except KeyError:
         stretch = {}
+        log = False
 
     title = make_map_title(file)
 
@@ -94,8 +96,6 @@ def make_preview(file):
         from mpl_toolkits.basemap import Basemap
     except ImportError:
         warnings.warn('Install matplotlib basemap for full functionality (graticules and coastlines)')
-
-        
 
     crs = meta['crs']
     p = Proj(**crs)
@@ -120,7 +120,7 @@ def make_preview(file):
     m.drawcoastlines()
     m.drawmapboundary(fill_color='darkgrey')
     m.drawlsmask(ocean_color='darkgrey')
-    if INDICES[var]['log']:
+    if log:
         m.imshow(data[::5,::5], origin='upper', extent = extent, interpolation = "none", norm=LogNorm(**stretch), cmap = 'jet')
     else:
         m.imshow(data[::5,::5], origin='upper', extent = extent, interpolation = "none", cmap = 'jet', **stretch)
