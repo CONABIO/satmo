@@ -9,10 +9,12 @@ import warnings
 from .query import query_from_extent, make_download_url
 from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
-                    is_night, resolution_to_km_str)
+                    is_night, resolution_to_km_str, OC_filename_builder)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import L2_L3_SUITES_CORRESPONDENCES
+from .processors import L3mProcess
+from .visualization import make_preview
 
 def timerange_download(sensors, begin, end, write_dir,\
                 north, south, west, east, day = True, night = True,\
@@ -33,7 +35,7 @@ def timerange_download(sensors, begin, end, write_dir,\
         east (float): east longitude of bounding box in DD
         day (bool): Order day data ?
         night (bool): Order night data ?
-        product (str): Product to order, defaults to 'L1A'. Other possible values include 
+        product (str): Product to order, defaults to 'L1A'. Other possible values include
         'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
         overwrite (bool): Should existing files on the host be overwritten
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
@@ -261,8 +263,16 @@ def make_daily_composite(date, variable, sensors = 'all', filename = None):
 
 def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
                      data_root, resolution, day=True, bit_mask = 0x0669D73B, proj4string=None, overwrite=False,
-                     fun=None, band_list=None):
+                     fun=None, band_list=None, preview=True):
     """Wrapper to easily run generate L3m files (implicitely from L2)
+
+    Details:
+        The function generates a L3m file for a given variable in tif format
+            from a list of L2 files. The variable can be either an existing
+            layer in the input L2 files, or can be calculated given a formula
+            (fun=) and a list of reflectance bands (band_list=). File names are
+            automatically generated and a png preview is optionally produced as
+            well.
 
     Args:
         date (str or datetime): Date to be processed
@@ -282,8 +292,21 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
         resolution (int): Outout resolution in the unit of the output
             coordinate reference system.
         proj4string (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
-            on the provided extent is used.
+            on the provided extent is used. Note that non metric projections
+            are likely to cause problems with the automatic output file naming.
         overwrite (bool): Overwrite existing L3m file. Defaults to False
+        preview (bool): Generate a png preview. Defaults to True
+
+    Example:
+        >>> import satmo
+
+        >>> filename = satmo.auto_L3m_process(date='2016-01-10', sensor_code='A', suite='CHL',
+                                              var='chlor_a', north=33, south=3, west=-122, east=-72,
+                                              overwrite=True, resolution=2000,
+                                              data_root='/home/ldutrieux/sandbox/satmo2_data')
+
+    Return:
+        The filename of the produced file.
     """
     # Build proj4string if not provided
     if proj4string is None:
@@ -324,4 +347,7 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
         bin_class.bin_to_grid(south=south, north=north, west=west, east=east,
                               resolution=resolution, proj4string=proj4string)
         bin_class.to_file(filename)
+        if preview:
+            make_preview(filename)
+
     return filename
