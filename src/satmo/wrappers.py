@@ -352,27 +352,81 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
 
     return filename
 
-def timerange_auto_L3m_process():
-    # sensor_code can be a list
-    # Support multicore processing
-    # Only one variable though
-    # Must include an error catcher for when there are no L2 files (the
-    # processing classe raises a IOError in this case
 
-    # make a list of the date/sensor combination that are supposed to get
-    # processed
+def auto_L3m_process_with_error_catcher(date, sensor_code, suite, var, north, south, west, east,
+                                        data_root, resolution, day=True, bit_mask = 0x0669D73B, proj4string=None, overwrite=False,
+                                        fun=None, band_list=None, preview=True):
+    try:
+        auto_L3m_process(date=date, sensor_code=sensor_code, suite=suite,
+                         var=var, north=north, south=south, west=west,
+                         east=east, data_root=data_root, resolution=resolution,
+                         day=day, bit_mask=bit_mask, proj4string=proj4string,
+                         overwrite=overwrite, fun=fun, band_list=band_list,
+                         preview=preview)
+    except IOError as e:
+        pprint('date %s, sensor %s could not be processed, reason: %s' %
+               (str(date), str(sensor_code), str(e)))
+    except Exception as e:
+        pprint('date %s, sensor %s could not be processed, reason: %s' %
+               (str(date), str(sensor_code), str(e)))
+    except KeyboardInterrupt:
+        raise
 
-    # Write a wrapper with error catcher to pass to map
+def timerange_auto_L3m_process(begin, end, sensor_codes, suite, var, north, south, west, east,
+                               data_root, resolution, day=True, bit_mask =
+                               0x0669D73B, proj4string=None, overwrite=False,
+                               fun=None, band_list=None, preview=True,
+                               n_threads=1):
+    """Wrapper with parallel support for batch processing of L3m files
 
-    # Run map
-    def fun_with_error_catcher():
-        try:
-            auto_L3m_process()
-        except IOError as e:
-            pprint('date %s, sensor %s could not be processed, reason: %s' %
-                   (str(date), str(sensor_code), str(e)))
-        except Exception as e:
-            pprint('date %s, sensor %s could not be processed, reason: %s' %
-                   (str(date), str(sensor_code), str(e)))
-        except KeyboardInterrupt:
-            raise
+    Args:
+        begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
+        end (datetime or str): End of time range. 'yyyy-mm-dd' if str
+        sensor_codes (list): list of strings with sensor codes (e.g.: ['A',
+            'T'])
+        n_threads (int): Number of threads to use for running the
+            auto_L3m_process function in parallel.
+        others (*): See help of auto_L3m_process for the other parameters.
+
+    Return:
+        This function does not return anything
+
+    Example:
+        >>> import satmo
+
+        >>> satmo.timerange_auto_L3m_process(begin='2001-01-01',
+                                             end='2017-12-31',
+                                             sensor_codes=['V', 'T', 'A'],
+                                             suite='CHL', var='chlor_a',
+                                             north=33, south=3, west=-122,
+                                             east=-72,
+                                             data_root='/home/ldutrieux/sandbox/satmo2_data',
+                                             resolution=2000)
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    ndays = (end - begin).days + 1
+    date_range = [begin + timedelta(days=x) for x in range(0, ndays)]
+    # Loop over each sensor and implement the mnultiprocessing there
+    for sensor_code in sensor_codes:
+
+        kwargs = {'sensor_code': sensor_code,
+                  'suite': suite,
+                  'var': var,
+                  'north': north,
+                  'south': south,
+                  'west': west,
+                  'east': east,
+                  'data_root': data_root,
+                  'resolution': resolution,
+                  'day': day,
+                  'bit_mask': bit_mask,
+                  'proj4string': proj4string,
+                  'overwrite': overwrite,
+                  'fun': fun,
+                  'band_list': band_list,
+                  'preview': preview}
+        pool = mp.Pool(n_threads)
+        pool.map(functools.partial(auto_L3m_process_with_error_catcher, **kwargs), date_range)

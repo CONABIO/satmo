@@ -111,6 +111,9 @@ def make_preview(file):
     urll = p(*urproj, inverse=True)
     extent = [xmin, xmax, ymin, ymax] # [left, right, bottom, top]
 
+    # Create figure
+    fig = plt.figure()
+
     # Instantiate Basemap
     m = Basemap(llcrnrlon=llll[0], llcrnrlat=llll[1], urcrnrlon=urll[0], urcrnrlat=urll[1],
                 projection=crs['proj'],
@@ -135,7 +138,6 @@ def make_preview(file):
     m.drawmeridians(meridians,labels=[False,False,False,True])
     plt.title(title)
     plt.savefig(fig_name, dpi=100, transparent=True)
-
-
+    plt.close(fig)
 
 
