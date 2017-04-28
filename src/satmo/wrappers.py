@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import itertools
-import multiprocessing.dummy as mp
+import multiprocessing as mp
 import functools
 import os
 from pprint import pprint
@@ -321,10 +321,6 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
                                    sensor_code=sensor_code, suite=suite,
                                    variable=var, composite='DAY',
                                    resolution=resolution_str)
-    # Create directory if not already exists
-    L3m_dir = os.path.dirname(filename)
-    if not os.path.exists(L3m_dir):
-        os.makedirs(L3m_dir)
     # Process the data (only if file does not yet exist, unless overwrite set
     # to True
     if not (os.path.isfile(filename) and not overwrite):
@@ -346,6 +342,11 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
         bin_class.apply_mask(bit_mask)
         bin_class.bin_to_grid(south=south, north=north, west=west, east=east,
                               resolution=resolution, proj4string=proj4string)
+        # Create directory if not already exists
+        L3m_dir = os.path.dirname(filename)
+        if not os.path.exists(L3m_dir):
+            os.makedirs(L3m_dir)
+        # Write grid to file
         bin_class.to_file(filename)
         if preview:
             make_preview(filename)
@@ -402,7 +403,26 @@ def timerange_auto_L3m_process(begin, end, sensor_codes, suite, var, north, sout
                                              east=-72,
                                              data_root='/home/ldutrieux/sandbox/satmo2_data',
                                              resolution=2000)
+
+        >>> # Second example with calculation of new variable from Rrs layers
+        >>> import satmo
+        >>> import numpy as np
+
+        >>> def add_bands(x, y):
+        >>>     return np.add(x, y)
+
+        >>> satmo.timerange_auto_L3m_process(begin='2016-01-01',
+                                             end='2016-01-16',
+                                             sensor_codes=['A', 'T'],
+                                             suite='RRS', var='rrs_add',
+                                             north=33, south=3, west=-122,
+                                             east=-72,
+                                             data_root='/home/ldutrieux/sandbox/satmo2_data',
+                                             resolution=2000,
+                                             n_threads=3, overwrite=True, fun=add_bands,
+                                             band_list=['Rrs_555', 'Rrs_645'])
     """
+    warnings.filterwarnings("ignore")
     if type(begin) is str:
         begin = datetime.strptime(begin, "%Y-%m-%d")
     if type(end) is str:
@@ -429,4 +449,6 @@ def timerange_auto_L3m_process(begin, end, sensor_codes, suite, var, north, sout
                   'band_list': band_list,
                   'preview': preview}
         pool = mp.Pool(n_threads)
-        pool.map(functools.partial(auto_L3m_process_with_error_catcher, **kwargs), date_range)
+        # Use of map_async().get(9999999) enables KeyboardInterrupt to work
+        pool.map_async(functools.partial(auto_L3m_process_with_error_catcher,
+                                         **kwargs), date_range).get(9999999)
