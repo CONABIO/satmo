@@ -9,11 +9,12 @@ import warnings
 from .query import query_from_extent, make_download_url
 from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
-                    is_night, resolution_to_km_str, OC_filename_builder)
+                    is_night, resolution_to_km_str, OC_filename_builder,
+                    OC_filename_parser)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import L2_L3_SUITES_CORRESPONDENCES
-from .processors import L3mProcess
+from .processors import L3mProcess, FileComposer
 from .visualization import make_preview
 
 def timerange_download(sensors, begin, end, write_dir,\
@@ -257,9 +258,64 @@ def timerange_l2_to_l3m(sensors, suite, variable, data_root, begin, end, south, 
 
 
 
-def make_daily_composite(date, variable, sensors = 'all', filename = None):
+def make_daily_composite(date, variable, suite, data_root, resolution,
+                         sensor_codes = 'all',
+                         fun='mean', filename = None, preview=True,
+                         overwrite=False):
+    """Wrapper for making daily composites (from multiple sensors)
+
+    Args:
+        date (str or datetime): Date of the data to be composited
+        variable (str): L3m variable (e.g. 'chlor_a')
+        suite (str): L3m suite (e.g. 'CHL')
+        data_root (str): Root of the data archive
+        resolution (str): e.g. '1km'
+        sensor_codes (list): Sensors to include in the composite. Defaults to
+            'all'
+        fun (str): Compositing function. Can be 'mean', 'median', 'min', 'max'.
+            Defaults to 'mean'
+        filename (str): Optional output filename. Defaults to None, in which
+            case the filename is automatically generated.
+        preview (bool): Generate a png preview. Defaults to True
+        overwrite (bool): Overwrite existing L3m file. Defaults to False
+
+    Return:
+        The filename of the created composite.
+
+    Example:
+
+    """
+    # Search the files that correspond to a date/variable, etc Do not restrict
+    # sensor code
+    file_list = OC_file_finder(data_root=data_root, date=date, level='L3m',
+                               suite=suite, variable=variable,
+                               resolution=resolution, composite='DAY',
+                               sensor_code=None)
+    # Filter in case only a subset of the sensors is asked
+    if sensor_codes != 'all':
+        file_list = [x for x in file_list if OC_filename_parser(x)['sensor_code'] in sensor_codes]
     # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
-    pass
+    compositing_class = FileComposer(*file_list)
+    # Run the compositing method using string provided in fun= argument
+    func = getattr(compositing_class, fun)
+    func()
+    # Generate filename if not provided
+    if filename is None:
+        filename = OC_filename_builder(level='L3m', full_path=True,
+                                       data_root=data_root, date=date,
+                                       sensor_code='X',
+                                       suite=suite,
+                                       composite='DAY', variable=variable,
+                                       resolution=resolution)
+    if not (os.path.isfile(filename) and not overwrite):
+        # Create directory if not already exists
+        out_dir = os.path.dirname(filename)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        compositing_class.to_file(filename)
+        if preview:
+            make_preview(filename)
+    return filename
 
 def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
                      data_root, resolution, day=True, bit_mask = 0x0669D73B, proj4string=None, overwrite=False,
