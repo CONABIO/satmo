@@ -408,7 +408,6 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
         filename_out = OC_path_builder(filename_out, data_root = data_root, add_file = True)
     return filename_out
 
-    
 
 def OC_path_builder(filename, data_root = None, add_file = True):
     """Universal path builder for Ocean color files
@@ -513,7 +512,6 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
 
     Returns:
         A list of filenames (empty if no matches)
-        
     """
     if type(date) is str:
         date = datetime.strptime(date, "%Y-%m-%d")
@@ -525,8 +523,10 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
     elif level == 'L2':
         file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '*.', level, '*', suite, '.nc'])
     elif level == 'L3m':
-        file_pattern = ''.join([sensor_code, str(date.year), str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
-                                composite, '_', suite, '_', variable, '_', resolution, '*'])
+        file_pattern = ''.join([sensor_code, str(date.year),
+                                str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
+                                composite, '_', suite, '_', variable, '_',
+                                resolution, '.tif'])
     else:
         raise ValueError('Unsuported data level')
     full_pattern = os.path.join(path_pattern, file_pattern)
