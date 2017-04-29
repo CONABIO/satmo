@@ -130,6 +130,9 @@ class FileComposer(Composer):
             dst.write(self.composed_array.astype(self.meta['dtype']), 1)
         return filename
 
+    def to_scidb(self):
+        pass
+
 
 class BasicBinMap(object):
     """ Class to produce daily gridded data for a given date/variable from L2 files
@@ -381,6 +384,9 @@ class BasicBinMap(object):
         counts, _, _ = np.histogram2d(destination_ids[1], destination_ids[0], bins=(range(0, destination_shape[0] + 1, 1), range(0, destination_shape[1] + 1, 1)))
         # Compute average value per bin
         dst_array = dst_array / counts
+        # Replace zeros by a more appropriate no data value (-1 since we are
+        # writing to float and most values are between 0 and 1)
+        dst_array[dst_array == 0] = -1
         dst_array = np.ma.masked_invalid(dst_array)
         # Write array to slot
         self.output_array = dst_array
@@ -393,7 +399,7 @@ class BasicBinMap(object):
                     'dtype': rasterio.float32,
                     'count': 1,
                     'compress':'lzw',
-                    'nodata': 0}
+                    'nodata': -1}
 
         self.geo_dict = geo_dict
 
