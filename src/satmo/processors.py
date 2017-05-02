@@ -63,13 +63,13 @@ class Composer(object):
         self.array_list = args
         self.composed_array = None
     def mean(self):
-        self.composed_array = np.mean(ma.array(self.array_list), axis=0)
+        self.composed_array = np.nanmean(ma.array(self.array_list), axis=0)
     def median(self):
-        self.composed_array = np.median(ma.array(self.array_list), axis=0)
+        self.composed_array = np.nanmedian(ma.array(self.array_list), axis=0)
     def max(self):
-        self.composed_array = np.amax(ma.array(self.array_list), axis=0)
+        self.composed_array = np.nanmax(ma.array(self.array_list), axis=0)
     def min(self):
-        self.composed_array = np.amin(ma.array(self.array_list), axis=0)
+        self.composed_array = np.nanmin(ma.array(self.array_list), axis=0)
 
 # Compose time 
 
@@ -93,6 +93,11 @@ class FileComposer(Composer):
     def _read_masked_array(self, file):
         """Util function to read a single layer raster file as masked np array
 
+        Note:
+            The 'masked' part has been removed when input is a geotiff (most
+            likely produced by the binning function), rasterio reads cells flagged as
+            nodata as np.nan in a geotiff by default.
+
         Args:
             file (str): Input file name
         """
@@ -104,7 +109,7 @@ class FileComposer(Composer):
                 array = src.variables[var][:]
         else:
             with rasterio.open(file) as src:
-                array = src.read(1, masked=True)
+                array = src.read(1)
         return array
 
     def __init__(self, *args):
