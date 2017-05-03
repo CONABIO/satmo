@@ -317,6 +317,48 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
             make_preview(filename)
     return filename
 
+
+def make_daily_composite_error_catcher(**kwargs):
+    try:
+        make_daily_composite(**kwargs)
+    except Exception as e:
+        pprint('%s composite, could not be processed, reason: %s' % (str(date),
+                                                                str(e)))
+    except KeyboardInterrupt:
+        raise
+
+
+def timerange_daily_composite(begin, end, variable, suite, data_root,
+                              resolution, sensor_codes='all', fun='mean',
+                              preview=True, overwrite=False, n_threads=1):
+    """Produce daily composite for individual dates in a time-range in batch
+
+    Args:
+        begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
+        end (datetime or str): End of time range. 'yyyy-mm-dd' if str
+        n_threads (int): Number of threads to use for running the
+            auto_L3m_process function in parallel.
+        others (*): See help of make_daily_composite for the other parameters.
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    ndays = (end - begin).days + 1
+    date_range = [begin + timedelta(days=x) for x in range(0, ndays)]
+    kwargs = {'sensor_codes': sensor_codes,
+              'suite': suite,
+              'variable': variable,
+              'data_root': data_root,
+              'resolution': resolution,
+              'fun': fun,
+              'overwrite': overwrite,
+              'preview': preview}
+    pool = mp.Pool(n_threads)
+    # Use of map_async().get(9999999) enables KeyboardInterrupt to work
+    pool.map_async(functools.partial(make_daily_composite_error_catcher,
+                                         **kwargs), date_range).get(9999999)
+
 def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
                      data_root, resolution, day=True, bit_mask = 0x0669D73B, proj4string=None, overwrite=False,
                      fun=None, band_list=None, preview=True):
