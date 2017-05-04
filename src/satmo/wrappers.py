@@ -283,6 +283,12 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
         The filename of the created composite.
 
     Example:
+        >>> import satmo
+
+        >>> satmo.make_daily_composite(date='2016-01-01', variable='chlor_a', suite='CHL',
+                                       resolution='2km',
+                                       data_root='/home/ldutrieux/sandbox/satmo2_data',
+                                       overwrite=True, fun='mean', sensor_codes=['A', 'V'])
 
     """
     # Search the files that correspond to a date/variable, etc Do not restrict
@@ -346,6 +352,15 @@ def timerange_daily_composite(begin, end, variable, suite, data_root,
         n_threads (int): Number of threads to use for running the
             make_daily_composite function in parallel.
         others (*): See help of make_daily_composite for the other parameters.
+
+    Example:
+        >>> import satmo
+
+        >>> satmo.timerange_daily_composite(begin='2015-01-01', end='2016-06-30',
+                                            variable='chlor_a', suite='CHL',
+                                            data_root='/home/ldutrieux/sandbox/satmo2_data',
+                                            resolution='2km')
+
     """
     if type(begin) is str:
         begin = datetime.strptime(begin, "%Y-%m-%d")
