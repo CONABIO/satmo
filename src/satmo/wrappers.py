@@ -318,9 +318,16 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
     return filename
 
 
-def make_daily_composite_error_catcher(**kwargs):
+def make_daily_composite_error_catcher(date, variable, suite, data_root, resolution,
+                                       sensor_codes = 'all',
+                                       fun='mean', filename = None, preview=True,
+                                       overwrite=False):
     try:
-        make_daily_composite(**kwargs)
+        make_daily_composite(date=date, variable=variable, suite=suite,
+                             data_root=data_root, resolution=resolution,
+                             sensor_codes=sensor_codes,
+                             fun=fun, filename=filename, preview=preview,
+                             overwrite=overwrite)
     except Exception as e:
         pprint('%s composite, could not be processed, reason: %s' % (str(date),
                                                                 str(e)))
@@ -337,7 +344,7 @@ def timerange_daily_composite(begin, end, variable, suite, data_root,
         begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
         end (datetime or str): End of time range. 'yyyy-mm-dd' if str
         n_threads (int): Number of threads to use for running the
-            auto_L3m_process function in parallel.
+            make_daily_composite function in parallel.
         others (*): See help of make_daily_composite for the other parameters.
     """
     if type(begin) is str:
