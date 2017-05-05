@@ -62,14 +62,19 @@ class Composer(object):
         """
         self.array_list = args
         self.composed_array = None
+        self.compositing_function = None
     def mean(self):
         self.composed_array = np.nanmean(ma.array(self.array_list), axis=0)
+        self.compositing_function = 'mean'
     def median(self):
         self.composed_array = np.nanmedian(ma.array(self.array_list), axis=0)
+        self.compositing_function = 'median'
     def max(self):
         self.composed_array = np.nanmax(ma.array(self.array_list), axis=0)
+        self.compositing_function = 'max'
     def min(self):
         self.composed_array = np.nanmin(ma.array(self.array_list), axis=0)
+        self.compositing_function = 'min'
 
 # Compose time 
 
@@ -112,6 +117,23 @@ class FileComposer(Composer):
                 array = src.read(1)
         return array
 
+    # TODO: Test function below
+    def _read_compositing_meta(self, file):
+        """Read the COMPOSITING_META tag of the input files
+
+        Because input of the compositing method may be composites too, the idea
+            enable propagation of these compositing metadata.
+
+        Args:
+            file (str): Input file name
+        """
+        try:
+            with rasterio.open(file) as src:
+                composite_meta = src.tags(ns='COMPOSITING_META')
+        except:
+            composite_meta = {}
+        return composite_meta
+
     def __init__(self, *args):
         """Instantiate FileComposer class
 
@@ -120,6 +142,9 @@ class FileComposer(Composer):
         """
         self.file_list = args
         self.meta = get_raster_meta(args[0])
+        # TODO: Validate dict comprehension below
+        self.compositing_meta = {key: _read_compositing_meta(key) for key in\
+                                 self.file_list}
         array_list = [self._read_masked_array(x) for x in args]
         super(FileComposer, self).__init__(*array_list)
 
@@ -133,6 +158,9 @@ class FileComposer(Composer):
         # running this method
         with rasterio.open(filename, 'w', **self.meta) as dst:
             dst.write(self.composed_array.astype(self.meta['dtype']), 1)
+            dst.update_tags(ns='COMPOSITING_META',
+                            compositing_function=self.compositing_function,
+                            input_file=[os.path.basename(x) for x in self.file_list])
         return filename
 
     def to_scidb(self):
