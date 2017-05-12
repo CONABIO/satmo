@@ -143,7 +143,7 @@ class FileComposer(Composer):
         self.file_list = args
         self.meta = get_raster_meta(args[0])
         # TODO: Validate dict comprehension below
-        self.compositing_meta = {key: _read_compositing_meta(key) for key in\
+        self.compositing_meta = {key: self._read_compositing_meta(key) for key in\
                                  self.file_list}
         array_list = [self._read_masked_array(x) for x in args]
         super(FileComposer, self).__init__(*array_list)
