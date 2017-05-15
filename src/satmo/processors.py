@@ -142,9 +142,11 @@ class FileComposer(Composer):
         """
         self.file_list = args
         self.meta = get_raster_meta(args[0])
-        # TODO: Validate dict comprehension below
+        # Get compositing metadata contained in input files, if there are none
+        # it returns an empty dictionary
         self.compositing_meta = {key: self._read_compositing_meta(key) for key in\
-                                 self.file_list}
+                                 self.file_list if\
+                                 self._read_compositing_meta(key)}
         array_list = [self._read_masked_array(x) for x in args]
         super(FileComposer, self).__init__(*array_list)
 
@@ -160,7 +162,8 @@ class FileComposer(Composer):
             dst.write(self.composed_array.astype(self.meta['dtype']), 1)
             dst.update_tags(ns='COMPOSITING_META',
                             compositing_function=self.compositing_function,
-                            input_file=[os.path.basename(x) for x in self.file_list])
+                            input_files=[os.path.basename(x) for x in self.file_list],
+                           input_meta=self.compositing_meta)
         return filename
 
     def to_scidb(self):
