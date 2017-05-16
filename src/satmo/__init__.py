@@ -11,4 +11,5 @@ l2_to_l3m_wrapper, timerange_l2_to_l3m, auto_L3m_process,
 from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError
 from .visualization import make_map_title, make_preview
-from .processors import nc2tif, FileComposer, BasicBinMap, L3mProcess
+from .processors import (nc2tif, FileComposer, BasicBinMap, L3mProcess,
+                         make_time_composite)
