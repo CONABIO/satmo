@@ -713,4 +713,56 @@ def bit_pos_to_hex(x):
         out = (out << 1) | bit
     return out
 
+def _range_dt(begin, end, delta):
+    """Internal function to make a list of dates with a given delta and
+        resetted to first of January on every year jump
 
+    Args:
+        begin (datetime.datetime): Begin date of the first composite
+        end (datetime.datetime): Begin date of the last composite
+        delta (int): composite length in days
+
+    Return:
+        A list of datetime.datetime corresponding to first day of each
+            composite
+    """
+    time_keeper = begin
+    date_list = []
+    while time_keeper <= end:
+        date_list.append(time_keeper)
+        year_next_step = (time_keeper + datetime.timedelta(delta)).year
+        if year_next_step != time_keeper.year:
+            # Reset to first of January of the new year
+            time_keeper = datetime.datetime(year_next_step, 1, 1)
+        else:
+            time_keeper += datetime.timedelta(delta)
+    return date_list
+
+def pre_compose(begin, end, delta):
+    """Prepare a list of list of datetime to run with a compositing function
+
+    Details:
+        Each sub list in the returned list contains the dates required to make the
+            composite. When delta is not a multiple of the number of day of a given
+            year, the last composite of the year is truncated and the next composite
+            starts on the first of January of the following calendart year.
+
+    Args:
+        begin (datetime.datetime): Begin date of the first composite
+        end (datetime.datetime): Begin date of the last composite
+        delta (int): composite length in days
+
+    Return:
+        A list of lists.
+
+    Example:
+        >>> import satmo
+        >>> satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), 16)
+    """
+    begin_list = _range_dt(begin, end, delta)
+    delta_list = [(j-i).days for i, j in zip(begin_list[:-1], begin_list[1:])]
+    delta_list.append(delta)
+    dateList_list = []
+    for (b, d) in zip(begin_list, delta_list):
+        dateList_list.append([b + datetime.timedelta(days=x) for x in range(0, d)])
+    return dateList_list
