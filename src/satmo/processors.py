@@ -523,7 +523,7 @@ def make_time_composite(date_list, var, suite, resolution, composite,
         var (str): L3m variable to composite
         suite (str): L3m suite
         resolution (str): Resolution of data to compose (e.g.: '2km')
-        composite (str): Type/name of composite (e.g.: '8DAY', '16DAY'). Used
+        composite (str): Type/name of generated composite (e.g.: '8DAY', '16DAY'). Used
             for automatic output filename generation.
         data_root (str): Root of the data archive
         sensor_code (str): Sensor to composite (defaults to 'X', which
@@ -584,8 +584,6 @@ def make_time_composite(date_list, var, suite, resolution, composite,
         if preview:
             make_preview(filename)
     return filename
-
-
 
 
 

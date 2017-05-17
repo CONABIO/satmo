@@ -10,11 +10,11 @@ from .query import query_from_extent, make_download_url
 from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
-                    OC_filename_parser)
+                    OC_filename_parser, pre_compose)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import L2_L3_SUITES_CORRESPONDENCES
-from .processors import L3mProcess, FileComposer
+from .processors import L3mProcess, FileComposer, make_time_composite
 from .visualization import make_preview
 
 def timerange_download(sensors, begin, end, write_dir,\
@@ -572,3 +572,60 @@ def timerange_auto_L3m_process(begin, end, sensor_codes, suite, var, north, sout
         # Use of map_async().get(9999999) enables KeyboardInterrupt to work
         pool.map_async(functools.partial(auto_L3m_process_with_error_catcher,
                                          **kwargs), date_range).get(9999999)
+
+
+def timerange_time_compositer(begin, end, delta, var, suite, resolution,
+                              composite, data_root, sensor_code='X', fun='mean',
+                              overwrite=False, preview=True, n_threads=1):
+    """Runs make_time_composite in batch and parallel
+
+    Args:
+        begin (datetime.datetime or str): Begin date of the first composite
+        end (datetime.datetime or str): Begin date of the last composite
+        delta (int): composite length in days
+        var (str): L3m variable to composite
+        suite (str): L3m suite to compose
+        resolution (str): Resolution of data to compose (e.g.: '2km')
+        composite (str): Type/name of generated composite (e.g.: '8DAY', '16DAY'). Used
+            for automatic output filename generation.
+        data_root (str): Root of the data archive
+        sensor_code (str): Sensor to composite (defaults to 'X', which
+            corresponds to daily (cross sensors) composites.
+        fun (str): compositing function, defaults to mean
+        overwrite (bool): Should output file be overwritten if it already
+            exists.
+        preview (bool): Should a png preview be automatically generated
+        n_threads (int): Number of threads to use for running the
+            auto_L3m_process function in parallel.
+
+    Return:
+        Used for its side effect of running make_time_composite in batch; does not
+            return anything
+
+    Example:
+        >>> import satmo
+        >>> # Create 16 days mean value composites of chlor_a
+        >>> satmo.timerange_time_compositer('2000-01-01', '2004-12-31', 16, 'chlor_a',
+                                            suite='CHL', resolution='2km', composite='16DAY',
+                                            data_root='/home/ldutrieux/sandbox/satmo2_data/',
+                                            overwrite=True, n_threads=2)
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    dateList_list = pre_compose(begin, end, delta)
+    # Define kwargs (arguments passed to make_time_composite other than date_list
+    kwargs = {'var': var,
+              'suite': suite,
+              'resolution': resolution,
+              'composite': composite,
+              'data_root': data_root,
+              'sensor_code': sensor_code,
+              'fun': fun,
+              'overwrite': overwrite,
+              'preview': preview}
+    pool = mp.Pool(n_threads)
+    # Use of map_async().get(9999999) enables KeyboardInterrupt to work
+    pool.map_async(functools.partial(make_time_composite,
+                                     **kwargs), dateList_list).get(9999999)
