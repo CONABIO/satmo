@@ -11,7 +11,7 @@ import argparse
 import satmo
 
 def main(aqua, terra, viirs, seawifs, begin, end, suite, var, north, south,
-         west, east, data_root, resolution, day, bit_mask, proj4string,
+         west, east, data_root, resolution, night, bit_mask, proj4string,
          overwrite, preview, n_threads):
     if not any([aqua, terra, viirs, seawifs]):
         raise ValueError('You need to set at least one of the sensors flag')
@@ -24,13 +24,14 @@ def main(aqua, terra, viirs, seawifs, begin, end, suite, var, north, south,
         sensor_codes.append('S')
     if viirs:
         sensor_codes.append('V')
+    bit_mask = int(bit_mask, 0)
     satmo.timerange_auto_L3m_process(begin=begin, end=end,
                                      sensor_codes=sensor_codes, suite=suite,
                                      var=var, north=north, south=south,
                                      west=west, east=east,
                                      data_root=data_root,
                                      resolution=resolution, bit_mask=bit_mask,
-                                     proj4string=proj4string,
+                                     proj4string=proj4string, day=not(night),
                                      overwrite=overwrite, preview=preview,
                                      n_threads=n_threads)
 
@@ -41,7 +42,10 @@ if __name__ == '__main__':
               '------------\n'
               'Example usage:\n'
               '------------\n\n'
-              '')
+              'timerange_L3m_process.py --aqua --terra -b 2005-01-01 -e 2017-06-01 '
+              '-s CHL -v chlor_a -d /home/ldutrieux/sandbox/satmo2_data -r 2000 '
+              '--overwrite -multi 3 -north 33 -south 3 -west -122 -east -72')
+
     parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('--aqua', action='store_true',
@@ -78,32 +82,60 @@ if __name__ == '__main__':
 
     parser.add_argument("-r", "--resolution",
                         required=True,
-                        help="Resolution (e.g. 1km)")
-timerange_auto_L3m_process
-auto_L3m_process
-        >>> satmo.timerange_auto_L3m_process(begin='2001-01-01',
-                                             end='2017-12-31',
-                                             sensor_codes=['V', 'T', 'A'],
-                                             suite='CHL', var='chlor_a',
-                                             north=33, south=3, west=-122,
-                                             east=-72,
-                                             data_root='/home/ldutrieux/sandbox/satmo2_data',
-                                             resolution=2000)
+                        help="Output resolution (in the unit of the output coordinate reference system)")
 
-        >>> # Second example with calculation of new variable from Rrs layers
-        >>> import satmo
-        >>> import numpy as np
+    parser.add_argument('-north', '--north',
+                        type = float,
+                        required = True,
+                        help = 'Northern boundary in DD')
 
-        >>> def add_bands(x, y):
-        >>>     return np.add(x, y)
+    parser.add_argument('-south', '--south',
+                        type = float,
+                        required = True,
+                        help = 'Southern boundary in DD')
 
-        >>> satmo.timerange_auto_L3m_process(begin='2016-01-01',
-                                             end='2016-01-16',
-                                             sensor_codes=['A', 'T'],
-                                             suite='RRS', var='rrs_add',
-                                             north=33, south=3, west=-122,
-                                             east=-72,
-                                             data_root='/home/ldutrieux/sandbox/satmo2_data',
-                                             resolution=2000,
-                                             n_threads=3, overwrite=True, fun=add_bands,
-                                             band_list=['Rrs_555', 'Rrs_645'])
+    parser.add_argument('-east', '--east',
+                        type = float,
+                        required = True,
+                        help = 'Eastern most boundary in DD')
+
+    parser.add_argument('-west', '--west',
+                        type = float,
+                        required = True,
+                        help = 'Western most boundary in DD')
+
+    parser.add_argument('-p', '--proj4string',
+                        type = str,
+                        required = False,
+                        help = ('Optional Coordinate reference system of the output in proj4 format',
+                                ' If None is provided, +proj=laea centered on the output center is used'))
+
+    parser.add_argument('--night', action='store_true',
+                        help='Process night variables')
+
+    parser.set_defaults(proj4string=None)
+
+    parser.add_argument('-mask', '--bit_mask',
+                        type = int,
+                        required = False,
+                        help = ('The mask to use for selecting active flags from the flag array'
+    'The array is coded bitwise so that the mask has to be built as a bit mask too. '
+    'It is generally more convenient to use hexadecimal to define the mask, for example'
+    ' if you want to activate flags 0, 3 and 5, you can pass 0x29 (0010 1001).'
+    ' The mask defaults to 0x0669D73B, which is the defaults value for seadas l2bin.'))
+    parser.set_defaults(bit_mask='0x0669D73B')
+
+    parser.add_argument('--overwrite', action='store_true',
+                       help = 'Should existing files be overwritten')
+
+    parser.add_argument('--preview', action='store_true',
+                        help = 'Generate png previews in addition to geotiffs')
+
+    parser.add_argument('-multi', '--n_threads',
+                        type = int,
+                        required = False,
+                        help = 'Number of threads to use for parallel implementation')
+    parser.set_defaults(n_threads=1)
+    parsed_args = parser.parse_args()
+
+    main(**vars(parsed_args))
