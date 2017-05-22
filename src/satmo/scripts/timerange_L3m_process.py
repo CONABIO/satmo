@@ -82,6 +82,7 @@ if __name__ == '__main__':
 
     parser.add_argument("-r", "--resolution",
                         required=True,
+                        type = int,
                         help="Output resolution (in the unit of the output coordinate reference system)")
 
     parser.add_argument('-north', '--north',
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--proj4string',
                         type = str,
                         required = False,
-                        help = ('Optional Coordinate reference system of the output in proj4 format',
+                        help = ('Optional Coordinate reference system of the output in proj4 format'
                                 ' If None is provided, +proj=laea centered on the output center is used'))
 
     parser.add_argument('--night', action='store_true',
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     parser.set_defaults(proj4string=None)
 
     parser.add_argument('-mask', '--bit_mask',
-                        type = int,
+                        type = str,
                         required = False,
                         help = ('The mask to use for selecting active flags from the flag array'
     'The array is coded bitwise so that the mask has to be built as a bit mask too. '
