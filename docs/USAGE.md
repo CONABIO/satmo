@@ -66,6 +66,7 @@ Night time SST
 
 ## Generate time composites
 
+`nohup timerange_time_composite.py -b 2000-01-01 -e 2017-06-01 -delta 16 -s CHL -v chlor_a -d /export/isilon/datos2/satmo2_data/ -r 2km --overwrite --preview -multi 4`
 
 ## Generate climatologies
 
