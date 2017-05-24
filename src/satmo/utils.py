@@ -1,6 +1,6 @@
 import re
 import glob
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import os
 from pint import UnitRegistry
 
@@ -730,12 +730,12 @@ def _range_dt(begin, end, delta):
     date_list = []
     while time_keeper <= end:
         date_list.append(time_keeper)
-        year_next_step = (time_keeper + datetime.timedelta(delta)).year
+        year_next_step = (time_keeper + timedelta(delta)).year
         if year_next_step != time_keeper.year:
             # Reset to first of January of the new year
-            time_keeper = datetime.datetime(year_next_step, 1, 1)
+            time_keeper = datetime(year_next_step, 1, 1)
         else:
-            time_keeper += datetime.timedelta(delta)
+            time_keeper += timedelta(delta)
     return date_list
 
 def pre_compose(begin, end, delta):
@@ -764,5 +764,5 @@ def pre_compose(begin, end, delta):
     delta_list.append(delta)
     dateList_list = []
     for (b, d) in zip(begin_list, delta_list):
-        dateList_list.append([b + datetime.timedelta(days=x) for x in range(0, d)])
+        dateList_list.append([b + timedelta(days=x) for x in range(0, d)])
     return dateList_list
