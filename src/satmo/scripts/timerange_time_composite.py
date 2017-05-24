@@ -24,9 +24,10 @@ def main(sensor, begin, end, delta, var, suite, resolution, data_root, fun, over
         sensor_code == 'S'
     else:
         raise ValueError('Non suported value for --sensor. If you think it should be supported change the code in satmo/scripts/timerange_time_composite.py')
+    # Generate composite name
+    composite = '%dDAY' % delta
 
-
-    timerange_time_compositer(begin=begin, end=end, delta=delta, var=var, suite=suite,
+    satmo.timerange_time_compositer(begin=begin, end=end, delta=delta, var=var, suite=suite,
                           resolution=resolution, composite=composite, data_root=data_root,
                           sensor_code=sensor_code, fun=fun, overwrite=overwrite,
                           preview=preview, n_threads=n_threads)
@@ -38,13 +39,13 @@ if __name__ == '__main__':
               '------------\n'
               'Example usage:\n'
               '------------\n\n'
-              'timerange_time_composite.py -s combined -b 2005-01-01 -e 2017-06-01 -delta 16'
+              'timerange_time_composite.py -sensor combined -b 2005-01-01 -e 2017-06-01 -delta 16'
               '-s CHL -v chlor_a -f mean -d /home/ldutrieux/sandbox/satmo2_data -r 2km'
               '--overwrite --preview -multi 4 ')
 
     parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('--sensor', '-s',
+    parser.add_argument('--sensor', '-sensor',
                         required = False,
                         type = str,
                         help = 'Which sensor should be processed. Optional, defaults to combined, which corresponds to daily composites. (Run timerange_daily_composite.py before this command in that case)')

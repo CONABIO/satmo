@@ -623,6 +623,7 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
               'data_root': data_root,
               'sensor_code': sensor_code,
               'fun': fun,
+              'filename': None,
               'overwrite': overwrite,
               'preview': preview}
     pool = mp.Pool(n_threads)
