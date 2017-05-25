@@ -552,12 +552,13 @@ def make_time_composite(date_list, var, suite, resolution, composite,
                                       overwrite=True)
     """
     # Search for the list of files
-    file_list = [OC_file_finder(data_root=data_root,
-                                      date=x, level='L3m', suite=suite,
-                                      sensor_code=sensor_code,
-                                      resolution=resolution,
-                                      variable=var, composite='DAY')[0] for x in
-                 date_list]
+    file_list = []
+    for date in date_list:
+        file_query = OC_file_finder(data_root=data_root, date=date, level='L3m', suite=suite,
+                                    sensor_code=sensor_code, resolution=resolution,
+                                    variable=var, composite='DAY')
+        if file_query:
+            file_list.append(file_query[0])
     # Exit if list of files is empty
     if not file_list:
         return
