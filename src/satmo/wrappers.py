@@ -630,3 +630,7 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
     # Use of map_async().get(9999999) enables KeyboardInterrupt to work
     pool.map_async(functools.partial(make_time_composite,
                                      **kwargs), dateList_list).get(9999999)
+
+def nrt_download(sub_list, refined=False):
+    """Update a local archive using a list 
+    """
