@@ -15,9 +15,9 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     """Query L1A data for a given period and spatial extent
 
     Uses an old school perl 'API' to get a list of filenames that intersect with a
-    geographical area and a time period. The function was initially designed to query 
+    geographical area and a time period. The function was initially designed to query
     L1A products; capability to query different L2 collection was added later and may not
-    function as well than the L1A query capability. 
+    function as well than the L1A query capability.
 
     Args:
         sensors: (list) list of strings, Valid entries are 'am' (aqua), 'tm' (terra),
@@ -31,7 +31,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         east (float): east longitude of bounding box in DD
         day (bool): Order day data ?
         night (bool): Order night data ?
-        product (str): Product to order, defaults to 'L1A'. Other possible values include 
+        product (str): Product to order, defaults to 'L1A'. Other possible values include
             'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
         base_url (str): 'api' host
 
@@ -121,3 +121,19 @@ def make_download_url(file_name, host = 'https://oceandata.sci.gsfc.nasa.gov/cgi
     if os.path.splitext(file_name)[1] != '.nc':
         url_components.append('.bz2')
     return ''.join(url_components)
+
+def get_subscription_urls(id):
+    """Send a request to a subscription number to get a list of download URLs
+
+    Args:
+        id (int): Ocean color subscription number
+
+    Returns:
+        A list of download urls
+    """
+    args_dict = {'subID': id,
+                 'addurl': 1,
+                 'results_as_file': 1}
+    r = requests.get("https://oceandata.sci.gsfc.nasa.gov/search/file_search.cgi",
+                    params=args_dict)
+    return r
