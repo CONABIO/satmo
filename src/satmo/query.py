@@ -136,4 +136,5 @@ def get_subscription_urls(id):
                  'results_as_file': 1}
     r = requests.get("https://oceandata.sci.gsfc.nasa.gov/search/file_search.cgi",
                     params=args_dict)
-    return r
+    url_list = r.text.split('\n')[:-1]
+    return url_list
