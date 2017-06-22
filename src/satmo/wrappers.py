@@ -6,7 +6,7 @@ import os
 from pprint import pprint
 import warnings
 
-from .query import query_from_extent, make_download_url
+from .query import query_from_extent, make_download_url, get_subscription_urls
 from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
@@ -631,6 +631,38 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
     pool.map_async(functools.partial(make_time_composite,
                                      **kwargs), dateList_list).get(9999999)
 
-def nrt_download(sub_list, refined=False):
-    """Update a local archive using a list 
+def subscriptions_download(sub_list, base_dir, refined=False):
+    """Update a local archive using a list of data subscription numbers
+
+    Args:
+        sub_list (list of int): List of subscription numbers
+        base_dir (str): root of the archive tree on the host
+        refined (bool): Do the subscriptions refer to refined processing data (defaults
+            to True), in which case the function will compare file size between the
+            local and remote archives before deciding or not to download the file.
+
+    Return:
+        TODO: would be good to return a list of the files that did get downloaded
+
+    Example:
+        >>> import satmo
+        >>> satmo.subscriptions_download([1821, 1823], base_dir='/export/isilon/datos2/satmo2_data',
+                                         refined=False)
     """
+    try:
+        # Send requests for each list element using a list comprehension
+        url_list_list = [get_subscription_urls(x) for x in sub_list]
+        # Flatten list (becuase it would be a list of lists)
+        url_list = [item for sublist in url_list_list for item in sublist]
+        # Run download_robust for each element of the list (for loop)
+        for url in url_list:
+            download_robust(url, base_dir=base_dir,
+                            check_integrity=refined)
+    except Exception as e:
+        pprint('There was a problem on %s with download. %s' % (datetime.now().strftime('%d %h at %H:%M'), e))
+        return []
+    except KeyboardInterrupt:
+        raise
+
+    # Would be good if download robust would return name of file downloaded or
+    # null when nothing is downloaded
