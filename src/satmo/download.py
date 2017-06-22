@@ -35,7 +35,7 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False, ti
     file_exists = os.path.isfile(local_filename)
     if file_exists and not overwrite and not check_integrity:
         # No need to even send a request, end function
-        return local_filename           
+        return None
     # Test that file is present on remote
     r0 = requests.head(url)
     if r0.status_code == 404:
@@ -43,7 +43,7 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False, ti
     if not overwrite and file_exists and check_integrity:
         # FIle integrity checking
         if os.path.getsize(local_filename) == int(r0.headers['Content-Length']): # file size matches
-            return local_filename
+            return None
     # Create directory if it doesn't exist yet
     if not os.path.exists(write_dir):
         os.makedirs(write_dir)
@@ -86,7 +86,7 @@ def download_to_tree(url, base_dir, overwrite = False, check_integrity = False):
 
 def download_robust(url, base_dir, n_retries = 5, pause_retries = 10, overwrite = False, check_integrity = False):
     """Robust download of a list of urls
-    
+
     Handles connection errors, optionally check for existing files and integrity
     Suitable for real time use and for updating an archive without overwritting existing data
 
@@ -105,18 +105,18 @@ def download_robust(url, base_dir, n_retries = 5, pause_retries = 10, overwrite 
     while n <= n_retries:
         try:
             file_path = download_to_tree(url, base_dir, overwrite = overwrite, check_integrity = check_integrity)
-            return True
+            return file_path
         except requests.ConnectionError:
             n += 1
             overwrite = True # In case file has been partly downloaded 
             time.sleep(pause_retries)
         except HttpResourceNotAvailable:
             warnings.warn(url + ' not downloaded. Not found on server')
-            return False
+            return None
         except KeyboardInterrupt:
             raise
         except:
             warnings.warn(url + ' not downloaded. Unknown reason')
-            return False
+            return None
     warnings.warn(url + ' not downloaded. Max retries reached')
-    return False
+    return None

@@ -655,9 +655,13 @@ def subscriptions_download(sub_list, base_dir, refined=False):
         # Flatten list (becuase it would be a list of lists)
         url_list = [item for sublist in url_list_list for item in sublist]
         # Run download_robust for each element of the list (for loop)
+        dl_list = []
         for url in url_list:
-            download_robust(url, base_dir=base_dir,
-                            check_integrity=refined)
+            dl_list.append(download_robust(url, base_dir=base_dir,
+                            check_integrity=refined))
+        # Filter dl_list
+        dl_list = [x for x in dl_list if x is not None]
+        return dl_list
     except Exception as e:
         pprint('There was a problem on %s with download. %s' % (datetime.now().strftime('%d %h at %H:%M'), e))
         return []
