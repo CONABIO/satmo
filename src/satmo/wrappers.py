@@ -668,11 +668,11 @@ def subscriptions_download(sub_list, data_root, refined=False):
     except KeyboardInterrupt:
         raise
 
-def nrt_wrapper(time, pp_type, var_list, data_root):
+def nrt_wrapper(day_or_night, pp_type, var_list, data_root):
     """Main wrapper to be called from CLI for NRT operation of the system
 
     Args:
-        time (str): 'day' or 'night'
+        day_or_night (str): 'day' or 'night'
         pp_type (str): 'nrt' (for near real time) or 'refined' (for refined processing
         var_list (list): list of variables to process after data download (e.g. ['chlor_a', 'sst'])
         data_root (str): Root of the data archive
@@ -695,7 +695,7 @@ def nrt_wrapper(time, pp_type, var_list, data_root):
         - Make daily composites (optional ?)
         - How to update time composites?
         - Need excellent documentation on how to add new variables, change subscriptions, ...
-            with all the global variables that need to be updated
+                with all the global variables that need to be updated
 
     """
     # Run subscription download on one type of subscription
@@ -703,5 +703,5 @@ def nrt_wrapper(time, pp_type, var_list, data_root):
         refined = True
     else:
         refined = False
-    sub_list = SUBSCRIPTIONS['L2'][pp_type][time]
+    sub_list = SUBSCRIPTIONS['L2'][pp_type][day_or_night]
     dl_list = subscriptions_download(sub_list, data_root, refined)
