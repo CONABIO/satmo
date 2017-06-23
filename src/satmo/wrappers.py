@@ -13,7 +13,7 @@ from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     OC_filename_parser, pre_compose)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
-from .global_variables import L2_L3_SUITES_CORRESPONDENCES
+from .global_variables import L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS
 from .processors import L3mProcess, FileComposer, make_time_composite
 from .visualization import make_preview
 
@@ -631,13 +631,13 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
     pool.map_async(functools.partial(make_time_composite,
                                      **kwargs), dateList_list).get(9999999)
 
-def subscriptions_download(sub_list, base_dir, refined=False):
+def subscriptions_download(sub_list, data_root, refined=False):
     """Update a local archive using a list of data subscription numbers
 
     Args:
         sub_list (list of int): List of subscription numbers
-        base_dir (str): root of the archive tree on the host
-        refined (bool): Do the subscriptions refer to refined processing data (defaults
+        data_root (str): Root of the data archive
+        efined (bool): Do the subscriptions refer to refined processing data (defaults
             to True), in which case the function will compare file size between the
             local and remote archives before deciding or not to download the file.
 
@@ -657,7 +657,7 @@ def subscriptions_download(sub_list, base_dir, refined=False):
         # Run download_robust for each element of the list (for loop)
         dl_list = []
         for url in url_list:
-            dl_list.append(download_robust(url, base_dir=base_dir,
+            dl_list.append(download_robust(url, base_dir=data_root,
                             check_integrity=refined))
         # Filter dl_list
         dl_list = [x for x in dl_list if x is not None]
@@ -668,5 +668,40 @@ def subscriptions_download(sub_list, base_dir, refined=False):
     except KeyboardInterrupt:
         raise
 
-    # Would be good if download robust would return name of file downloaded or
-    # null when nothing is downloaded
+def nrt_wrapper(time, pp_type, var_list, data_root):
+    """Main wrapper to be called from CLI for NRT operation of the system
+
+    Args:
+        time (str): 'day' or 'night'
+        pp_type (str): 'nrt' (for near real time) or 'refined' (for refined processing
+        var_list (list): list of variables to process after data download (e.g. ['chlor_a', 'sst'])
+        data_root (str): Root of the data archive
+
+    Return:
+
+    Example:
+        >>> # The idea is to call this wrapper several time within a scheduler
+
+    TODO for this function:
+        - util function to produce a list of dicts from the files downloaded
+            - Dict structure should be {'sensor': 'modisa',
+                                        'products': ['chlor_a', 'chlor_ocx', ...],
+                                        'date': '1987-11-21'}
+        - for item in list:
+            - compare var_list with item['products']
+            - run L3m_process for each var
+                - retrieve suite directly from var (need to global variable)
+                - Fetch bit mask automatically from the suite name (need new global variable)
+        - Make daily composites (optional ?)
+        - How to update time composites?
+        - Need excellent documentation on how to add new variables, change subscriptions, ...
+            with all the global variables that need to be updated
+
+    """
+    # Run subscription download on one type of subscription
+    if pp_type == 'refined':
+        refined = True
+    else:
+        refined = False
+    sub_list = SUBSCRIPTIONS['L2'][pp_type][time]
+    dl_list = subscriptions_download(sub_list, data_root, refined)
