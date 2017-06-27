@@ -4,7 +4,8 @@ from datetime import datetime, time, timedelta
 import os
 from pint import UnitRegistry
 
-from .global_variables import SENSOR_CODES, DATA_LEVELS
+from .global_variables import SENSOR_CODES, DATA_LEVELS, VARS_FROM_L2_SUITE
+
 
 # unit database for pint
 ureg = UnitRegistry()
@@ -766,3 +767,58 @@ def pre_compose(begin, end, delta):
     for (b, d) in zip(begin_list, delta_list):
         dateList_list.append([b + timedelta(days=x) for x in range(0, d)])
     return dateList_list
+
+def processing_meta_from_list(file_list):
+    """Takes a list of filenames and returns a list of dictionaries with processing metadata
+
+    Details:
+        The function is meant to be used within satmo.wrappers.nrt_wrapper to know
+            which information can be generated from a list of newly downloaded files
+            and hence kick-off the right processing chains.
+
+    Arguments:
+        file_list (list): A list of file names parsable by OC_filename_parser
+
+    Return:
+        A list of unique dictionaries containing processing information.
+            Example of a dict (list element):
+            {'date': datetime.date(2017, 6, 25),
+             'products': ['Rrs_412',
+                          'Rrs_443',
+                          'Rrs_469',
+                          'Rrs_488',
+                          'Rrs_531',
+                          'Rrs_547',
+                          'Rrs_555',
+                          'Rrs_645',
+                          'Rrs_667',
+                          'Rrs_678',
+                          'Kd_490',
+                          'chl_ocx',
+                          'aot_869',
+                          'ipar',
+                          'nflh',
+                          'par',
+                          'pic',
+                          'poc',
+                          'chlor_a'],
+             'sensor': 'aqua'},
+    """
+    def _processing_meta_from_name(x):
+        """Function to generate with the appropriate keys from a single list item
+        """
+        d = OC_filename_parser(x)
+        sensor = d['sensor']
+        out_dict = {'date': d['date'],
+                    'sensor': sensor,
+                    'products': VARS_FROM_L2_SUITE[sensor]['day'][d['suite']]}
+        return out_dict
+    dict_list = [_processing_meta_from_name(file) for file in file_list]
+    # Remove duplicate dictionaries
+    out = []
+    for item in dict_list:
+        if item not in out:
+            out.append(item)
+    return out
+
+
