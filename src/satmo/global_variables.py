@@ -87,9 +87,9 @@ COMPOSITES = {'DAY': 'Daily',
               'MON': 'Monthly composite'}
 
 SUBSCRIPTIONS = {'L2':{'nrt': {'day': [1823, 1821, 1825],
-                               'night': [1824, 1822]},
+                               'night': [1824, 1822, 1826]},
                        'refined': {'day': [1857, 1859, 1861],
-                                   'night': [1862]}},
+                                   'night': [1862, 1858, 1860]}},
                  'L1A': {'day': [],
                          'night': []}}
 
