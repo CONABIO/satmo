@@ -802,7 +802,8 @@ def processing_meta_from_list(file_list):
                           'pic',
                           'poc',
                           'chlor_a'],
-             'sensor': 'aqua'},
+             'sensor': 'aqua',
+             'sensor_code': 'A'},
     """
     def _processing_meta_from_name(x):
         """Function to generate with the appropriate keys from a single list item
@@ -811,6 +812,7 @@ def processing_meta_from_list(file_list):
         sensor = d['sensor']
         out_dict = {'date': d['date'],
                     'sensor': sensor,
+                    'sensor_code': d['sensor_code'],
                     'products': VARS_FROM_L2_SUITE[sensor]['day'][d['suite']]}
         return out_dict
     dict_list = [_processing_meta_from_name(file) for file in file_list]
