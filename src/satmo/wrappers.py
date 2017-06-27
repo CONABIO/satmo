@@ -10,7 +10,7 @@ from .query import query_from_extent, make_download_url, get_subscription_urls
 from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
-                    OC_filename_parser, pre_compose)
+                    OC_filename_parser, pre_compose, processing_meta_from_list)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS
@@ -704,4 +704,19 @@ def nrt_wrapper(day_or_night, pp_type, var_list, data_root):
     else:
         refined = False
     sub_list = SUBSCRIPTIONS['L2'][pp_type][day_or_night]
+    # TODO: wrap below expression in a try ?
     dl_list = subscriptions_download(sub_list, data_root, refined)
+    dict_list = processing_meta_from_list(dl_list)
+    for item in dict_list:
+        # Compare list of potential variable with the list of variables supplied
+        vars_to_process = list(set(var_list).intersection(item['products']))
+        for var in vars_to_process:
+            try:
+            auto_L3m_process(date=date, sensor_code=sensor_code, suite=suite,
+                             var=var, north=north, south=south, west=west,
+                             east=east, data_root=data_root, resolution=resolution,
+                             day=day, bit_mask=bit_mask, proj4string=proj4string,
+                             overwrite=overwrite, fun=fun, band_list=band_list,
+                             preview=preview)
+
+

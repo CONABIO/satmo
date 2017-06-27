@@ -133,3 +133,14 @@ L3_SUITE_FROM_VAR = SuperDict({'day': {'Rrs_.*': 'RRS',
                                'night': {'sst': 'NSST',
                                          'sst_triple': 'SST3',
                                          'sst4': 'SST4'}})
+
+BIT_MASK_FROM_L3_SUITE = {'CHL':,
+                          'RRS':,
+                          'FLH':,
+                          'PIC':,
+                          'POC':,
+                          'KD490':,
+                          'SST':,
+                          'NSST':,
+                          'SST3':,
+                          'SST4':}
