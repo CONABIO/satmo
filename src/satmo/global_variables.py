@@ -1,3 +1,5 @@
+from .utils import SuperDict
+
 # Global variable that contains sensor information
 SENSOR_CODES = {'A': 'aqua',
                 'T': 'terra',
@@ -118,3 +120,16 @@ VARS_FROM_L2_SUITE = {'aqua':{'day':{'OC': ['Rrs_412', 'Rrs_443', 'Rrs_469',
                                       'SST': ['sst']},
                                'night':{'SST': ['sst'],
                                         'SST3': ['sst_triple']}}}
+
+L3_SUITE_FROM_VAR = SuperDict({'day': {'Rrs_.*': 'RRS',
+                                       'chlor_a': 'CHL',
+                                       'chl_ocx': 'CHL',
+                                       'ipar': 'FLH',
+                                       'par': 'PAR',
+                                       'pic': 'PIC',
+                                       'poc': 'POC',
+                                       'nflh': 'FLH',
+                                       'Kd_490': 'KD490'},
+                               'night': {'sst': 'NSST',
+                                         'sst_triple': 'SST3',
+                                         'sst4': 'SST4'}})
