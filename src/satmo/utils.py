@@ -10,6 +10,25 @@ from .global_variables import SENSOR_CODES, DATA_LEVELS, VARS_FROM_L2_SUITE
 # unit database for pint
 ureg = UnitRegistry()
 
+class SuperDict(dict):
+    """Class to enable use of regex patterns as dictionary keys
+
+    Args:
+        dict (dict): A dictionary
+
+    Examples:
+        >>> a = SuperDict({'rrs_.*': 12, 'chlor_a': 11})
+        >>> print a['rrs_555']
+        >>> print a['chlor_a']
+        >>> print a['random_key']
+    """
+    def __getitem__(self, word):
+        keys = [x for x in self.keys() if re.match(x, word) is not None]
+        if len(keys) > 1:
+            raise KeyError('Too many matching keys')
+        elif len(keys) == 0:
+            raise KeyError('No matching keys')
+        return dict.__getitem__(self, keys[0])
 
 def OC_filename_parser(filename, raiseError = True):
     """File parser for ocean color products
