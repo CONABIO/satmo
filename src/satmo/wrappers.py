@@ -13,7 +13,8 @@ from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     OC_filename_parser, pre_compose, processing_meta_from_list)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
-from .global_variables import L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS
+from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
+                               BIT_MASK_FROM_L3_SUITE)
 from .processors import L3mProcess, FileComposer, make_time_composite
 from .visualization import make_preview
 
@@ -668,7 +669,8 @@ def subscriptions_download(sub_list, data_root, refined=False):
     except KeyboardInterrupt:
         raise
 
-def nrt_wrapper(day_or_night, pp_type, var_list, data_root):
+def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
+                data_root, resolution, preview=True):
     """Main wrapper to be called from CLI for NRT operation of the system
 
     Args:
@@ -703,6 +705,12 @@ def nrt_wrapper(day_or_night, pp_type, var_list, data_root):
         refined = True
     else:
         refined = False
+    if day_or_night == 'day':
+        day = True
+    elif day_or_night == 'night':
+        day = False
+    else:
+        ValueError('day_or_night must be one of \'day\' or \'night\'')
     sub_list = SUBSCRIPTIONS['L2'][pp_type][day_or_night]
     # TODO: wrap below expression in a try ?
     dl_list = subscriptions_download(sub_list, data_root, refined)
@@ -712,11 +720,14 @@ def nrt_wrapper(day_or_night, pp_type, var_list, data_root):
         vars_to_process = list(set(var_list).intersection(item['products']))
         for var in vars_to_process:
             try:
-            auto_L3m_process(date=date, sensor_code=sensor_code, suite=suite,
-                             var=var, north=north, south=south, west=west,
-                             east=east, data_root=data_root, resolution=resolution,
-                             day=day, bit_mask=bit_mask, proj4string=proj4string,
-                             overwrite=overwrite, fun=fun, band_list=band_list,
-                             preview=preview)
-
-
+                suite = L3_SUITE_FROM_VAR[var]
+                auto_L3m_process(date=item['date'], sensor_code=item['sensor_code'],
+                                 suite=suite, var=var, north=north,
+                                 south=south, west=west, east=east, data_root=data_root,
+                                 resolution=resolution, day=day, bit_mask=BIT_MASK_FROM_L3_SUITE[suite],
+                                 overwrite=True, preview=preview)
+            except Exception as e:
+                pprint('%s not processed for %s sensor. %s' % (var, item['sensor'], e))
+            except KeyboardInterrupt:
+                raise
+        #TODO: How to handle composites
