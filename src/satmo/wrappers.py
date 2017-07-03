@@ -670,7 +670,8 @@ def subscriptions_download(sub_list, data_root, refined=False):
         raise
 
 def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
-                data_root, resolution, preview=True):
+                data_root, resolution, preview=True, daily_compose=False,
+                compositing_function='mean'):
     """Main wrapper to be called from CLI for NRT operation of the system
 
     Args:
@@ -705,12 +706,15 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         refined = True
     else:
         refined = False
+    # Make night day string variable
     if day_or_night == 'day':
         day = True
     elif day_or_night == 'night':
         day = False
     else:
         ValueError('day_or_night must be one of \'day\' or \'night\'')
+    # Build resolution string, to be used for compositing functions
+    resolution_str = resolution_to_km_str(resolution)
     sub_list = SUBSCRIPTIONS['L2'][pp_type][day_or_night]
     # TODO: wrap below expression in a try ?
     dl_list = subscriptions_download(sub_list, data_root, refined)
@@ -730,4 +734,23 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 pprint('%s not processed for %s sensor. %s' % (var, item['sensor'], e))
             except KeyboardInterrupt:
                 raise
-        #TODO: How to handle composites
+    # Produce daily composites
+    if daily_compose:
+        # Get date_list from dict_list
+        date_list = list(set([x['date'] for x in dict_list]))
+        for fecha in date_list:
+            for var in var_list:
+                try:
+                    suite = L3_SUITE_FROM_VAR[var]
+                    make_daily_composite(date=fecha, variable=var, suite=suite,
+                                         data_root=data_root, resolution=resolution_str,
+                                         sensor_codes = 'all',
+                                         fun=compositing_function, preview=preview,
+                                         overwrite=True)
+                except Exception as e:
+                    pass
+                except KeyboardInterrupt:
+                    raise
+
+
+    # TODO: How to handle composites
