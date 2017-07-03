@@ -10,7 +10,8 @@ from .query import query_from_extent, make_download_url, get_subscription_urls
 from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
-                    OC_filename_parser, pre_compose, processing_meta_from_list)
+                    OC_filename_parser, pre_compose, processing_meta_from_list,
+                    find_composite_date_list)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,

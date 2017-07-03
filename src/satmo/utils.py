@@ -10,26 +10,6 @@ from .global_variables import SENSOR_CODES, DATA_LEVELS, VARS_FROM_L2_SUITE
 # unit database for pint
 ureg = UnitRegistry()
 
-class SuperDict(dict):
-    """Class to enable use of regex patterns as dictionary keys
-
-    Args:
-        dict (dict): A dictionary
-
-    Examples:
-        >>> a = SuperDict({'rrs_.*': 12, 'chlor_a': 11})
-        >>> print a['rrs_555']
-        >>> print a['chlor_a']
-        >>> print a['random_key']
-    """
-    def __getitem__(self, word):
-        keys = [x for x in self.keys() if re.match(x, word) is not None]
-        if len(keys) > 1:
-            raise KeyError('Too many matching keys')
-        elif len(keys) == 0:
-            raise KeyError('No matching keys')
-        return dict.__getitem__(self, keys[0])
-
 def OC_filename_parser(filename, raiseError = True):
     """File parser for ocean color products
 
@@ -842,4 +822,25 @@ def processing_meta_from_list(file_list):
             out.append(item)
     return out
 
+def find_composite_date_list(date, delta):
+    """Find, given a date and delta, all the dates that compose the composite to
+        to which the input date belong
+
+    Details:
+        To be used with the near real time wrapper function to find out, when a new
+            L3m file is produced, which composite should be created or updated.
+
+    Args:
+        date (datetime.datetime): Input date (probably corresponding to a newly
+            created L3m file (e.g.: daily composite))
+        delta (int): Composite length in days
+
+    Returns:
+        A list of dates (to be passed to make_time_composite)
+    """
+    begin = datetime(date.year, 1, 1)
+    end = datetime(date.year + 1, 1, 1)
+    date_list_list = pre_compose(begin, end, delta)
+    date_list = [x for x in date_list_list if date in x][0]
+    return date_list
 
