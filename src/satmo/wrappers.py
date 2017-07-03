@@ -672,7 +672,7 @@ def subscriptions_download(sub_list, data_root, refined=False):
 
 def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 data_root, resolution, preview=True, daily_compose=False,
-                compositing_function='mean'):
+                eight_day=False, sixteen_day=False, compositing_function='mean'):
     """Main wrapper to be called from CLI for NRT operation of the system
 
     Args:
@@ -702,6 +702,9 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 with all the global variables that need to be updated
 
     """
+    # Argument coherence check
+    if (eight_day or sixteen_day) and not daily_compose:
+        raise ValueError('temporal composites are generated from daily composites, so that daily_compose must be set to True for if eight_day or sixteen_day are used.')
     # Run subscription download on one type of subscription
     if pp_type == 'refined':
         refined = True
@@ -713,7 +716,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
     elif day_or_night == 'night':
         day = False
     else:
-        ValueError('day_or_night must be one of \'day\' or \'night\'')
+        raise ValueError('day_or_night must be one of \'day\' or \'night\'')
     # Build resolution string, to be used for compositing functions
     resolution_str = resolution_to_km_str(resolution)
     sub_list = SUBSCRIPTIONS['L2'][pp_type][day_or_night]
@@ -752,6 +755,38 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                     pass
                 except KeyboardInterrupt:
                     raise
+    if eight_day:
+        # Get date_list from dict_list
+        date_list = list(set([x['date'] for x in dict_list]))
+        for fecha in date_list:
+            for var in var_list:
+                try:
+                    suite = L3_SUITE_FROM_VAR[var]
+                    fecha_list = find_composite_date_list(fecha, 8)
+                    make_time_composite(date_list=fecha_list, var=var, suite=suite,
+                                       resolution=resolution_str, composite='8DAY',
+                                       data_root=data_root, sensor_code='X', fun=compositing_function,
+                                       overwrite=True, preview=preview)
+                except Exception as e:
+                    pass
+                except KeyboardInterrupt:
+                    raise
 
 
-    # TODO: How to handle composites
+    if sixteen_day:
+        # Get date_list from dict_list
+        date_list = list(set([x['date'] for x in dict_list]))
+        for fecha in date_list:
+            for var in var_list:
+                try:
+                    suite = L3_SUITE_FROM_VAR[var]
+                    fecha_list = find_composite_date_list(fecha, 16)
+                    make_time_composite(date_list=fecha_list, var=var, suite=suite,
+                                       resolution=resolution_str, composite='16DAY',
+                                       data_root=data_root, sensor_code='X', fun=compositing_function,
+                                       overwrite=True, preview=preview)
+                except Exception as e:
+                    pass
+                except KeyboardInterrupt:
+                    raise
+
