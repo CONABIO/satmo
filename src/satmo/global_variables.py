@@ -1,3 +1,5 @@
+import re
+
 class SuperDict(dict):
     # Defined here to avoid circular dependencies and because it's only
     # used here anyway

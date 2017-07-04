@@ -671,7 +671,7 @@ def subscriptions_download(sub_list, data_root, refined=False):
         raise
 
 def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
-                data_root, resolution, preview=True, daily_compose=False,
+                data_root, resolution, preview=False, daily_compose=False,
                 eight_day=False, sixteen_day=False, compositing_function='mean'):
     """Main wrapper to be called from CLI for NRT operation of the system
 
@@ -750,7 +750,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         vars_to_process = list(set(var_list).intersection(item['products']))
         for var in vars_to_process:
             try:
-                suite = L3_SUITE_FROM_VAR[var]
+                suite = L3_SUITE_FROM_VAR[day_or_night][var]
                 auto_L3m_process(date=item['date'], sensor_code=item['sensor_code'],
                                  suite=suite, var=var, north=north,
                                  south=south, west=west, east=east, data_root=data_root,
