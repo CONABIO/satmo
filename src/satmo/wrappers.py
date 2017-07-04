@@ -679,28 +679,37 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         day_or_night (str): 'day' or 'night'
         pp_type (str): 'nrt' (for near real time) or 'refined' (for refined processing
         var_list (list): list of variables to process after data download (e.g. ['chlor_a', 'sst'])
+        north (float): north latitude of bounding box in DD
+        south (float): south latitude of bounding box in DD
+        west (float): west longitude of bounding box in DD
+        east (float): east longitude of bounding box in DD
         data_root (str): Root of the data archive
+        resolution (int): Outout resolution in the unit of the output
+            coordinate reference system.
+        preview (bool): Generate a png previews. Defaults to False
+        daily_compose (bool): Generate daily composites (defaults to False)
+        eight_day (bool): Generate 8 days temporal composites (defaults to False)
+        sixteen_day (bool): Generate 16 days temporal composites (defaults to False)
+        compositing_function (str): Function to be used to generate coposites
+            (temporal and daily composites). Can be 'mean' (default), 'median',
+            'min', or 'max'
 
     Return:
+        The function is used for it's side effects of downloading data, and processing
+            associated variables
 
     Example:
         >>> # The idea is to call this wrapper several time within a scheduler
 
-    TODO for this function:
-        - util function to produce a list of dicts from the files downloaded
-            - Dict structure should be {'sensor': 'modisa',
-                                        'products': ['chlor_a', 'chlor_ocx', ...],
-                                        'date': '1987-11-21'}
-        - for item in list:
-            - compare var_list with item['products']
-            - run L3m_process for each var
-                - retrieve suite directly from var (need to global variable)
-                - Fetch bit mask automatically from the suite name (need new global variable)
-        - Make daily composites (optional ?)
-        - How to update time composites?
-        - Need excellent documentation on how to add new variables, change subscriptions, ...
-                with all the global variables that need to be updated
-
+    Details:
+        How to adapt this function?
+            - To add/remove subscriptions, simply edit the global variable SUBSCRIPTIONS
+            - To add new variables you probably have to edit the global variables L3_SUITE_FROM_VAR and
+                BIT_MASK_FROM_L3_SUITE (if the variable belongs to a suite that is not referenced in these variables)
+            - Adding a new temporal composite means adding the corresponding argument, and following
+                the logic of the eight_day and sixteen_day cases (already implemented)
+            - Every change that involves changing the function argument should be passed to the CLI
+                (satmo_nrt.py)
     """
     # Argument coherence check
     if (eight_day or sixteen_day) and not daily_compose:
@@ -708,8 +717,10 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
     # Run subscription download on one type of subscription
     if pp_type == 'refined':
         refined = True
-    else:
+    elif pp_type == 'nrt':
         refined = False
+    else:
+        raise ValueError('Unknown pp_type. Must be \'nrt\' or \'refined\'')
     # Make night day string variable
     if day_or_night == 'day':
         day = True
@@ -720,8 +731,19 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
     # Build resolution string, to be used for compositing functions
     resolution_str = resolution_to_km_str(resolution)
     sub_list = SUBSCRIPTIONS['L2'][pp_type][day_or_night]
-    # TODO: wrap below expression in a try ?
-    dl_list = subscriptions_download(sub_list, data_root, refined)
+    # Query subscriptions and download corresponding data (update local data archive) 
+    try:
+        dl_list = subscriptions_download(sub_list, data_root, refined)
+    except Exception as e:
+        # Exit function if the download did not work because there would be nothing
+        # to do anyway
+        return
+    except KeyboardInterrupt:
+        raise
+    # Check that something got downloaded
+    if not dl_list:
+        # Exit function in case no files were downloaded
+        return
     dict_list = processing_meta_from_list(dl_list)
     for item in dict_list:
         # Compare list of potential variable with the list of variables supplied
@@ -755,6 +777,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                     pass
                 except KeyboardInterrupt:
                     raise
+    # Produce 8DAY composites
     if eight_day:
         # Get date_list from dict_list
         date_list = list(set([x['date'] for x in dict_list]))
@@ -771,8 +794,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                     pass
                 except KeyboardInterrupt:
                     raise
-
-
+    # Produce 16DAY composites
     if sixteen_day:
         # Get date_list from dict_list
         date_list = list(set([x['date'] for x in dict_list]))
