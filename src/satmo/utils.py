@@ -809,7 +809,7 @@ def processing_meta_from_list(file_list):
         """
         d = OC_filename_parser(x)
         sensor = d['sensor']
-        out_dict = {'date': d['date'],
+        out_dict = {'date': datetime.combine(d['date'], datetime.min.time()),
                     'sensor': sensor,
                     'sensor_code': d['sensor_code'],
                     'products': VARS_FROM_L2_SUITE[sensor]['day'][d['suite']]}

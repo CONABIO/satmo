@@ -767,14 +767,14 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         for fecha in date_list:
             for var in var_list:
                 try:
-                    suite = L3_SUITE_FROM_VAR[var]
+                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
                     make_daily_composite(date=fecha, variable=var, suite=suite,
                                          data_root=data_root, resolution=resolution_str,
                                          sensor_codes = 'all',
                                          fun=compositing_function, preview=preview,
                                          overwrite=True)
                 except Exception as e:
-                    pass
+                    pprint('%s daily composite not processed. %s' % (var, e))
                 except KeyboardInterrupt:
                     raise
     # Produce 8DAY composites
@@ -784,14 +784,14 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         for fecha in date_list:
             for var in var_list:
                 try:
-                    suite = L3_SUITE_FROM_VAR[var]
+                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
                     fecha_list = find_composite_date_list(fecha, 8)
                     make_time_composite(date_list=fecha_list, var=var, suite=suite,
                                        resolution=resolution_str, composite='8DAY',
                                        data_root=data_root, sensor_code='X', fun=compositing_function,
                                        overwrite=True, preview=preview)
                 except Exception as e:
-                    pass
+                    pprint('%s 8 day composite not processed. %s' % (var, e))
                 except KeyboardInterrupt:
                     raise
     # Produce 16DAY composites
@@ -801,14 +801,14 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         for fecha in date_list:
             for var in var_list:
                 try:
-                    suite = L3_SUITE_FROM_VAR[var]
+                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
                     fecha_list = find_composite_date_list(fecha, 16)
                     make_time_composite(date_list=fecha_list, var=var, suite=suite,
                                        resolution=resolution_str, composite='16DAY',
                                        data_root=data_root, sensor_code='X', fun=compositing_function,
                                        overwrite=True, preview=preview)
                 except Exception as e:
-                    pass
+                    pprint('%s 16 day composite not processed. %s' % (var, e))
                 except KeyboardInterrupt:
                     raise
 
