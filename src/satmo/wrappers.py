@@ -700,6 +700,12 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
 
     Example:
         >>> # The idea is to call this wrapper several time within a scheduler
+        >>> import satmo
+
+        >>> satmo.nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=['chlor_a', 'sst', 'nflh', 'Kd_490'],
+                              north=33, south=3, west=-122, east=-72, resolution=2000, preview=False,
+                              data_root='/export/isilon/datos2/satmo2_data/', daily_compose=True,
+                              eight_day=True, sixteen_day=True, compositing_function='mean')
 
     Details:
         How to adapt this function?
