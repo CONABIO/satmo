@@ -13,38 +13,69 @@ import argparse
 from satmo import nrt_wrapper
 import schedule
 import time
+import signal
+from contextlib import contextmanager
+from pprint import pprint
 
-# TODO: DEfine time limit manager https://stackoverflow.com/questions/366682/how-to-limit-execution-time-of-a-function-call-in-python
-# No step should take more than 2 hr (there is a 3 hours spacing between them in the scheduling so
-# that by limiting execution time to 2 hr, they will never step on each others, and hanging tasks will be
-# stopped). 
+class TimeoutException(Exception):
+    pass
+
+# Handle function running time (no step should take more than 2 hr, otherwise it probably means that
+# it's hanging, and it should be stopped to not affect the other tasks). This is likely to happen in case of
+# the internet connection momentarily breaks during download. All processes are launched with at least 3 hr interval
+@contextmanager
+def time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutException
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
 
 def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
          data_root, resolution, north, south, west, east, preview, compositing_function):
 
     def day_nrt():
-        nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=day_vars, north=north,
-                    south=south, west=west, east=east, resolution=resolution, preview=preview,
-                    data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                    sixteen_day=sixteen_day, compositing_function=compositing_function)
+        try:
+            with time_limit(7200):
+                nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=day_vars, north=north,
+                            south=south, west=west, east=east, resolution=resolution, preview=preview,
+                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
+                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+        except TimeoutException:
+            pprint('A process timed out for not completing after 2hr!')
 
     def day_refined():
-        nrt_wrapper(day_or_night='day', pp_type='refined', var_list=day_vars,
-                    south=south, west=west, east=east, resolution=resolution, preview=preview,
-                    data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                    sixteen_day=sixteen_day, compositing_function=compositing_function)
+        try:
+            with time_limit(7200):
+                nrt_wrapper(day_or_night='day', pp_type='refined', var_list=day_vars,
+                            south=south, west=west, east=east, resolution=resolution, preview=preview,
+                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
+                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+        except TimeoutException:
+            pprint('A processed timed out!')
 
     def night_nrt():
-        nrt_wrapper(day_or_night='night', pp_type='nrt', var_list=night_vars, north=north,
-                    south=south, west=west, east=east, resolution=resolution, preview=preview,
-                    data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                    sixteen_day=sixteen_day, compositing_function=compositing_function)
+        try:
+            with time_limit(7200):
+                nrt_wrapper(day_or_night='night', pp_type='nrt', var_list=night_vars, north=north,
+                            south=south, west=west, east=east, resolution=resolution, preview=preview,
+                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
+                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+        except TimeoutException:
+            pprint('A processed timed out!')
 
     def night_refined():
-        nrt_wrapper(day_or_night='night', pp_type='refined', var_list=night_vars, north=north,
-                    south=south, west=west, east=east, resolution=resolution, preview=preview,
-                    data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                    sixteen_day=sixteen_day, compositing_function=compositing_function)
+        try:
+            with time_limit(7200):
+                nrt_wrapper(day_or_night='night', pp_type='refined', var_list=night_vars, north=north,
+                            south=south, west=west, east=east, resolution=resolution, preview=preview,
+                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
+                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+        except TimeoutException:
+            pprint('A processed timed out!')
 
     schedule.every().day.at("20:00").do(day_nrt)
     schedule.every().day.at("06:00").do(night_nrt)
