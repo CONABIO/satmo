@@ -10,9 +10,14 @@ Details: The script does a bit of parsing and calls several time the nrt_wrapper
 """
 
 import argparse
-import satmo
+from satmo import nrt_wrapper
 import schedule
 import time
+
+# TODO: DEfine time limit manager https://stackoverflow.com/questions/366682/how-to-limit-execution-time-of-a-function-call-in-python
+# No step should take more than 2 hr (there is a 3 hours spacing between them in the scheduling so
+# that by limiting execution time to 2 hr, they will never step on each others, and hanging tasks will be
+# stopped). 
 
 def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
          data_root, resolution, north, south, west, east, preview, compositing_function):
@@ -42,10 +47,10 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
                     sixteen_day=sixteen_day, compositing_function=compositing_function)
 
     schedule.every().day.at("20:00").do(day_nrt)
-    schedule.every().day.at("07:00").do(night_nrt)
+    schedule.every().day.at("06:00").do(night_nrt)
     if refined:
-        schedule.every().day.at("22:00").do(day_refined)
-        schedule.every().day.at("20:00").do(night_refined)
+        schedule.every().day.at("23:00").do(day_refined)
+        schedule.every().day.at("02:00").do(night_refined)
 
     while True:
         schedule.run_pending()
