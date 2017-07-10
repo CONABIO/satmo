@@ -50,12 +50,12 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
     def day_refined():
         try:
             with time_limit(7200):
-                nrt_wrapper(day_or_night='day', pp_type='refined', var_list=day_vars,
+                nrt_wrapper(day_or_night='day', pp_type='refined', var_list=day_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
                             sixteen_day=sixteen_day, compositing_function=compositing_function)
         except TimeoutException:
-            pprint('A processed timed out!')
+            pprint('A processed timed out for not completing after 2hr!')
 
     def night_nrt():
         try:
@@ -65,7 +65,7 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
                             sixteen_day=sixteen_day, compositing_function=compositing_function)
         except TimeoutException:
-            pprint('A processed timed out!')
+            pprint('A processed timed out for not completing after 2hr!')
 
     def night_refined():
         try:
@@ -75,7 +75,7 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
                             sixteen_day=sixteen_day, compositing_function=compositing_function)
         except TimeoutException:
-            pprint('A processed timed out!')
+            pprint('A processed timed out for not completing after 2hr!')
 
     schedule.every().day.at("20:00").do(day_nrt)
     schedule.every().day.at("06:00").do(night_nrt)
