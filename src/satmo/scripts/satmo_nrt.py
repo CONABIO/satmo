@@ -97,7 +97,7 @@ if __name__ == '__main__':
               '------------------\n'
               'Example usage:\n'
               '------------------\n\n'
-              'satmo_nrt --day_vars chlor_a nflh sst Kd_490 --night_vars sst --north 33 --south 3 --west -122 \n'
+              'satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --north 33 --south 3 --west -122 \n'
               '--east -72 -d /export/isilon/datos2/satmo2_data/ -r 2000')
 
     parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
