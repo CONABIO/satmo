@@ -39,3 +39,8 @@ satmo
         query
         download
     events (module to generate alerts, etc)
+
+
+Hand drawing of desired satmo structure (11 July 2017):
+
+![](docs/img/refactor.jpg)
