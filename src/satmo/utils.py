@@ -809,10 +809,11 @@ def processing_meta_from_list(file_list):
         """
         d = OC_filename_parser(x)
         sensor = d['sensor']
+        day_night = 'day' if is_day(x) else 'night'
         out_dict = {'date': datetime.combine(d['date'], datetime.min.time()),
                     'sensor': sensor,
                     'sensor_code': d['sensor_code'],
-                    'products': VARS_FROM_L2_SUITE[sensor]['day'][d['suite']]}
+                    'products': VARS_FROM_L2_SUITE[sensor][day_night][d['suite']]}
         return out_dict
     dict_list = [_processing_meta_from_name(file) for file in file_list]
     # Remove duplicate dictionaries
