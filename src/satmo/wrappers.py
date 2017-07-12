@@ -743,6 +743,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
     except Exception as e:
         # Exit function if the download did not work because there would be nothing
         # to do anyway
+        pprint('Data download did not work properly. %s' % e)
         return
     except KeyboardInterrupt:
         raise
