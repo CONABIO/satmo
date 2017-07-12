@@ -1,6 +1,8 @@
 import re
 import glob
 from datetime import datetime, time, timedelta
+from dateutil.relativedelta import relativedelta
+import calendar
 import os
 from pint import UnitRegistry
 
@@ -738,6 +740,32 @@ def _range_dt(begin, end, delta):
             time_keeper += timedelta(delta)
     return date_list
 
+def _diff_month(d1, d2):
+    """INternal function to compute the number of months between two dates
+
+    Args:
+        d1 (datatime.datetime): posterior date
+        d2 (datatime.datetime): anterior date
+
+    Return:
+        The integer corresponding to the number of months between the two dates.
+    """
+    return (d1.year - d2.year) * 12 + d1.month - d2.month
+
+def _month_dates_from_dt(dt):
+    """INternal function to return all the dates of the month to which belong the input
+        date provided
+
+    Args:
+        dt (datetime.datetime): Date
+
+    Return:
+        A list of dates.
+    """
+    nday = calendar.monthrange(dt.year, dt.month)[1]
+    days = [datetime(dt.year, dt.month, day) for day in range(1, nday+1)]
+    return days
+
 def pre_compose(begin, end, delta):
     """Prepare a list of list of datetime to run with a compositing function
 
@@ -750,7 +778,7 @@ def pre_compose(begin, end, delta):
     Args:
         begin (datetime.datetime): Begin date of the first composite
         end (datetime.datetime): Begin date of the last composite
-        delta (int): composite length in days
+        delta (int or str): composite length in days if int, 'month' if str.
 
     Return:
         A list of lists.
@@ -758,13 +786,21 @@ def pre_compose(begin, end, delta):
     Example:
         >>> import satmo
         >>> satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), 16)
+        >>> satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), 'month')
     """
-    begin_list = _range_dt(begin, end, delta)
-    delta_list = [(j-i).days for i, j in zip(begin_list[:-1], begin_list[1:])]
-    delta_list.append(delta)
-    dateList_list = []
-    for (b, d) in zip(begin_list, delta_list):
-        dateList_list.append([b + timedelta(days=x) for x in range(0, d)])
+
+    if delta == 'month':
+        month_list = [begin + relativedelta(months = m) for m in range(_diff_month(end, begin)+1)]
+        dateList_list = [_month_dates_from_dt(x) for x in month_list]
+    elif isinstance(delta, int):
+        begin_list = _range_dt(begin, end, delta)
+        delta_list = [(j-i).days for i, j in zip(begin_list[:-1], begin_list[1:])]
+        delta_list.append(delta)
+        dateList_list = []
+        for (b, d) in zip(begin_list, delta_list):
+            dateList_list.append([b + timedelta(days=x) for x in range(0, d)])
+    else:
+        raise ValueError('delta must be \'month\' or an integer')
     return dateList_list
 
 def processing_meta_from_list(file_list):

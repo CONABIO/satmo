@@ -13,7 +13,7 @@ setup(name='satmo',
       install_requires=[
           'requests',
           'future',
-          'dateutil',
+          'python-dateutil',
           'jinja2',
           'pyproj',
           'affine',
