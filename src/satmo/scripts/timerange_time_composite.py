@@ -24,8 +24,16 @@ def main(sensor, begin, end, delta, var, suite, resolution, data_root, fun, over
         sensor_code == 'S'
     else:
         raise ValueError('Non suported value for --sensor. If you think it should be supported change the code in satmo/scripts/timerange_time_composite.py')
-    # Generate composite name
-    composite = '%dDAY' % delta
+
+    # Deal with the delta
+    if delta.isdigit():
+        delta = int(delta)
+        # Generate composite name
+        composite = '%dDAY' % delta
+    elif delta == 'month':
+        composite = 'MO'
+    else:
+        raise ValueError('--delta must be an integer or month')
 
     satmo.timerange_time_compositer(begin=begin, end=end, delta=delta, var=var, suite=suite,
                           resolution=resolution, composite=composite, data_root=data_root,
@@ -61,8 +69,8 @@ if __name__ == '__main__':
 
     parser.add_argument('-delta', '--delta',
                        required = True,
-                       type = int,
-                       help = 'Compositing period, in days.')
+                       type = str,
+                       help = 'Compositing period, in number of days, or \'month\' to create monthly composites.')
 
     parser.add_argument('-v', '--var',
                         required = True,

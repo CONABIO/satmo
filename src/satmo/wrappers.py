@@ -584,7 +584,7 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
     Args:
         begin (datetime.datetime or str): Begin date of the first composite
         end (datetime.datetime or str): Begin date of the last composite
-        delta (int): composite length in days
+        delta (int or str): composite length in days if int, 'month' if str.
         var (str): L3m variable to composite
         suite (str): L3m suite to compose
         resolution (str): Resolution of data to compose (e.g.: '2km')

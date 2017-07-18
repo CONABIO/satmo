@@ -870,7 +870,7 @@ def find_composite_date_list(date, delta):
     Args:
         date (datetime.datetime): Input date (probably corresponding to a newly
             created L3m file (e.g.: daily composite))
-        delta (int): Composite length in days
+        delta (int or str): composite length in days if int, 'month' if str.
 
     Returns:
         A list of dates (to be passed to make_time_composite)
