@@ -672,7 +672,8 @@ def subscriptions_download(sub_list, data_root, refined=False):
 
 def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 data_root, resolution, preview=False, daily_compose=False,
-                eight_day=False, sixteen_day=False, compositing_function='mean'):
+                eight_day=False, sixteen_day=False, month=False,
+                compositing_function='mean'):
     """Main wrapper to be called from CLI for NRT operation of the system
 
     Args:
@@ -690,6 +691,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         daily_compose (bool): Generate daily composites (defaults to False)
         eight_day (bool): Generate 8 days temporal composites (defaults to False)
         sixteen_day (bool): Generate 16 days temporal composites (defaults to False)
+        month (bool): Generate monthly temporal composites (defaults to False)
         compositing_function (str): Function to be used to generate coposites
             (temporal and daily composites). Can be 'mean' (default), 'median',
             'min', or 'max'
@@ -718,8 +720,8 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 (satmo_nrt.py)
     """
     # Argument coherence check
-    if (eight_day or sixteen_day) and not daily_compose:
-        raise ValueError('temporal composites are generated from daily composites, so that daily_compose must be set to True for if eight_day or sixteen_day are used.')
+    if (eight_day or sixteen_day or month) and not daily_compose:
+        raise ValueError('temporal composites are generated from daily composites, so that daily_compose must be set to True for if eight_day, sixteen_day or month are used.')
     # Run subscription download on one type of subscription
     if pp_type == 'refined':
         refined = True
@@ -801,6 +803,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                     pprint('%s 8 day composite not processed. %s' % (var, e))
                 except KeyboardInterrupt:
                     raise
+
     # Produce 16DAY composites
     if sixteen_day:
         # Get date_list from dict_list
@@ -816,6 +819,24 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                                        overwrite=True, preview=preview)
                 except Exception as e:
                     pprint('%s 16 day composite not processed. %s' % (var, e))
+                except KeyboardInterrupt:
+                    raise
+
+    # Produce monthly composites
+    if month:
+        # Get date_list from dict_list
+        date_list = list(set([x['date'] for x in dict_list]))
+        for fecha in date_list:
+            for var in var_list:
+                try:
+                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
+                    fecha_list = find_composite_date_list(fecha, 'month')
+                    make_time_composite(date_list=fecha_list, var=var, suite=suite,
+                                       resolution=resolution_str, composite='MO',
+                                       data_root=data_root, sensor_code='X', fun=compositing_function,
+                                       overwrite=True, preview=preview)
+                except Exception as e:
+                    pprint('%s monthly composite not processed. %s' % (var, e))
                 except KeyboardInterrupt:
                     raise
 

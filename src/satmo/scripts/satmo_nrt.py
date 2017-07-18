@@ -34,7 +34,7 @@ def time_limit(seconds):
     finally:
         signal.alarm(0)
 
-def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
+def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_compose,
          data_root, resolution, north, south, west, east, preview, compositing_function):
 
     def day_nrt():
@@ -43,7 +43,7 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
                 nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=day_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
         except TimeoutException:
             pprint('A process timed out for not completing after 2hr!')
 
@@ -53,7 +53,7 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
                 nrt_wrapper(day_or_night='day', pp_type='refined', var_list=day_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
         except TimeoutException:
             pprint('A processed timed out for not completing after 2hr!')
 
@@ -63,7 +63,7 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
                 nrt_wrapper(day_or_night='night', pp_type='nrt', var_list=night_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
         except TimeoutException:
             pprint('A processed timed out for not completing after 2hr!')
 
@@ -73,7 +73,7 @@ def main(day_vars, night_vars, refined, eight_day, sixteen_day, daily_compose,
                 nrt_wrapper(day_or_night='night', pp_type='refined', var_list=night_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, compositing_function=compositing_function)
+                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
         except TimeoutException:
             pprint('A processed timed out for not completing after 2hr!')
 
@@ -122,6 +122,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--no-16DAY', dest='sixteen_day', action='store_false',
                         help='Disable processing of 16 days temporal composites')
+
+    parser.add_argument('--no-month', dest='month', action='store_false',
+                        help='Disable processing of monthly temporal composites')
 
     parser.add_argument('--no-daily_compose', dest='daily_compose', action='store_false',
                         help='Disable processing of daily composites. Because temporal composites are produced from daily composites, you must disable temporal composites when disabling daily composites.')
