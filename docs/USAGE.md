@@ -44,19 +44,19 @@ The commands `timerange_L3m_process.py` generates L3m files, projected to a regu
 #### Examples usage
 
 - Process Cholorophyll-a at 2000 m resolution for aqua, terra and viirs.
-`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s CHL -v chlor_a -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -multi 4 -north 33 -south 3 -west -122 -east -72 -multi 4 &`
+`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s CHL -v chlor_a -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &`
 
 - Process SST at 2000 m resolution for aqua, terra and viirs.
-`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s SST -v sst -mask 0x1002 -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -multi 4 -north 33 -south 3 -west -122 -east -72 -multi 4 &`
+`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s SST -v sst -mask 0x1002 -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &`
 
 - Process PAR at 2000 m resolution for aqua, terra and viirs.
-`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s PAR -v par -mask 0x600000a -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -multi 4 -north 33 -south 3 -west -122 -east -72 -multi 4 &`
+`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s PAR -v par -mask 0x600000a -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &`
 
 - Process FLH at 2000 m resolution for aqua, terra and viirs.
-`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s FLH -v nflh -mask 0x679d73f -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -multi 4 -north 33 -south 3 -west -122 -east -72 -multi 4 &`
+`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s FLH -v nflh -mask 0x679d73f -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &`
 
 - Process NSST at 2000 m resolution for aqua, terra and viirs (note the `--night` flag)
-`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s NSST -v sst -mask 0x2 --night -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -multi 4 -north 33 -south 3 -west -122 -east -72 -multi 4 &`
+`nohup timerange_L3m_process.py --aqua --terra --viirs -b 2000-01-01 -e 2017-05-10 -s NSST -v sst -mask 0x2 --night -d /export/isilon/datos2/satmo2_data/ -r 2000 --overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &`
 
 
 ### Generate multisensor composites
