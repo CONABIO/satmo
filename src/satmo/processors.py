@@ -183,6 +183,9 @@ class BasicBinMap(object):
 
     Args:
         file_list (list): List of L2 files (they should all belong to the same collection/day/etc)
+        qual_array (str): Name of the quality array (named qual_prod in l2bin documentation)
+            Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.
+            Defaults to None.
         var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
 
     Attributes:
@@ -190,6 +193,8 @@ class BasicBinMap(object):
         lon_dd: 1D Np array containing longitude coordinates
         lat_dd: 1D Np array containing latitude coordinates
         flag_array: 1D np array containing flag values
+        qual_array: 1D np array containing pixel quality information (higher values
+            mean lower quality)
         var_array: 1D np array containing variable to bin
         output_array: a 2D np array containing binned variable
         geo_dict: A dictionary used to write the output_array using rasterio
@@ -211,11 +216,12 @@ class BasicBinMap(object):
         >>> # Write grid with binned data to a georeferenced file
         >>> bin_class.to_file('/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif')
     """
-    def __init__(self, file_list, var = None):
+    def __init__(self, file_list, qual_array = None, var = None):
         self.file_list = file_list
         self.lon_dd = np.array([])
         self.lat_dd = np.array([])
         self.flag_array = np.array([])
+        self.qual_array = np.array([])
         self.var_array = None
         self.output_array = None
         self.geo_dict = None
@@ -223,6 +229,9 @@ class BasicBinMap(object):
             self.lon_dd = np.append(self.lon_dd, self._get_lon(file))
             self.lat_dd = np.append(self.lat_dd, self._get_lat(file))
             self.flag_array = np.append(self.flag_array, self._read_band(file, 'l2_flags'))
+            # Read using the same logic the qual_array if its name is given
+            if qual_array is not None:
+                self.qual_array = np.append(self.qual_array, self._read_band(file, qual_array))
         self.flag_array = np.uint32(self.flag_array)
         if var is not None:
             var_array = np.array([])
@@ -231,7 +240,8 @@ class BasicBinMap(object):
                 self.var_array = var_array
 
     @classmethod
-    def from_sensor_date(cls, sensor_code, date, day, suite, data_root, var = None):
+    def from_sensor_date(cls, sensor_code, date, day, suite, data_root,
+                         qual_array = None, var = None):
         """Alternative class buider that builds automatically the right file list
 
         Args:
@@ -240,13 +250,16 @@ class BasicBinMap(object):
             day (bool): Are we looking for day data
             suite (str): L2 suite of input files (e.g. OC, SST, SST4, SST3)
             data_root (str): Root of the data archive
+            qual_array (str): Name of the quality array (named qual_prod in l2bin documentation)
+                Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.
+                Defaults to None.
             var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
         """
         file_list = OC_file_finder(data_root, date, level = 'L2', suite = suite, sensor_code = sensor_code)
         file_list = [x for x in file_list if is_day(x) == day]
         if len(file_list) == 0:
             raise IOError('No L2 files found')
-        bin_class = cls(file_list, var)
+        bin_class = cls(file_list, qual_array, var)
         return bin_class
 
     def _read_band(self, file, var):
@@ -315,8 +328,9 @@ class BasicBinMap(object):
             raise ValueError('Dimension missmatch')
         self.var_array = x
 
-    def apply_mask(self, bit_mask = 0x0669D73B):
-        """Method to mask data using information from the flag array
+    def apply_mask(self, bit_mask = 0x0669D73B, max_qual = 2):
+        """Method to mask data using information from the flag array. And optionally
+            the mask array (named qual_prod in l2bin documentation)
 
         Args:
             bit_mask (int): The mask to use for selecting active flags from the flag array
@@ -324,6 +338,10 @@ class BasicBinMap(object):
                 It's generally more convenient to use hexadecimal to define the mask, for example
                 if you want to activate flags 0, 3 and 5, you can pass 0x29 (0010 1001).
                 The mask defaults to 0x0669D73B, which is the defaults value for seadas l2bin.
+            max_qual (int): Maximum quality value of the qual array. Any value higher than
+                this value will be used to filter out data. Defaults to 2.
+                0, 1, 2 correspond to best, good, acceptable. Any value higher than that is bad
+                Only applies if qual_array is not None during the class instantiation.
 
         Details:
             Below the table of flag signification for modis, viirs and seawifs
@@ -376,6 +394,10 @@ class BasicBinMap(object):
             raise ValueError('A variable needs to be set or selected before masking')
         # Create mask
         mask_array = np.bitwise_and(self.flag_array, np.array([bit_mask])) == 0
+        # if qual_array exists, create another mask and combine it with mask_array (&)
+        if self.qual_array.size:
+            qual_mask = self.qual_array <= max_qual
+            mask_array = mask_array & qual_mask
         # Apply mask to various arrays
         self.var_array = self.var_array[mask_array]
         self.lon_dd = self.lon_dd[mask_array]
@@ -489,8 +511,8 @@ class L3mProcess(BasicBinMap):
         >>> # Write grid with binned data to a georeferenced file
         >>> bin_class.to_file('/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif')
     """
-    def __init__(self, file_list, var = None):
-        super(L3mProcess, self).__init__(file_list, var)
+    def __init__(self, file_list, qual_array = None, var = None):
+        super(L3mProcess, self).__init__(file_list, qual_array, var)
 
     def calc(self, band_list, fun):
         """Generic band math method

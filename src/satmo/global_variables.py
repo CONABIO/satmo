@@ -169,3 +169,15 @@ BIT_MASK_FROM_L3_SUITE = {'CHL':0x669d73b,
                           'NSST':0x2,
                           'SST3':0x2,
                           'SST4':0x2}
+
+QUAL_ARRAY_NAME_FROM_SUITE = {'SST': 'qual_sst',
+                              'NSST': 'qual_sst',
+                              'SST4': 'qual_sst4',
+                              'SST3': None, # Not sure about this one (not present in l2bin viirs defaults)
+                              'CHL': None,
+                              'RRS': None,
+                              'FLH': None,
+                              'PIC': None,
+                              'PAR': None,
+                              'POC': None,
+                              'KD490': None}

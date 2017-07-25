@@ -15,7 +15,7 @@ from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
-                               BIT_MASK_FROM_L3_SUITE)
+                               BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE)
 from .processors import L3mProcess, FileComposer, make_time_composite
 from .visualization import make_preview
 
@@ -430,6 +430,8 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
     Return:
         The filename of the produced file.
     """
+    # Get qual array name (if any) from global variable
+    qual_array = QUAL_ARRAY_NAME_FROM_SUITE[suite]
     # Build proj4string if not provided
     if proj4string is None:
         lat_0 = (south + north) / 2.0
@@ -453,14 +455,15 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
                                                     date=date, day=day,
                                                     suite=L2_L3_SUITES_CORRESPONDENCES[suite],
                                                     data_root=data_root,
-                                                    var=var)
+                                                    var=var, qual_array=qual_array)
         else:
             bin_class = L3mProcess.from_sensor_date(sensor_code=sensor_code,
                                                     date=date, day=day,
                                                     suite=L2_L3_SUITES_CORRESPONDENCES[suite],
-                                                    data_root=data_root)
+                                                    data_root=data_root, qual_array=qual_array)
             bin_class.calc(band_list=band_list, fun=fun)
-
+        # TODO: In case someone one day wants to adjust quality levels for filtering
+        # (mostly applies to temperature products), this should be done here
         bin_class.apply_mask(bit_mask)
         bin_class.bin_to_grid(south=south, north=north, west=west, east=east,
                               resolution=resolution, proj4string=proj4string)
