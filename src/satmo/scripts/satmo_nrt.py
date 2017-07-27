@@ -10,29 +10,14 @@ Details: The script does a bit of parsing and calls several time the nrt_wrapper
 """
 
 import argparse
-from satmo import nrt_wrapper
+from satmo import nrt_wrapper, time_limit, TimeoutException
 import schedule
 import time
-import signal
-from contextlib import contextmanager
 from pprint import pprint
-
-class TimeoutException(Exception):
-    pass
 
 # Handle function running time (no step should take more than 2 hr, otherwise it probably means that
 # it's hanging, and it should be stopped to not affect the other tasks). This is likely to happen in case of
 # the internet connection momentarily breaks during download. All processes are launched with at least 3 hr interval
-@contextmanager
-def time_limit(seconds):
-    def signal_handler(signum, frame):
-        raise TimeoutException
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(seconds)
-    try:
-        yield
-    finally:
-        signal.alarm(0)
 
 def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_compose,
          data_root, resolution, north, south, west, east, preview, compositing_function):
