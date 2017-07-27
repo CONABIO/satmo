@@ -5,7 +5,10 @@ from dateutil.relativedelta import relativedelta
 import calendar
 import os
 from pint import UnitRegistry
+import signal
+from contextlib import contextmanager
 
+from .errors import TimeoutException
 from .global_variables import SENSOR_CODES, DATA_LEVELS, VARS_FROM_L2_SUITE
 
 
@@ -881,3 +884,31 @@ def find_composite_date_list(date, delta):
     date_list = [x for x in date_list_list if date in x][0]
     return date_list
 
+@contextmanager
+def time_limit(seconds):
+    """Forces call timeout after a defined duration
+
+    Args:
+        seconds (int): Timeout limit
+
+    Example:
+        >>> # Use in a context manager, raises a TimeoutException when time spent within
+        >>> # the context manger exceeds specified duration in seconds
+        >>> import time
+        >>> from pprint import pprint
+        >>> from satmo import TimeoutException, time_limit
+
+        >>> try:
+        >>>     with time_limit(12):
+        >>>         time.sleep(13)
+        >>> except TimeoutException as e:
+        >>>     pprint('Function timed out')
+    """
+    def signal_handler(signum, frame):
+        raise TimeoutException
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
