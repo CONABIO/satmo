@@ -11,13 +11,14 @@ from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
                     OC_filename_parser, pre_compose, processing_meta_from_list,
-                    find_composite_date_list)
+                    find_composite_date_list, time_limit)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
                                BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE)
 from .processors import L3mProcess, FileComposer, make_time_composite
 from .visualization import make_preview
+from .errors import TimeoutException
 
 def timerange_download(sensors, begin, end, write_dir,\
                 north, south, west, east, day = True, night = True,\
@@ -483,18 +484,22 @@ def auto_L3m_process_with_error_catcher(date, sensor_code, suite, var, north, so
                                         data_root, resolution, day=True, bit_mask = 0x0669D73B, proj4string=None, overwrite=False,
                                         fun=None, band_list=None, preview=True):
     try:
-        auto_L3m_process(date=date, sensor_code=sensor_code, suite=suite,
-                         var=var, north=north, south=south, west=west,
-                         east=east, data_root=data_root, resolution=resolution,
-                         day=day, bit_mask=bit_mask, proj4string=proj4string,
-                         overwrite=overwrite, fun=fun, band_list=band_list,
-                         preview=preview)
+        with time_limit(120):
+            auto_L3m_process(date=date, sensor_code=sensor_code, suite=suite,
+                             var=var, north=north, south=south, west=west,
+                             east=east, data_root=data_root, resolution=resolution,
+                             day=day, bit_mask=bit_mask, proj4string=proj4string,
+                             overwrite=overwrite, fun=fun, band_list=band_list,
+                             preview=preview)
     except IOError as e:
         pprint('date %s, sensor %s could not be processed, reason: %s' %
                (str(date), str(sensor_code), str(e)))
     except Exception as e:
         pprint('date %s, sensor %s could not be processed, reason: %s' %
                (str(date), str(sensor_code), str(e)))
+    except TimeoutException as e:
+        pprint('date %s, sensor %s could not be processed, Process timed out after 120 seconds' %
+               (str(date), str(sensor_code)))
     except KeyboardInterrupt:
         raise
 
