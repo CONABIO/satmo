@@ -274,7 +274,8 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
         data_root (str): Root of the data archive
         resolution (str): e.g. '1km'
         sensor_codes (list): Sensors to include in the composite. Defaults to
-            'all'
+            'all', which is automatically transformed to ['A', 'T', 'V'] for
+            aqua, terra and viirs.
         fun (str): Compositing function. Can be 'mean', 'median', 'min', 'max'.
             Defaults to 'mean'
         filename (str): Optional output filename. Defaults to None, in which
@@ -301,8 +302,9 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
                                resolution=resolution, composite='DAY',
                                sensor_code=None)
     # Filter in case only a subset of the sensors is asked
-    if sensor_codes != 'all':
-        file_list = [x for x in file_list if OC_filename_parser(x)['sensor_code'] in sensor_codes]
+    if sensor_codes == 'all':
+        sensor_codes = ['A', 'T', 'V']
+    file_list = [x for x in file_list if OC_filename_parser(x)['sensor_code'] in sensor_codes]
     # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
     compositing_class = FileComposer(*file_list)
     # Run the compositing method using string provided in fun= argument
