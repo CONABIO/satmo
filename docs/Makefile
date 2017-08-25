@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
-GH_PAGES_SOURCES = docs satmo Makefile
+GH_PAGES_SOURCES = docs satmo docs/Makefile
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_elements.papersize=a4
