@@ -12,6 +12,13 @@ Welcome to satmo's documentation!
 
    satmo
 
+CLI guide
+=========
+
+.. toctree::
+   :maxdepth: 2
+
+   cli
 
 Indices and tables
 ==================
