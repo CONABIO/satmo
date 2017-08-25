@@ -50,7 +50,6 @@ help:
 	
 .PHONY: gh-pages
 gh-pages:
-	cd ..
 	git checkout gh-pages
 	rm -rf build _sources _static
 	git checkout master $(GH_PAGES_SOURCES)
