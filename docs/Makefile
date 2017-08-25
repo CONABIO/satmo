@@ -6,6 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
+GH_PAGES_SOURCES = docs satmo Makefile
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_elements.papersize=a4
@@ -45,6 +46,19 @@ help:
 	@echo "  doctest     to run all doctests embedded in the documentation (if enabled)"
 	@echo "  coverage    to run coverage check of the documentation (if enabled)"
 	@echo "  dummy       to check syntax errors of document sources"
+	@echo "  gh-pages    to compile doc and automatically push it to gh-pages
+	
+.PHONY: gh-pages
+gh-pages:
+	git checkout gh-pages
+	rm -rf build _sources _static
+	git checkout master $(GH_PAGES_SOURCES)
+	git reset HEAD
+	make html
+	mv -fv build/html/* ./
+	rm -rf $(GH_PAGES_SOURCES) build
+	git add -A
+	git ci -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout master
 
 .PHONY: clean
 clean:
