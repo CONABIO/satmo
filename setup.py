@@ -1,7 +1,24 @@
 from setuptools import setup, find_packages
+import itertools
+
+# Parse the version from the satmo module.
+with open('satmo/__init__.py') as f:
+    for line in f:
+        if line.find("__version__") >= 0:
+            version = line.split("=")[1].strip()
+            version = version.strip('"')
+            version = version.strip("'")
+            continue
+
+# 
+extra_reqs = {'docs': ['sphinx', 'sphinx-rtd-theme']}
+extra_reqs['all'] = list(set(itertools.chain(*extra_reqs.values())))
+# TODO: The package has an optional dependency on matplotlib-basemap, but
+# this is difficult to mention in this file, even as extra dependency since
+# it is not on pypi. Replace by cartopy
 
 setup(name='satmo',
-      version='0.0.1',
+      version=version,
       description=u"Fonctionalities to query, download, process and manipulate data for the SATMO project",
       classifiers=[],
       keywords='Ocean color, MODIS, VIIRS, SeaWifs, NASA',
@@ -32,4 +49,5 @@ setup(name='satmo',
                'satmo/scripts/timerange_L3m_process.py',
                'satmo/scripts/make_preview.py'],
       package_data={'satmo': ['templates/*']},
-      test_suite="tests")
+      test_suite="tests",
+      extras_require=extra_reqs)

@@ -1,3 +1,5 @@
+"""satmo"""
+
 from .download import download_robust, download_to_tree, download_file
 from .preprocessors import bz2_unpack, bz2_compress, extractJob, OC_l2bin, OC_l3mapgen
 from .query import make_download_url, query_from_extent, get_subscription_urls
@@ -15,3 +17,5 @@ from .errors import HttpResourceNotAvailable, SeadasError, TimeoutException
 from .visualization import make_map_title, make_preview
 from .processors import (nc2tif, FileComposer, BasicBinMap, L3mProcess,
                          make_time_composite)
+
+__version__ = "0.1"
