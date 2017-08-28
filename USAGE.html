@@ -1,0 +1,311 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; satmo 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="satmo 0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Users Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/USAGE.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p>## Overview</p>
+<p>Satmo operates in two modes; an update mode, to download archive data and (re-)process these archive data, and a near real time mode.</p>
+<p>These operation can be operated by a set of consistent command line interfaces.
+The present document presents the main uses, features and examples of operation of the interface.</p>
+<p>## Update mode</p>
+<p>Update mode is used primarilly to download and process archive data. All command start by the prefix <cite>timerange</cite>, indicating that their action apply to time range.</p>
+<p>### Download data</p>
+<p>#### Description</p>
+<p>The general data download interface is called <cite>timerange_download.py</cite>; running <cite>timerange_download.py –help</cite> displays the help page of the command line interface.</p>
+<p>&gt; Note: Downloading full speed causes problems of breaking connection, it is therefore preferable to limit download speed with tools like <strong>trickle</strong>.
+&gt; In accordance with the recommandations of the CONABIO IT department the overall download speed for the whole system should not exceed 15 MB/s. Therefore if running two download commands in parallel, use for each command <cite>nohup trickle -d 7 timerange_download.py … &amp;</cite></p>
+<p>#### Examples usage</p>
+<ul class="simple">
+<li>L1A data download</li>
+</ul>
+<p><cite>nohup timerange_download.py –terra –aqua –viirs -b 2000-02-24 -e 2016-12-31 -north 32 -south 4 -west -121 -east -73 -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log &amp;</cite></p>
+<ul>
+<li><p class="first">L2 data download</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li>Ocean color variables (Blue reflectances, chlor_a, etc)</li>
+</ul>
+</div></blockquote>
+<p><cite>nohup timerange_download.py –terra –aqua –viirs -b 2000-02-24 -e 2016-12-31 -north 32 -south 4 -west -121 -east -73 -p OC –no-night -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log &amp;</cite></p>
+<ul class="simple">
+<li>Day time SST</li>
+</ul>
+<p><cite>nohup timerange_download.py –terra –aqua –viirs -b 2000-02-24 -e 2016-12-31 -north 32 -south 4 -west -121 -east -73 -p SST –no-night -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log &amp;</cite></p>
+<ul class="simple">
+<li>Night time SST</li>
+</ul>
+<p><cite>nohup timerange_download.py –terra –aqua –viirs -b 2000-02-24 -e 2016-12-31 -north 32 -south 4 -west -121 -east -73 -p SST –no-day -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log &amp;</cite></p>
+</div></blockquote>
+</li>
+</ul>
+<p>### L3m products processing</p>
+<p>#### Description</p>
+<p>The commands <cite>timerange_L3m_process.py</cite> generates L3m files, projected to a regular georeferenced grid, from the input L2 files, downloaded using the <cite>timerange_download.py</cite> command line interface. Each variable has to be processed separately (But multiple sensors can be processed at the same time). Running <cite>timerange_L3m_process.py –help</cite> displays the help page of the command line interface.</p>
+<p>#### Examples usage</p>
+<ul class="simple">
+<li>Process Cholorophyll-a at 2000 m resolution for aqua, terra and viirs.</li>
+</ul>
+<p><cite>nohup timerange_L3m_process.py –aqua –terra –viirs -b 2000-01-01 -e 2017-05-10 -s CHL -v chlor_a -d /export/isilon/datos2/satmo2_data/ -r 2000 –overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &amp;</cite></p>
+<ul class="simple">
+<li>Process SST at 2000 m resolution for aqua, terra and viirs.</li>
+</ul>
+<p><cite>nohup timerange_L3m_process.py –aqua –terra –viirs -b 2000-01-01 -e 2017-05-10 -s SST -v sst -mask 0x1002 -d /export/isilon/datos2/satmo2_data/ -r 2000 –overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &amp;</cite></p>
+<ul class="simple">
+<li>Process PAR at 2000 m resolution for aqua, terra and viirs.</li>
+</ul>
+<p><cite>nohup timerange_L3m_process.py –aqua –terra –viirs -b 2000-01-01 -e 2017-05-10 -s PAR -v par -mask 0x600000a -d /export/isilon/datos2/satmo2_data/ -r 2000 –overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &amp;</cite></p>
+<ul class="simple">
+<li>Process FLH at 2000 m resolution for aqua, terra and viirs.</li>
+</ul>
+<p><cite>nohup timerange_L3m_process.py –aqua –terra –viirs -b 2000-01-01 -e 2017-05-10 -s FLH -v nflh -mask 0x679d73f -d /export/isilon/datos2/satmo2_data/ -r 2000 –overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &amp;</cite></p>
+<ul class="simple">
+<li>Process NSST at 2000 m resolution for aqua, terra and viirs (note the <cite>–night</cite> flag)</li>
+</ul>
+<p><cite>nohup timerange_L3m_process.py –aqua –terra –viirs -b 2000-01-01 -e 2017-05-10 -s NSST -v sst -mask 0x2 –night -d /export/isilon/datos2/satmo2_data/ -r 2000 –overwrite -north 33 -south 3 -west -122 -east -72 -multi 4 &amp;</cite></p>
+<p>### Generate multisensor composites</p>
+<p>#### Description</p>
+<p>The command <cite>timerange_daily_composite.py</cite> produces multi sensors composites (e.g.: Data from aqua and terra, acquired on the same day are combined into a single product). The input files for this operation are sensor specific L3m files; it is therefore essential to run <cite>timerange_L3m_process.py</cite> prior to this command. The files generated use the sensor code prefix <cite>X</cite> and are written to the <cite>combined</cite> sensor subdirectory of the data archive. Running <cite>timerange_daily_composite.py –help</cite> displays the help page of the command line interface.</p>
+<p>#### Examples usage</p>
+<ul class="simple">
+<li>Combine chlorophyll-a data from all the sensors available:</li>
+</ul>
+<p><cite>nohup timerange_daily_composite.py -b 2000-01-01 -e 2016-12-31 -v chlor_a -s CHL -d /export/isilon/datos2/satmo2_data/ -r 2km –overwrite -multi 4 &amp;</cite></p>
+<p>### Generate time composites</p>
+<p>#### Description</p>
+<p>The command <cite>timerange_time_composite.py</cite> produces temporal composites for a given variable using daily data from a given sensor (which can be combined (default)). Running <cite>timerange_time_composite.py –help</cite> displays the help page of the command line interface.</p>
+<p>#### Examples usage</p>
+<ul class="simple">
+<li>Generate 16 days composites from the daily composites of chlorophyll-a produced by the <cite>timerange_daily_composite.py</cite> command.</li>
+</ul>
+<p><cite>nohup timerange_time_composite.py -b 2000-01-01 -e 2017-06-01 -delta 16 -s CHL -v chlor_a -d /export/isilon/datos2/satmo2_data/ -r 2km –overwrite –preview -multi 4</cite></p>
+<p>## Near real time mode</p>
+<p>The main command to operate satmo near real time mode is called <cite>satmo_nrt.py</cite>.</p>
+<p>### Description</p>
+<p><cite>satmo_nrt.py</cite> starts the near real time mode of the satmo system. The current version of the near real time mode handles downloading of NRT and refined processing data, processing to L3m level and production of daily and temporal composites (8 and 16 days).
+Running <cite>satmo_nrt.py –help</cite> displays the help page of the command line interface.</p>
+<p>### Examples usage</p>
+<ul class="simple">
+<li>Start the system with download of NRT + refined processing L2 data, processing of <cite>chlor_a</cite>, <cite>nflh</cite> and <cite>sst</cite> (day and night), at 2km resolution</li>
+</ul>
+<p><cite>nohup satmo_nrt.py –day_vars chlor_a nflh sst Kd_490 –night_vars sst –north 33 –south 3 –west -122 –east -72 -d /export/isilon/datos2/satmo2_data/ -r 2000 &gt; ~/nrt_log.log &amp;</cite></p>
+<p>## Generate climatologies</p>
+<p>## Generate anomalies</p>
+<p># Installation</p>
+<p>There is an optional dependency on matplotlib basemap for generating png previews (available in most cli with the –preview flag). Basemap won’t be automatically installed (because it is a heavy package and is not on pypi).
+To install it: <cite>pip install https://github.com/matplotlib/basemap/archive/v1.1.0.tar.gz</cite></p>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
