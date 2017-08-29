@@ -1,5 +1,5 @@
 satmo.download module
-===================
+=====================
 
 .. automodule:: satmo.download
     :members:

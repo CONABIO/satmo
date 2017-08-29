@@ -1,5 +1,5 @@
 satmo.visualization module
-===================
+==========================
 
 .. automodule:: satmo.visualization
     :members:

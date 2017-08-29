@@ -1,5 +1,5 @@
 satmo.preprocessors module
-===================
+==========================
 
 .. automodule:: satmo.preprocessors
     :members:

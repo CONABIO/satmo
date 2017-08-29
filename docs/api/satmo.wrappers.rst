@@ -1,5 +1,5 @@
 satmo.wrappers module
-===================
+=====================
 
 .. automodule:: satmo.wrappers
     :members:

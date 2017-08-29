@@ -1,5 +1,5 @@
 satmo.processors module
-===================
+=======================
 
 .. automodule:: satmo.processors
     :members:
