@@ -6,7 +6,7 @@
 satmo (Sistema Satelital de Monitoreo Oceanico)
 ===============================================
 
-This is the documentation of the satmo python package. The source code is available in a
+This is the documentation of the ``satmo`` python package. The source code is available in a
 git repository hosted at https://github.com/CONABIO/satmo
 
 
