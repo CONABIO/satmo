@@ -115,7 +115,7 @@ SUBSCRIPTIONS = {'L2':{'nrt': {'day': [1823, 1821, 1825],
                                'night': [1824, 1822, 1826]},
                        'refined': {'day': [1857, 1859, 1861],
                                    'night': [1862, 1858, 1860]}},
-                 'L1A': {'day': [],
+                 'L1A': {'day': [1954, 1955, 1956],
                          'night': []}}
 
 VARS_FROM_L2_SUITE = {'aqua':{'day':{'OC': ['Rrs_412', 'Rrs_443', 'Rrs_469',

@@ -649,7 +649,7 @@ def subscriptions_download(sub_list, data_root, refined=False):
     Args:
         sub_list (list of int): List of subscription numbers
         data_root (str): Root of the data archive
-        efined (bool): Do the subscriptions refer to refined processing data (defaults
+        refined (bool): Do the subscriptions refer to refined processing data (defaults
             to True), in which case the function will compare file size between the
             local and remote archives before deciding or not to download the file.
 
@@ -659,6 +659,11 @@ def subscriptions_download(sub_list, data_root, refined=False):
     Example:
         >>> import satmo
         >>> satmo.subscriptions_download([1821, 1823], base_dir='/export/isilon/datos2/satmo2_data',
+                                         refined=False)
+
+        >>> from satmo.global_variables import SUBSCRIPTIONS
+        >>> satmo.subscriptions_download(SUBSCRIPTIONS['L1A']['day'],
+                                         base_dir='/export/isilon/datos2/satmo2_data',
                                          refined=False)
     """
     try:
