@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>download.crs module &mdash; satmo 0.1 documentation</title>
+  <title>satmo.download module &mdash; satmo 0.1 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="satmo 0.1 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
-        <link rel="next" title="errors.crs module" href="satmo.errors.html"/>
-        <link rel="prev" title="utils.crs module" href="satmo.utils.html"/> 
+        <link rel="next" title="satmo.errors module" href="satmo.errors.html"/>
+        <link rel="prev" title="satmo.utils module" href="satmo.utils.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -97,19 +97,19 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">satmo package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="satmo.utils.html">utils.crs module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">download.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.errors.html">errors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.geo.html">geo.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.global_variables.html">global_variables.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.preprocessors.html">preprocessors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.processors.html">processors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.query.html">query.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.visualization.html">visualization.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.wrappers.html">wrappers.crs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.utils.html">satmo.utils module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">satmo.download module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.errors.html">satmo.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.geo.html">satmo.geo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.global_variables.html">satmo.global_variables module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.preprocessors.html">satmo.preprocessors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.processors.html">satmo.processors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.query.html">satmo.query module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.visualization.html">satmo.visualization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.wrappers.html">satmo.wrappers module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-satmo">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -162,7 +162,7 @@
         
           <li><a href="index.html">satmo package</a> &raquo;</li>
         
-      <li>download.crs module</li>
+      <li>satmo.download module</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -181,8 +181,114 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="download-crs-module">
-<h1>download.crs module<a class="headerlink" href="#download-crs-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-satmo.download">
+<span id="satmo-download-module"></span><h1>satmo.download module<a class="headerlink" href="#module-satmo.download" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="satmo.download.download_file">
+<code class="descclassname">satmo.download.</code><code class="descname">download_file</code><span class="sig-paren">(</span><em>url</em>, <em>write_dir</em>, <em>overwrite=False</em>, <em>check_integrity=False</em>, <em>timeout=15</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/download.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.download.download_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic file download function</p>
+<p>Downloads a file from a URL, and write it to a user defined location</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>url</strong> (<em>str</em>) – download url</li>
+<li><strong>write_dir</strong> (<em>str</em>) – Host directory to which the data will be written</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Should the file be overwritten if already existing on local host</li>
+<li><strong>check_integrity</strong> (<em>bool</em>) – Only makes sense if overwrite is set to False (when updating the archive)</li>
+<li><strong>timeout</strong> (<em>float</em>) – How long to wait (in seconds) for the server to send data before giving up and
+raising a requests.ConnectionError</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Details:</dt>
+<dd>The function will raise a ConnectionError (via requests) if a connection cannot be established
+with the server (e.g.: network is down) and an HttpResourceNotAvailable if the file appear not to
+exist on the server</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The filename of the downloaded data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.download.download_robust">
+<code class="descclassname">satmo.download.</code><code class="descname">download_robust</code><span class="sig-paren">(</span><em>url</em>, <em>base_dir</em>, <em>n_retries=5</em>, <em>pause_retries=10</em>, <em>overwrite=False</em>, <em>check_integrity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/download.html#download_robust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.download.download_robust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Robust download of a list of urls</p>
+<p>Handles connection errors, optionally check for existing files and integrity
+Suitable for real time use and for updating an archive without overwritting existing data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>url</strong> (<em>str</em>) – Download url</li>
+<li><strong>base_dir</strong> (<em>str</em>) – root of the archive tree on the host</li>
+<li><strong>n_retries</strong> (<em>int</em>) – Number of retries when the download fails because of a ConnectionError</li>
+<li><strong>pause_retries</strong> (<em>int</em>) – Duration (in seconds) between retries</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Should existing files on the host be overwritten</li>
+<li><strong>check_integrity</strong> (<em>bool</em>) – Only makes sense if overwrite is set to False (when updating the archive)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Boolean, True when successful, False otherwise</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.download.download_to_tree">
+<code class="descclassname">satmo.download.</code><code class="descname">download_to_tree</code><span class="sig-paren">(</span><em>url</em>, <em>base_dir</em>, <em>overwrite=False</em>, <em>check_integrity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/download.html#download_to_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.download.download_to_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download an ocean product file and automatically write it to the right location</p>
+<p>The idea is that the function immediatly knows where to write the file
+by parsing the filename (present in url)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>url</strong> (<em>str</em>) – download url</li>
+<li><strong>base_dir</strong> (<em>str</em>) – root of the archive tree on the host</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Should the file be overwritten if already existing on local host</li>
+<li><strong>check_integrity</strong> (<em>bool</em>) – Only makes sense if overwrite is set to False (when updating the archive)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Details:</dt>
+<dd>Directories where data are downloaded do not need to exist before running the function
+Similarly to download_file, the function will raise a ConnectionError (via requests) if a connection
+cannot be established with the server (e.g.: network is down) and an HttpResourceNotAvailable
+if the file appear not to exist on the server. It might be worth re-trying when catching requests.ConnectionError,
+going to the next file is probably the best way if catching a HttpResourceNotAvailable</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The filename of the downloaded file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 
@@ -195,10 +301,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="satmo.errors.html" class="btn btn-neutral float-right" title="errors.crs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="satmo.errors.html" class="btn btn-neutral float-right" title="satmo.errors module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="satmo.utils.html" class="btn btn-neutral" title="utils.crs module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="satmo.utils.html" class="btn btn-neutral" title="satmo.utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

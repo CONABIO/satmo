@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>satmo.download &mdash; satmo 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="satmo 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Users Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>satmo.download</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for satmo.download</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">make_file_path</span>
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="k">import</span> <span class="n">HttpResourceNotAvailable</span>
+
+<div class="viewcode-block" id="download_file"><a class="viewcode-back" href="../../api/satmo.download.html#satmo.download.download_file">[docs]</a><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">write_dir</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">check_integrity</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span> <span class="o">=</span> <span class="mi">15</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic file download function</span>
+
+<span class="sd">    Downloads a file from a URL, and write it to a user defined location</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str): download url</span>
+<span class="sd">        write_dir (str): Host directory to which the data will be written</span>
+<span class="sd">        overwrite (bool): Should the file be overwritten if already existing on local host</span>
+<span class="sd">        check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)</span>
+<span class="sd">        timeout (float): How long to wait (in seconds) for the server to send data before giving up and </span>
+<span class="sd">            raising a requests.ConnectionError</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        The function will raise a ConnectionError (via requests) if a connection cannot be established</span>
+<span class="sd">        with the server (e.g.: network is down) and an HttpResourceNotAvailable if the file appear not to</span>
+<span class="sd">        exist on the server</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The filename of the downloaded data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">local_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">write_dir</span><span class="p">,</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">file_exists</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local_filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_exists</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_integrity</span><span class="p">:</span>
+        <span class="c1"># No need to even send a request, end function</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># Test that file is present on remote</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r0</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HttpResourceNotAvailable</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">file_exists</span> <span class="ow">and</span> <span class="n">check_integrity</span><span class="p">:</span>
+        <span class="c1"># FIle integrity checking</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">local_filename</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">r0</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Length&#39;</span><span class="p">]):</span> <span class="c1"># file size matches</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># Create directory if it doesn&#39;t exist yet</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">write_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">write_dir</span><span class="p">)</span>
+    <span class="c1"># Download file</span>
+    <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">closing</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span><span class="p">))</span> <span class="k">as</span> <span class="n">r1</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">r1</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">local_filename</span></div>
+
+
+
+<div class="viewcode-block" id="download_to_tree"><a class="viewcode-back" href="../../api/satmo.download.html#satmo.download.download_to_tree">[docs]</a><span class="k">def</span> <span class="nf">download_to_tree</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">check_integrity</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download an ocean product file and automatically write it to the right location</span>
+
+<span class="sd">    The idea is that the function immediatly knows where to write the file</span>
+<span class="sd">    by parsing the filename (present in url)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str): download url</span>
+<span class="sd">        base_dir (str): root of the archive tree on the host</span>
+<span class="sd">        overwrite (bool): Should the file be overwritten if already existing on local host</span>
+<span class="sd">        check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        Directories where data are downloaded do not need to exist before running the function</span>
+<span class="sd">        Similarly to download_file, the function will raise a ConnectionError (via requests) if a connection</span>
+<span class="sd">        cannot be established with the server (e.g.: network is down) and an HttpResourceNotAvailable</span>
+<span class="sd">        if the file appear not to exist on the server. It might be worth re-trying when catching requests.ConnectionError,</span>
+<span class="sd">        going to the next file is probably the best way if catching a HttpResourceNotAvailable</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The filename of the downloaded file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">write_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">make_file_path</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">add_file</span> <span class="o">=</span> <span class="kc">False</span><span class="p">))</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">write_dir</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">check_integrity</span> <span class="o">=</span> <span class="n">check_integrity</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<div class="viewcode-block" id="download_robust"><a class="viewcode-back" href="../../api/satmo.download.html#satmo.download.download_robust">[docs]</a><span class="k">def</span> <span class="nf">download_robust</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">n_retries</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">pause_retries</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">check_integrity</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Robust download of a list of urls</span>
+
+<span class="sd">    Handles connection errors, optionally check for existing files and integrity</span>
+<span class="sd">    Suitable for real time use and for updating an archive without overwritting existing data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str): Download url</span>
+<span class="sd">        base_dir (str): root of the archive tree on the host</span>
+<span class="sd">        n_retries (int): Number of retries when the download fails because of a ConnectionError</span>
+<span class="sd">        pause_retries (int): Duration (in seconds) between retries</span>
+<span class="sd">        overwrite (bool): Should existing files on the host be overwritten</span>
+<span class="sd">        check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Boolean, True when successful, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">n_retries</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">download_to_tree</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">check_integrity</span> <span class="o">=</span> <span class="n">check_integrity</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">file_path</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># In case file has been partly downloaded </span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">pause_retries</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">HttpResourceNotAvailable</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="s1">&#39; not downloaded. Not found on server&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="s1">&#39; not downloaded. Unknown reason&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="s1">&#39; not downloaded. Max retries reached&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

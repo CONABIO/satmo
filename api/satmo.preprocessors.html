@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preprocessors.crs module &mdash; satmo 0.1 documentation</title>
+  <title>satmo.preprocessors module &mdash; satmo 0.1 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="satmo 0.1 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
-        <link rel="next" title="processors.crs module" href="satmo.processors.html"/>
-        <link rel="prev" title="global_variables.crs module" href="satmo.global_variables.html"/> 
+        <link rel="next" title="satmo.processors module" href="satmo.processors.html"/>
+        <link rel="prev" title="satmo.global_variables module" href="satmo.global_variables.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -97,19 +97,19 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">satmo package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="satmo.utils.html">utils.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.download.html">download.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.errors.html">errors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.geo.html">geo.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.global_variables.html">global_variables.crs module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">preprocessors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.processors.html">processors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.query.html">query.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.visualization.html">visualization.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.wrappers.html">wrappers.crs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.utils.html">satmo.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.download.html">satmo.download module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.errors.html">satmo.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.geo.html">satmo.geo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.global_variables.html">satmo.global_variables module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">satmo.preprocessors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.processors.html">satmo.processors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.query.html">satmo.query module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.visualization.html">satmo.visualization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.wrappers.html">satmo.wrappers module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-satmo">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -162,7 +162,7 @@
         
           <li><a href="index.html">satmo package</a> &raquo;</li>
         
-      <li>preprocessors.crs module</li>
+      <li>satmo.preprocessors module</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -181,8 +181,258 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="preprocessors-crs-module">
-<h1>preprocessors.crs module<a class="headerlink" href="#preprocessors-crs-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-satmo.preprocessors">
+<span id="satmo-preprocessors-module"></span><h1>satmo.preprocessors module<a class="headerlink" href="#module-satmo.preprocessors" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="satmo.preprocessors.OC_l2bin">
+<code class="descclassname">satmo.preprocessors.</code><code class="descname">OC_l2bin</code><span class="sig-paren">(</span><em>file_list</em>, <em>L3b_suite</em>, <em>resolution=1</em>, <em>night=False</em>, <em>filename=None</em>, <em>data_root=None</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#OC_l2bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.OC_l2bin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run l2bin for a list of L2 files</p>
+<dl class="docutils">
+<dt>Details:</dt>
+<dd>This is a simple no filter python wrapper around the seadas l2bin utility.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_list</strong> (<em>list</em>) – list of L2 files (full paths)</li>
+<li><strong>L3b_suite</strong> (<em>str</em>) – Product suite to bin (see global variable STANDARD_L3_SUITES
+for corresponding variables)</li>
+<li><strong>resolution</strong> (<em>int</em><em> or </em><em>str</em>) – See resolve argument in l2bin doc</li>
+<li><strong>night</strong> (<em>bool</em>) – Is that night products</li>
+<li><strong>filename</strong> (<em>str</em>) – Optional full path of output filename (L3b). If not provided, a
+filename is automatically generated.</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive. Mandatory if filename is not provided
+ignored otherwise</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite file if already exists? Defaults to False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The output filename</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">satmo.SeadasError if the seadas command exists with status 1</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Example usage:</dt>
+<dd><div class="first highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span><span class="o">,</span> <span class="nn">glob</span>
+</pre></div>
+</div>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">infiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;/home/ldutrieux/sandbox/satmo2_data/aqua/L2/2016/001/*L2*nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">OC_l2bin</span><span class="p">(</span><span class="n">infiles</span><span class="p">,</span> <span class="s1">&#39;CHL&#39;</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="s1">&#39;/home/ldutrieux/sandbox/satmo2_data&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.preprocessors.OC_l3mapgen">
+<code class="descclassname">satmo.preprocessors.</code><code class="descname">OC_l3mapgen</code><span class="sig-paren">(</span><em>ifile</em>, <em>variable</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>filename=None</em>, <em>resolution='1000m'</em>, <em>projection=None</em>, <em>data_root=None</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#OC_l3mapgen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.OC_l3mapgen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run l3mapgen from a l3b file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ifile</strong> (<em>str</em>) – Path to input L3b file</li>
+<li><strong>variable</strong> (<em>str</em>) – variable to warp (should exist in the L3b file) (e.g.: sst, chlor_a, Rrs_555, …)</li>
+<li><strong>south</strong> (<em>int</em><em> or </em><em>float</em>) – south latitude of mapped file extent</li>
+<li><strong>north</strong> (<em>int</em><em> or </em><em>float</em>) – north latitude of mapped file extent</li>
+<li><strong>west</strong> (<em>int</em><em> or </em><em>float</em>) – west longitude of mapped file extent</li>
+<li><strong>east</strong> (<em>int</em><em> or </em><em>float</em>) – east longitude of mapped file extent</li>
+<li><strong>filename</strong> (<em>str</em>) – Optional full path of output filename (L3m). If not provided, a
+filename is automatically generated.</li>
+<li><strong>resolution</strong> (<em>str</em>) – MApping resolution in the form of e.g.‘1000m’. Defaults to ‘1000m’</li>
+<li><strong>projection</strong> (<em>str</em>) – Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+on the provided extent is used.</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive. Mandatory if filename is not provided
+ignored otherwise</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite file if already exists? Defaults to False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The output filename</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">satmo.SeadasError if the seadas command exists with status 1</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Example usage:</dt>
+<dd><div class="first highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span><span class="o">,</span> <span class="nn">glob</span>
+</pre></div>
+</div>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ifile</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;/home/ldutrieux/sandbox/satmo2_data/aqua/L3b/2016/001/*L3b_CHL*nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">OC_l3mapgen</span><span class="p">(</span><span class="n">ifile</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;chlor_a&#39;</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="s1">&#39;/home/ldutrieux/sandbox/satmo2_data&#39;</span><span class="p">,</span> <span class="n">south</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">north</span> <span class="o">=</span> <span class="mi">33</span><span class="p">,</span> <span class="n">west</span> <span class="o">=</span> <span class="o">-</span><span class="mi">122</span><span class="p">,</span> <span class="n">east</span> <span class="o">=</span> <span class="o">-</span><span class="mi">72</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.preprocessors.bz2_compress">
+<code class="descclassname">satmo.preprocessors.</code><code class="descname">bz2_compress</code><span class="sig-paren">(</span><em>source</em>, <em>destination</em>, <em>compresslevel=3</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#bz2_compress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.bz2_compress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpacks data compressed with bz2</p>
+<p>Utility function to bz2 compress data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>str</em>) – the filename to compress</li>
+<li><strong>destination</strong> (<em>str</em>) – the destination directory, filename will be
+set automatically</li>
+<li><strong>compresslevel</strong> (<em>int</em>) – Compression level</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – If false, check whether file already exists and returns its name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The filename of the bz2 compressed file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.preprocessors.bz2_unpack">
+<code class="descclassname">satmo.preprocessors.</code><code class="descname">bz2_unpack</code><span class="sig-paren">(</span><em>source</em>, <em>destination</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#bz2_unpack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.bz2_unpack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpacks data compressed with bz2</p>
+<p>Utility function to unpack bz2 compressed data
+The function only works if a single file is compressed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>str</em>) – the filename of the archive</li>
+<li><strong>destination</strong> (<em>str</em>) – the destination directory, filename will be
+set automatically</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – If false, check whether file already exists and returns its name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The filename of the unpacked file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="satmo.preprocessors.extractJob">
+<em class="property">class </em><code class="descclassname">satmo.preprocessors.</code><code class="descname">extractJob</code><span class="sig-paren">(</span><em>input_dir</em>, <em>pattern='.*L1A.*\.(nc|bz2)$'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#extractJob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.extractJob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class sensor independent L1A data extraction</p>
+<p>Works with modis, viirs, seawifs. Works by calling l1aextract_%sensor via
+multilevel_processor.py. All the processing happens in the same directory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_dir</strong> (<em>str</em>) – location of the files to extract, ideally the directory should
+not contain any other files, otherwise there is a risk they get deleted</li>
+<li><strong>pattern</strong> (<em>str</em>) – regex pattern to match input files</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="satmo.preprocessors.extractJob.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><em>keep_uncompressed=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#extractJob.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.extractJob.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove unwanted files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>keep_uncompressed</strong> (<em>bool</em>) – Should uncompressed files (input to seadas processors)
+be kept?</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="satmo.preprocessors.extractJob.compress">
+<code class="descname">compress</code><span class="sig-paren">(</span><em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#extractJob.compress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.extractJob.compress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compress the extracted files present in the directory with bz2</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>overwrite</strong> (<em>bool</em>) – Should existing bz2 files be overwritten</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="satmo.preprocessors.extractJob.extract">
+<code class="descname">extract</code><span class="sig-paren">(</span><em>north</em>, <em>south</em>, <em>east</em>, <em>west</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/preprocessors.html#extractJob.extract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.preprocessors.extractJob.extract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data extraction method</p>
+<p>Used for its side effect of extracting the L1A file to the specified extent</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>north</strong> (<em>float</em>) – north latitude of bounding box in DD</li>
+<li><strong>south</strong> (<em>float</em>) – south latitude of bounding box in DD</li>
+<li><strong>west</strong> (<em>float</em>) – west longitude of bounding box in DD</li>
+<li><strong>east</strong> (<em>float</em>) – east longitude of bounding box in DD</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Should existing .sub files be overwritten. Usefull
+to differentiate archive updating vs re-processing.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Details:</dt>
+<dd>It is safe to apply a buffer (larger extent, e.g. 2 extra degrees on each side) around
+the area ordered with query_from_extent (query module).</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">fine, 1: error)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Status returned by multilevel_processor.py (0</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="satmo.preprocessors.extractJob.template">
+<code class="descname">template</code><em class="property"> = &lt;Template 'extract.par'&gt;</em><a class="headerlink" href="#satmo.preprocessors.extractJob.template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -195,10 +445,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="satmo.processors.html" class="btn btn-neutral float-right" title="processors.crs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="satmo.processors.html" class="btn btn-neutral float-right" title="satmo.processors module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="satmo.global_variables.html" class="btn btn-neutral" title="global_variables.crs module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="satmo.global_variables.html" class="btn btn-neutral" title="satmo.global_variables module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

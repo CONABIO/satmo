@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>satmo.query &mdash; satmo 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="satmo 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Users Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>satmo.query</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for satmo.query</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">future.standard_library</span> <span class="k">import</span> <span class="n">install_aliases</span>
+<span class="n">install_aliases</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">requests.packages.urllib3.util.retry</span> <span class="k">import</span> <span class="n">Retry</span>
+<span class="kn">from</span> <span class="nn">requests.adapters</span> <span class="k">import</span> <span class="n">HTTPAdapter</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+
+<div class="viewcode-block" id="query_from_extent"><a class="viewcode-back" href="../../api/satmo.query.html#satmo.query.query_from_extent">[docs]</a><span class="k">def</span> <span class="nf">query_from_extent</span><span class="p">(</span><span class="n">sensors</span><span class="p">,</span> <span class="n">date_begin</span><span class="p">,</span> <span class="n">per</span><span class="p">,</span> <span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">day</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>\
+                      <span class="n">night</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">product</span> <span class="o">=</span> <span class="s1">&#39;L1A&#39;</span><span class="p">,</span> <span class="n">base_url</span> <span class="o">=</span> <span class="s1">&#39;https://oceancolor.gsfc.nasa.gov/cgi/browse.pl&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Query L1A data for a given period and spatial extent</span>
+
+<span class="sd">    Uses an old school perl &#39;API&#39; to get a list of filenames that intersect with a</span>
+<span class="sd">    geographical area and a time period. The function was initially designed to query</span>
+<span class="sd">    L1A products; capability to query different L2 collection was added later and may not</span>
+<span class="sd">    function as well than the L1A query capability.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sensors: (list) list of strings, Valid entries are &#39;am&#39; (aqua), &#39;tm&#39; (terra),</span>
+<span class="sd">        &#39;sw&#39; (seawifs), &#39;v0&#39; (viirs)</span>
+<span class="sd">        date_begin (datetime or str): date of the first day of the period queried</span>
+<span class="sd">            use &#39;yyyy-mm-dd&#39; format if passing it as a string</span>
+<span class="sd">        per (str): The period queried. One of &#39;DAY&#39;, &#39;MO&#39;, &#39;YR&#39;</span>
+<span class="sd">        north (float): north latitude of bounding box in DD</span>
+<span class="sd">        south (float): south latitude of bounding box in DD</span>
+<span class="sd">        west (float): west longitude of bounding box in DD</span>
+<span class="sd">        east (float): east longitude of bounding box in DD</span>
+<span class="sd">        day (bool): Order day data ?</span>
+<span class="sd">        night (bool): Order night data ?</span>
+<span class="sd">        product (str): Product to order, defaults to &#39;L1A&#39;. Other possible values include</span>
+<span class="sd">            &#39;CHL&#39; for L2_OC, &#39;SST&#39; for L2_SST, and &#39;SST4&#39; for L2_SST4</span>
+<span class="sd">        base_url (str): &#39;api&#39; host</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of filenames</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Instantiate a requests session and set number of retries and pause between them</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="n">retries</span> <span class="o">=</span> <span class="n">Retry</span><span class="p">(</span><span class="n">total</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="n">backoff_factor</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">status_forcelist</span> <span class="o">=</span> <span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">])</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">&#39;https://&#39;</span><span class="p">,</span> <span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span> <span class="o">=</span> <span class="n">retries</span><span class="p">))</span>
+    <span class="c1"># Collect elements to build the first request url</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sensors</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;sensors must be a list&#39;</span><span class="p">)</span>
+    <span class="c1"># Seawifs special case</span>
+    <span class="k">if</span> <span class="s1">&#39;sw&#39;</span> <span class="ow">in</span> <span class="n">sensors</span><span class="p">:</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="s1">&#39;MLAC&#39;</span>
+        <span class="n">sensors</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;sw&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="s1">&#39;@&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sensors</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">date_begin</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">date_begin</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_begin</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">dnm</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">day</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">dnm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">night</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">dnm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">product</span> <span class="o">==</span> <span class="s1">&#39;L1A&#39;</span><span class="p">:</span>
+        <span class="n">prm</span> <span class="o">=</span> <span class="s1">&#39;TC&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prm</span> <span class="o">=</span> <span class="n">product</span> <span class="c1"># Only useful for second request</span>
+    <span class="n">dnm</span> <span class="o">=</span> <span class="s1">&#39;@&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dnm</span><span class="p">)</span>
+    <span class="n">day</span> <span class="o">=</span> <span class="p">(</span><span class="n">date_begin</span> <span class="o">-</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1970</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>
+    <span class="c1"># BUild dictionary of arguments</span>
+    <span class="n">query0_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sub&#39;</span><span class="p">:</span> <span class="s1">&#39;level1or2list&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;per&#39;</span><span class="p">:</span> <span class="n">per</span><span class="p">,</span>
+              <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span>
+              <span class="s1">&#39;sen&#39;</span><span class="p">:</span> <span class="n">sensors</span><span class="p">,</span>
+              <span class="s1">&#39;dnm&#39;</span><span class="p">:</span> <span class="n">dnm</span><span class="p">,</span>
+              <span class="s1">&#39;prm&#39;</span><span class="p">:</span> <span class="s1">&#39;TC&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;typ&#39;</span><span class="p">:</span> <span class="n">typ</span><span class="p">,</span>
+              <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="n">north</span><span class="p">,</span>
+              <span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">south</span><span class="p">,</span>
+              <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="n">west</span><span class="p">,</span>
+              <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="n">east</span><span class="p">}</span>
+    <span class="c1"># This first query will return an html page from which the order id can be retrieved</span>
+    <span class="c1"># and used to send a second request</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">base_url</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">query0_args</span><span class="p">)]))</span>
+    <span class="k">if</span> <span class="n">r0</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span>
+    <span class="c1"># regular expression to find the orderid in the html page</span>
+    <span class="n">orderid_grep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;filenamelist&amp;id=(\d+\.\d+)&quot;</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">orderid_grep</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">r0</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">query1_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sub&#39;</span><span class="p">:</span> <span class="s1">&#39;filenamelist&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                   <span class="s1">&#39;prm&#39;</span><span class="p">:</span> <span class="n">prm</span><span class="p">}</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">base_url</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">query1_args</span><span class="p">)]))</span>
+    <span class="k">if</span> <span class="n">r1</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">r1</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_list</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<span class="c1"># file_list = query_from_extent([&#39;am&#39;], &#39;2007-01-01&#39;, &#39;MO&#39;, 33, 10, -100, -70)</span>
+
+<div class="viewcode-block" id="make_download_url"><a class="viewcode-back" href="../../api/satmo.query.html#satmo.query.make_download_url">[docs]</a><span class="k">def</span> <span class="nf">make_download_url</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Builds a download URL from a (L1A) file name</span>
+
+<span class="sd">    Simple helper that given a filename (obtained with query_from_extent</span>
+<span class="sd">    for example), prepends the &#39;getFile url&#39; of the oceancolor DAAC and appends </span>
+<span class="sd">    &#39;.gz&#39; when files are not netcdf.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_name (str): name of a L1A file present on oceancolor servers</span>
+<span class="sd">        host (str): Address of the root of the archive. DON&#39;T FORGET TRAILING SLASH</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        In line with query_from_extent, this function is designed to work</span>
+<span class="sd">        with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and</span>
+<span class="sd">        other data levels.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A string of the URL at which the file can be downloaded (ready to be passed to</span>
+<span class="sd">        download_robust)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url_components</span> <span class="o">=</span> <span class="p">[</span><span class="n">host</span><span class="p">,</span> <span class="n">file_name</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.nc&#39;</span><span class="p">:</span>
+        <span class="n">url_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;.bz2&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">url_components</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_subscription_urls"><a class="viewcode-back" href="../../api/satmo.query.html#satmo.query.get_subscription_urls">[docs]</a><span class="k">def</span> <span class="nf">get_subscription_urls</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Send a request to a subscription number to get a list of download URLs</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (int): Ocean color subscription number</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of download urls</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">args_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subID&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+                 <span class="s1">&#39;addurl&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="s1">&#39;results_as_file&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://oceandata.sci.gsfc.nasa.gov/search/file_search.cgi&quot;</span><span class="p">,</span>
+                    <span class="n">params</span><span class="o">=</span><span class="n">args_dict</span><span class="p">)</span>
+    <span class="n">url_list</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">url_list</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>errors.crs module &mdash; satmo 0.1 documentation</title>
+  <title>satmo.errors module &mdash; satmo 0.1 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="satmo 0.1 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
-        <link rel="next" title="geo.crs module" href="satmo.geo.html"/>
-        <link rel="prev" title="download.crs module" href="satmo.download.html"/> 
+        <link rel="next" title="satmo.geo module" href="satmo.geo.html"/>
+        <link rel="prev" title="satmo.download module" href="satmo.download.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -97,19 +97,19 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">satmo package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="satmo.utils.html">utils.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.download.html">download.crs module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">errors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.geo.html">geo.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.global_variables.html">global_variables.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.preprocessors.html">preprocessors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.processors.html">processors.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.query.html">query.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.visualization.html">visualization.crs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="satmo.wrappers.html">wrappers.crs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.utils.html">satmo.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.download.html">satmo.download module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">satmo.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.geo.html">satmo.geo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.global_variables.html">satmo.global_variables module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.preprocessors.html">satmo.preprocessors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.processors.html">satmo.processors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.query.html">satmo.query module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.visualization.html">satmo.visualization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.wrappers.html">satmo.wrappers module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-satmo">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -162,7 +162,7 @@
         
           <li><a href="index.html">satmo package</a> &raquo;</li>
         
-      <li>errors.crs module</li>
+      <li>satmo.errors module</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -181,8 +181,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="errors-crs-module">
-<h1>errors.crs module<a class="headerlink" href="#errors-crs-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-satmo.errors">
+<span id="satmo-errors-module"></span><h1>satmo.errors module<a class="headerlink" href="#module-satmo.errors" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="satmo.errors.HttpResourceNotAvailable">
+<em class="property">exception </em><code class="descclassname">satmo.errors.</code><code class="descname">HttpResourceNotAvailable</code><a class="reference internal" href="../_modules/satmo/errors.html#HttpResourceNotAvailable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.errors.HttpResourceNotAvailable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<p>Custom exception for http resource availability</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="satmo.errors.SeadasError">
+<em class="property">exception </em><code class="descclassname">satmo.errors.</code><code class="descname">SeadasError</code><a class="reference internal" href="../_modules/satmo/errors.html#SeadasError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.errors.SeadasError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<p>Custom exception for when seadas does not exit with status 0</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="satmo.errors.TimeoutException">
+<em class="property">exception </em><code class="descclassname">satmo.errors.</code><code class="descname">TimeoutException</code><a class="reference internal" href="../_modules/satmo/errors.html#TimeoutException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.errors.TimeoutException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<p>Custom exception for when a set time limit is exceeded</p>
+</dd></dl>
+
 </div>
 
 
@@ -195,10 +216,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="satmo.geo.html" class="btn btn-neutral float-right" title="geo.crs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="satmo.geo.html" class="btn btn-neutral float-right" title="satmo.geo module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="satmo.download.html" class="btn btn-neutral" title="download.crs module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="satmo.download.html" class="btn btn-neutral" title="satmo.download module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
