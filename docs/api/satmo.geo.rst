@@ -1,7 +1,7 @@
-geo.crs module
+satmo.geo module
 ===================
 
-.. automodule:: geo.crs
+.. automodule:: geo
     :members:
     :undoc-members:
     :show-inheritance:

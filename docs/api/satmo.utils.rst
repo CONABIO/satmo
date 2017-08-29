@@ -1,7 +1,7 @@
-utils.crs module
+satmo.utils module
 ===================
 
-.. automodule:: utils.crs
+.. automodule:: satmo.utils
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,7 +1,7 @@
-query.crs module
+satmo.query module
 ===================
 
-.. automodule:: query.crs
+.. automodule:: satmo.query
     :members:
     :undoc-members:
     :show-inheritance:

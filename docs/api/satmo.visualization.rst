@@ -1,7 +1,7 @@
-visualization.crs module
+satmo.visualization module
 ===================
 
-.. automodule:: visualization.crs
+.. automodule:: satmo.visualization
     :members:
     :undoc-members:
     :show-inheritance:

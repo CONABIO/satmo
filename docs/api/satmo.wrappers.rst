@@ -1,7 +1,7 @@
-wrappers.crs module
+satmo.wrappers module
 ===================
 
-.. automodule:: wrappers.crs
+.. automodule:: satmo.wrappers
     :members:
     :undoc-members:
     :show-inheritance:

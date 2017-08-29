@@ -1,7 +1,7 @@
-processors.crs module
+satmo.processors module
 ===================
 
-.. automodule:: processors.crs
+.. automodule:: satmo.processors
     :members:
     :undoc-members:
     :show-inheritance:

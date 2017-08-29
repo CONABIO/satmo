@@ -1,7 +1,7 @@
-global_variables.crs module
+satmo.global_variables module
 ===================
 
-.. automodule:: global_variables.crs
+.. automodule:: satmo.global_variables
     :members:
     :undoc-members:
     :show-inheritance:

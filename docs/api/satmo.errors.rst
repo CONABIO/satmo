@@ -1,7 +1,7 @@
-errors.crs module
+satmo.errors module
 ===================
 
-.. automodule:: errors.crs
+.. automodule:: satmo.errors
     :members:
     :undoc-members:
     :show-inheritance:

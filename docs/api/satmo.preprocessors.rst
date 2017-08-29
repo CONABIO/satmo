@@ -1,7 +1,7 @@
-preprocessors.crs module
+satmo.preprocessors module
 ===================
 
-.. automodule:: preprocessors.crs
+.. automodule:: satmo.preprocessors
     :members:
     :undoc-members:
     :show-inheritance:

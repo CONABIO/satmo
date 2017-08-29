@@ -1,7 +1,7 @@
-download.crs module
+satmo.download module
 ===================
 
-.. automodule:: download.crs
+.. automodule:: satmo.download
     :members:
     :undoc-members:
     :show-inheritance:
