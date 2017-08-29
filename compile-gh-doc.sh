@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Remove everything except this script
-find . -type f -not -name 'compile-gh-doc.sh' -print0 | xargs -0 rm --
+find . -type f -not -name 'compile-gh-doc.sh' -not -path '*/\.*' -print0 | xargs -0 rm --
 # Checkout whatever is necessary to compile the doc (from master branch)
 git checkout master docs satmo
 git reset HEAD
