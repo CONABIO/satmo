@@ -54,7 +54,7 @@ def OC_filename_parser(filename, raiseError = True):
         end_year (int) (for climatologies only)
         Key values are set to None when not applicable
     """
-    pattern_0 = re.compile(r'(?P<sensor_code>CLIM\.|ANOM\.|[A-Z]{1})(?P<time_info>\d{3}\.|\d{7}\.|\d{13}\.)(?P<level>L0|L1A|L1B|GEO|L2|L3b|L3m)_.*')
+    pattern_0 = re.compile(r'(?P<sensor_code>CLIM\.|ANOM\.|[A-Z]{1})(?P<time_info>\d{3}\.|\d{7}\.|\d{13}\.)(?P<level>L0|L1A|L1B|GEO|GEO-M|L2|L3b|L3m)_.*')
     m_0 = pattern_0.search(filename)
     if m_0 is None:
         if raiseError:
@@ -150,7 +150,7 @@ def OC_filename_parser(filename, raiseError = True):
                      'composite': None,
                      'begin_year': None,
                      'end_year': None}
-    elif m_0.group('level') == 'GEO':
+    elif m_0.group('level') in ['GEO', 'GEO-M']:
         pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{6})\..*')
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
@@ -436,6 +436,9 @@ def OC_path_builder(filename, data_root = None, add_file = True):
             path_elements = ['combined', file_meta['level'], '%s_anom' % file_meta['composite'], str(file_meta['year']), str(file_meta['doy']).zfill(3)]
         else:
             path_elements = [file_meta['sensor'], file_meta['level'], file_meta['composite'], str(file_meta['year']), str(file_meta['doy']).zfill(3)]
+    elif file_meta['level'] == 'GEO':
+        # Geo files go alongside L1A (useful when downloading viirs L1A)
+        path_elements = [file_meta['sensor'], 'L1A', str(file_meta['year']), str(file_meta['doy']).zfill(3)]
     else:
         path_elements = [file_meta['sensor'], file_meta['level'], str(file_meta['year']), str(file_meta['doy']).zfill(3)]
     if add_file:

@@ -165,6 +165,26 @@ class TestUtils(unittest.TestCase):
              'variable': 'sst',
              'year': 2014}
 
+        f9 = 'V2017241160000.GEO-M_SNPP.nc'
+        d9 = {'anomaly': False,
+             'begin_year': None,
+             'climatology': False,
+             'composite': None,
+             'date': date(2017, 8, 29),
+             'dom': 29,
+             'doy': 241,
+             'end_year': None,
+             'filename': 'V2017241160000.GEO-M_SNPP.nc',
+             'level': 'GEO',
+             'month': 8,
+             'resolution': None,
+             'sensor': 'viirs',
+             'sensor_code': 'V',
+             'suite': None,
+             'time': time(16, 00, 00),
+             'variable': None,
+             'year': 2017}
+
         self.assertEqual(satmo.OC_filename_parser(f1), d1)
         self.assertEqual(satmo.OC_filename_parser(f2), d2)
         self.assertEqual(satmo.OC_filename_parser(f3), d3)
@@ -173,6 +193,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_filename_parser(f6), d6)
         self.assertEqual(satmo.OC_filename_parser(f7), d7)
         self.assertEqual(satmo.OC_filename_parser(f8), d8)
+        self.assertEqual(satmo.OC_filename_parser(f9), d9)
 
     def test_OC_filename_builder(self):
 
@@ -246,6 +267,8 @@ class TestUtils(unittest.TestCase):
         p6 = 'combined/L3m/8DAY_clim/027'
         d7 = {'filename': 'ANOM.2014027.L3m_8DAY_SST_sst_1km.tif', 'add_file': False}
         p7 = 'combined/L3m/8DAY_anom/2014/027'
+        d8 = {'filename': 'V2017241160000.GEO-M_SNPP.nc', 'add_file': True}
+        p8 = 'viirs/L1A/2017/241/V2017241160000.GEO-M_SNPP.nc'
 
         self.assertEqual(satmo.OC_path_builder(**d1), p1)
         self.assertEqual(satmo.OC_path_builder(**d2), p2)
@@ -254,6 +277,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_path_builder(**d5), p5)
         self.assertEqual(satmo.OC_path_builder(**d6), p6)
         self.assertEqual(satmo.OC_path_builder(**d7), p7)
+        self.assertEqual(satmo.OC_path_builder(**d8), p8)
 
     def test_to_km(self):
         self.assertEqual(satmo.to_km('1000m'), '1km')
