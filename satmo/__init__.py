@@ -18,6 +18,6 @@ from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError, TimeoutException
 from .visualization import make_map_title, make_preview
 from .processors import (nc2tif, FileComposer, BasicBinMap, L3mProcess,
-                         make_time_composite)
+                         make_time_composite, l2_append)
 
 __version__ = "0.1"

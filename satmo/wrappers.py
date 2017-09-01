@@ -12,7 +12,7 @@ from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
                     OC_filename_parser, pre_compose, processing_meta_from_list,
                     find_composite_date_list, time_limit)
-from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen
+from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen, l2gen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
                                BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE)
@@ -855,3 +855,13 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 except KeyboardInterrupt:
                     raise
 
+def nrt_wrapper_l1(var_list, north, south, west, east, data_root, resolution):
+    file_list = subscriptions_download(SUBSCRIPTIONS['L1A']['day'],
+                                       base_dir=data_root, refined=False)
+    # TODO: would be good for the line below to:
+        # have some error catching mechanish
+        # have a dynamic suite
+    L2_list = [l2gen(x, var_list, 'FAI', data_root) for x in file_list]
+    # For each L2 file, append AFAI to netCDF file
+    # Check l2_append() and global variable BAND_MATH_FUNCTIONS
+    # Get a list of dates/sensor combinations

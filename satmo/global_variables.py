@@ -181,3 +181,27 @@ QUAL_ARRAY_NAME_FROM_SUITE = {'SST': 'qual_sst',
                               'PAR': None,
                               'POC': None,
                               'KD490': None}
+
+def afai_viirs(red, nir, swir):
+    nir_line = red + (swir - red) * (745 - 671) / (862 - 671)
+    return nir - nir_line
+
+def afai_modis(red, nir, swir):
+    nir_line = red + (swir - red) * (748 - 667) / (869 - 667)
+    return nir - nir_line
+
+BAND_MATH_FUNCTIONS = {'afai': {'aqua': {'formula': afai_modis,
+                                         'bands': ['rhos_667', 'rhos_748', 'rhos_869'],
+                                         'standard_name': 'afai',
+                                         'long_name': 'Alternative floating algae index'},
+                                'terra':{'formula': afai_modis,
+                                         'bands': ['rhos_667', 'rhos_748', 'rhos_869'],
+                                         'standard_name': 'afai',
+                                         'long_name': 'Alternative floating algae index'},
+                                'viirs':{'formula': afai_viirs,
+                                         'bands': ['rhos_671', 'rhos_745', 'rhos_862'],
+                                         'standard_name': 'afai',
+                                         'long_name': 'Alternative floating algae index'}}}
+
+
+
