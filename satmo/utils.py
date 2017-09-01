@@ -7,6 +7,8 @@ import os
 from pint import UnitRegistry
 import signal
 from contextlib import contextmanager
+import random
+import string
 
 from .errors import TimeoutException
 from .global_variables import SENSOR_CODES, DATA_LEVELS, VARS_FROM_L2_SUITE
@@ -927,3 +929,9 @@ def time_limit(seconds):
         yield
     finally:
         signal.alarm(0)
+
+def randomword(length):
+    """Generate a random string of desired length
+    """
+    return ''.join(random.choice(string.lowercase) for i in range(length))
+
