@@ -541,6 +541,18 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
     file_list = glob.glob(full_pattern)
     return file_list
 
+def OC_viirs_geo_filename_builder(x):
+    """Builds the viirs geo filename corresponding to a L1A file
+
+    Args:
+        x (str): L1A viirs filename
+
+    Return:
+        str: A viirs geo filename
+    """
+    dirname, basename = os.path.split(x)
+    basename = basename.replace('L1A', 'GEO-M')
+    return os.path.join(dirname, basename)
 
 
 def make_file_path(filename, add_file = True, doy = True, level = None):
