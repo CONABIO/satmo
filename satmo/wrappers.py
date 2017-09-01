@@ -654,7 +654,7 @@ def subscriptions_download(sub_list, data_root, refined=False):
             local and remote archives before deciding or not to download the file.
 
     Return:
-        TODO: would be good to return a list of the files that did get downloaded
+        A list of file paths corresponding to the local paths of downloaded files
 
     Example:
         >>> import satmo

@@ -9,7 +9,9 @@ import string
 import random
 import re
 
-from .utils import super_glob, OC_filename_parser, make_file_path, make_file_name, is_day, OC_filename_builder, to_km
+from .utils import (super_glob, OC_filename_parser, make_file_path,
+                    make_file_name, is_day, OC_filename_builder, to_km,
+                    OC_viirs_geo_filename_builder, randomword)
 from .errors import SeadasError
 from .global_variables import STANDARD_L3_SUITES
 
@@ -17,7 +19,7 @@ from .global_variables import STANDARD_L3_SUITES
 
 def bz2_unpack(source, destination, overwrite = False):
     """Unpacks data compressed with bz2
-    
+
     Utility function to unpack bz2 compressed data
     The function only works if a single file is compressed
 
@@ -43,7 +45,7 @@ def bz2_unpack(source, destination, overwrite = False):
 
 def bz2_compress(source, destination, compresslevel = 3, overwrite = False):
     """Unpacks data compressed with bz2
-    
+
     Utility function to bz2 compress data
 
     Args:
@@ -66,6 +68,79 @@ def bz2_compress(source, destination, compresslevel = 3, overwrite = False):
             dst.write(data)
     return out_file
 
+
+def l2gen(x, var_list, suite, data_root, tmp_dir=None):
+    """Wrapper to run seadas l2gen on L1A data
+
+    Run l2gen via multilevel_processor in the case of modis and directly with l2gen
+    command in the case of viirs. If input is a viirs L1A file, there must be a
+    corresponging GEO file in the same folder.
+
+    Args:
+        x (str): Path to input L1A file
+        var_list (list): List of strings representing the variables to process
+        suite (str): Output L2 suite name
+        data_root (str): Root of the local data archive
+        tmp_dir (str): Path to a directory where to store intermediary output of
+            the L1A to L2 process. Defaults to None, in which case os.path.join(data_root, 'tmp')
+            is used.
+
+    Returns:
+        str: file name of the generated L2 file
+    """
+    if tmp_dir is None:
+        tmp_dir = os.path.join(data_root, 'tmp')
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
+    ext = os.path.splitext(x)[1]
+    input_dir = os.path.dirname(x)
+    output_filename = OC_filename_builder(level='L2', filename=x,
+                                                suite=suite, full_path=True,
+                                                data_root=data_root)
+    output_dir = os.path.dirname(output_filename)
+    # The delete switch determines whether or not an uncompressed file must be
+    # deleted or not. viirs do not come as bz2 compressed files so this does not apply
+    # for them
+    delete = False
+    input_meta = OC_filename_parser(x)
+    if ext == '.bz2':
+        x = bz2_unpack(x, input_dir)
+        delete = True
+    # Create L2 output dir if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(L2output_dir)
+    # Split in two different paths (modis --> multilevel_processor, viirs --> l2gen)
+    if input_meta['sensor'] == 'viirs':
+        geo_file = OC_viirs_geo_filename_builder(x)
+        cli_elements = ['l2gen',
+                        'ifile=%s' % x,
+                        'geofile=%s' % geo_file,
+                        'ofile=%s' % output_filename,
+                        'l2prod=%s' % ','.join(var_list)]
+        status = subprocess.call(cli_elements)
+        if status != 0:
+            raise SeadasError('l2gen processor exited with status %d during viirs L2 processing' % status)
+    elif input_meta['sensor'] in ['aqua', 'terra']:
+        # modis L2 processing is done via multilevel_processor.py
+        template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('l2process.par')
+        # Par file templating 
+        par = template.render(ifile = x,
+                              prod_list = var_list,
+                              ofile = output_filename)
+        # par filename creation + writing to output directory
+        par_file = os.path.join(tmp_dir, '%s_l2process.par' % randomword(10))
+        with open(par_file, "wb") as dst:
+            dst.write(par)
+        # Build multilevel processing arguments list
+        cli_elements = ['multilevel_processor.py',
+                      par_file,
+                      '--output_dir=%s' % tmp_dir]
+        status = subprocess.call(cli_elements)
+        if status != 0:
+            raise SeadasError('Multilevel processor exited with status %d during modis L2 processing' % status_0)
+    if delete:
+        os.remove(x)
+    return output_filename
 
 # Make a class that holds all the information of a future L2 (binned) product
 
