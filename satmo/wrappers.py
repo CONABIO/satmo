@@ -15,8 +15,9 @@ from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen, l2gen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
-                               BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE)
-from .processors import L3mProcess, FileComposer, make_time_composite
+                               BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE,
+                               BAND_MATH_FUNCTIONS)
+from .processors import L3mProcess, FileComposer, make_time_composite, l2_append
 from .visualization import make_preview
 from .errors import TimeoutException
 
@@ -856,12 +857,40 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                     raise
 
 def nrt_wrapper_l1(var_list, north, south, west, east, data_root, resolution):
-    file_list = subscriptions_download(SUBSCRIPTIONS['L1A']['day'],
-                                       base_dir=data_root, refined=False)
-    # TODO: would be good for the line below to:
-        # have some error catching mechanish
-        # have a dynamic suite
-    L2_list = [l2gen(x, var_list, 'FAI', data_root) for x in file_list]
+    # 1 - Download data
+    try:
+        file_list = subscriptions_download(SUBSCRIPTIONS['L1A']['day'],
+                                           base_dir=data_root, refined=False)
+    except Exception as e:
+        # Exit function if the download did not work because there would be nothing
+        # to do anyway
+        pprint('Data download did not work properly. %s' % e)
+        return
+    except KeyboardInterrupt:
+        raise
+    # Check that something got downloaded
+    if not file_list:
+        # Exit function in case no files were downloaded
+        return
+    # Process every L1A file to L2 with error catching
+    # Would be good to have a dynamic suite here
+    L2_list = []
+    for L1_file in file_list:
+        try:
+            L2_file = l2gen(x=L1_file, var_list=var_list, suite='FAI',
+                            data_root=data_root)
+            L2_list.append(L2_file)
+        except Exception as e:
+            pprint('Problem while generating L2 file from %s. %s' % (L1_file, e))
+        except KeyboardInterrupt:
+            raise
     # For each L2 file, append AFAI to netCDF file
-    # Check l2_append() and global variable BAND_MATH_FUNCTIONS
+    for L2_file in L2_list:
+        meta = OC_filename_parser(L2_file)
+        afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
+        l2_append(L2_file, input_bands=afai_param['bands'],
+                  formula=afai_param['formula'],
+                  short_name='afai',
+                  long_name=afai_param['long_name'],
+                  standard_name=afai_param['standard_name'])
     # Get a list of dates/sensor combinations
