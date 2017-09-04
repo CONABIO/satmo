@@ -82,12 +82,16 @@ STANDARD_L3_SUITES = {'RRS': {'terra': ['Rrs_412','Rrs_443','Rrs_469','Rrs_488',
                                       'viirs': ['Kd_490'],
                                       'seawifs': ['Kd_490'],
                                       'meris': ['Kd_490']},
+                      'FAI': {'terra': ['fai', 'afai'],
+                              'aqua': ['fai', 'afai'],
+                              'viirs': ['afai']},
                             'FLH': {'aqua': ['nflh', 'ipar'],
                                     'terra': ['nflh', 'ipar']}}
 
 # Rrc (Rayleight corrected reflectance), used by Hu are called rhos in seadas
 
 L2_L3_SUITES_CORRESPONDENCES = {'RRS': 'OC',
+                                'FAI': 'FAI',
                                 'SST': 'SST',
                                 'NSST': 'SST',
                                 'SST4': 'SST4',
@@ -153,6 +157,8 @@ L3_SUITE_FROM_VAR = SuperDict({'day': {'Rrs_.*': 'RRS',
                                        'pic': 'PIC',
                                        'poc': 'POC',
                                        'nflh': 'FLH',
+                                       'fai': 'FAI',
+                                       'afai': 'FAI',
                                        'Kd_490': 'KD490'},
                                'night': {'sst': 'NSST',
                                          'sst_triple': 'SST3',
@@ -165,6 +171,7 @@ BIT_MASK_FROM_L3_SUITE = {'CHL':0x669d73b,
                           'PAR':0x600000a,
                           'POC':0x669d73b,
                           'KD490':0x669d73b,
+                          'FAI':0x20a, # CLDICE,LAND,HIGLINT
                           'SST':0x1002,
                           'NSST':0x2,
                           'SST3':0x2,
@@ -180,6 +187,7 @@ QUAL_ARRAY_NAME_FROM_SUITE = {'SST': 'qual_sst',
                               'PIC': None,
                               'PAR': None,
                               'POC': None,
+                              'FAI': None,
                               'KD490': None}
 
 def afai_viirs(red, nir, swir):
@@ -189,6 +197,11 @@ def afai_viirs(red, nir, swir):
 def afai_modis(red, nir, swir):
     nir_line = red + (swir - red) * (748 - 667) / (869 - 667)
     return nir - nir_line
+
+def fai_modis(red, nir, swir):
+    nir_line = red + (swir - red) * (859 - 645) / (1240 - 645)
+    return nir - nir_line
+
 
 BAND_MATH_FUNCTIONS = {'afai': {'aqua': {'formula': afai_modis,
                                          'bands': ['rhos_667', 'rhos_748', 'rhos_869'],
@@ -201,7 +214,14 @@ BAND_MATH_FUNCTIONS = {'afai': {'aqua': {'formula': afai_modis,
                                 'viirs':{'formula': afai_viirs,
                                          'bands': ['rhos_671', 'rhos_745', 'rhos_862'],
                                          'standard_name': 'afai',
-                                         'long_name': 'Alternative floating algae index'}}}
-
+                                         'long_name': 'Alternative floating algae index'}},
+                       'fai': {'aqua': {'formula': fai_modis,
+                                        'bands': ['rhos_645', 'rhos_859', 'rhos_1240'],
+                                        'standard_name': 'fai',
+                                        'long_name': 'Floating algae index'},
+                               'terra': {'formula': fai_modis,
+                                        'bands': ['rhos_645', 'rhos_859', 'rhos_1240'],
+                                        'standard_name': 'fai',
+                                        'long_name': 'Floating algae index'}}}
 
 
