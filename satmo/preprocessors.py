@@ -108,7 +108,7 @@ def l2gen(x, var_list, suite, data_root, tmp_dir=None):
         delete = True
     # Create L2 output dir if it doesn't exist
     if not os.path.exists(output_dir):
-        os.makedirs(L2output_dir)
+        os.makedirs(output_dir)
     # Split in two different paths (modis --> multilevel_processor, viirs --> l2gen)
     if input_meta['sensor'] == 'viirs':
         geo_file = OC_viirs_geo_filename_builder(x)
