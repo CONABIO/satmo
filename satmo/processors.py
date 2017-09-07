@@ -610,12 +610,16 @@ def make_time_composite(date_list, var, suite, resolution, composite,
 
 
 
-def l2_append(x, input_bands, formula, short_name, long_name, standard_name):
+def l2_append(x, bands, formula, short_name, long_name, standard_name,
+              valid_min, valid_max):
     """Compute a new array and append it to an existing OBPG L2 file
+
+    This function can be called by passing a nested dict of the global variable
+    BAND_MATH_FUNCTIONS as kwargs. Example l2_append(x, **BAND_MATH_FUNCTIONS['afai'][sensor])
 
     Args:
         x (str): Input L2 file in netCDF format
-        input_bands (list): List of strings corresponding to the names of the
+        bands (list): List of strings corresponding to the names of the
             netCDF dataset variables used to compute the new array. They must
             be provided in the same order than used in the formula argument
         formula (func): The function used to compute the new variable. Each argument
@@ -624,6 +628,8 @@ def l2_append(x, input_bands, formula, short_name, long_name, standard_name):
             variable name)
         long_name (str): Name of the newly create dataset
         standard_name (str): Name of the newly create dataset
+        valid_min (float): Valid minimum value
+        valid_max (float): Valid maximum value
 
     Return:
         None: The function is used for its side effect of appending a new variable
@@ -631,15 +637,14 @@ def l2_append(x, input_bands, formula, short_name, long_name, standard_name):
     """
     with nc.Dataset(x, 'a') as src:
         geo = src['geophysical_data']
-        newVar = geo.createVariable(short_name, 'f4', ('number_of_lines', 'pixels_per_line'))
+        newVar = geo.createVariable(short_name, 'f4', ('number_of_lines', 'pixels_per_line'),
+                                    fill_value=geo[bands[0]]._FillValue)
         newVar.long_name = long_name
         newVar.standard_name = standard_name
-        newVar[:] = formula(*[geo[x][:] for x in input_bands])
+        newVar.valid_min = valid_min
+        newVar.valid_max = valid_max
+        newVar[:] = formula(*[geo[x][:] for x in bands])
 
-def afai_viirs(red, nir, swir):
-    # TODO: Perhaps these function would better fit in global variables module
-    nir_line = red + (swir - red) * (745 - 671) / (862 - 671)
-    return nir - nir_line
 
 
 

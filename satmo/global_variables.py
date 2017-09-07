@@ -202,26 +202,42 @@ def fai_modis(red, nir, swir):
     nir_line = red + (swir - red) * (859 - 645) / (1240 - 645)
     return nir - nir_line
 
-
+# The keys of the lowest level of nested dict match the l2_append function arguments
+# so that they can be passed as kwargs
 BAND_MATH_FUNCTIONS = {'afai': {'aqua': {'formula': afai_modis,
                                          'bands': ['rhos_667', 'rhos_748', 'rhos_869'],
                                          'standard_name': 'afai',
+                                         'short_name': 'afai',
+                                         'valid_min': -1.,
+                                         'valid_max': 1.,
                                          'long_name': 'Alternative floating algae index'},
                                 'terra':{'formula': afai_modis,
                                          'bands': ['rhos_667', 'rhos_748', 'rhos_869'],
                                          'standard_name': 'afai',
+                                         'short_name': 'afai',
+                                         'valid_min': -1.,
+                                         'valid_max': 1.,
                                          'long_name': 'Alternative floating algae index'},
                                 'viirs':{'formula': afai_viirs,
                                          'bands': ['rhos_671', 'rhos_745', 'rhos_862'],
                                          'standard_name': 'afai',
+                                         'short_name': 'afai',
+                                         'valid_min': -1.,
+                                         'valid_max': 1.,
                                          'long_name': 'Alternative floating algae index'}},
                        'fai': {'aqua': {'formula': fai_modis,
                                         'bands': ['rhos_645', 'rhos_859', 'rhos_1240'],
                                         'standard_name': 'fai',
+                                        'short_name': 'fai',
+                                        'valid_min': -1.,
+                                        'valid_max': 1.,
                                         'long_name': 'Floating algae index'},
                                'terra': {'formula': fai_modis,
                                         'bands': ['rhos_645', 'rhos_859', 'rhos_1240'],
                                         'standard_name': 'fai',
+                                        'short_name': 'fai',
+                                        'valid_min': -1.,
+                                        'valid_max': 1.,
                                         'long_name': 'Floating algae index'}}}
 
 
