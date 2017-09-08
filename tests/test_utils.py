@@ -185,6 +185,25 @@ class TestUtils(unittest.TestCase):
              'variable': None,
              'year': 2017}
 
+        f10 = 'A2008085203500.L2m_CHL_chlor_a.tif'
+        d10 = {'anomaly': False,
+             'begin_year': None,
+             'climatology': False,
+             'composite': None,
+             'date': date(2008, 3, 25),
+             'dom': 25,
+             'doy': 85,
+             'end_year': None,
+             'filename': 'A2008085203500.L2m_CHL_chlor_a.tif',
+             'level': 'L2m',
+             'month': 3,
+             'resolution': None,
+             'sensor': 'aqua',
+             'sensor_code': 'A',
+             'suite': 'CHL',
+             'time': time(20, 35, 00),
+             'variable': 'chlor_a',
+             'year': 2008}
         self.assertEqual(satmo.OC_filename_parser(f1), d1)
         self.assertEqual(satmo.OC_filename_parser(f2), d2)
         self.assertEqual(satmo.OC_filename_parser(f3), d3)
@@ -194,6 +213,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_filename_parser(f7), d7)
         self.assertEqual(satmo.OC_filename_parser(f8), d8)
         self.assertEqual(satmo.OC_filename_parser(f9), d9)
+        self.assertEqual(satmo.OC_filename_parser(f10), d10)
 
     def test_OC_filename_builder(self):
 
@@ -230,6 +250,8 @@ class TestUtils(unittest.TestCase):
         f11 = 'A2004005.L3m_DAY_CHL_chlor_a_1km.tif'
         d12_0 = {'level': 'L3m', 'filename': 'A2004005.L3b_DAY_CHL.nc', 'composite': 'DAY', 'variable': 'chlor_a', 'resolution': '1km', 'full_path': True}
         f12 = 'aqua/L3m/DAY/2004/005/A2004005.L3m_DAY_CHL_chlor_a_1km.tif'
+        f13 = 'A2008085203500.L2m_CHL_chlor_a.tif'
+        d13_0 = {'level': 'L2m', 'filename': 'A2008085203500.L2_LAC_OC.nc', 'suite': 'CHL', 'variable': 'chlor_a'}
 
 
         self.assertEqual(satmo.OC_filename_builder(**d1_0), f1)
@@ -250,6 +272,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.OC_filename_builder(**d10_1), f10)
         self.assertEqual(satmo.OC_filename_builder(**d11_0), f11)
         self.assertEqual(satmo.OC_filename_builder(**d12_0), f12)
+        self.assertEqual(satmo.OC_filename_builder(**d13_0), f13)
 
     def test_OC_path_builder(self):
 

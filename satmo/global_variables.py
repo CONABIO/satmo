@@ -35,7 +35,7 @@ SENSOR_CODES = {'A': 'aqua',
                 'X': 'combined'} # 'combined' is not a sensor, but the name given to combined multisensors
                                  # products
 
-DATA_LEVELS = ['L0', 'L1A', 'L1B', 'L2', 'L3b', 'L3m']
+DATA_LEVELS = ['L0', 'L1A', 'L1B', 'L2', 'L2m', 'L3b', 'L3m']
 
 
 # See seadas defaults in /seadas/run/data/{sensor}/l2bin_defaults_{suite}.par
@@ -176,6 +176,19 @@ BIT_MASK_FROM_L3_SUITE = {'CHL':0x669d73b,
                           'NSST':0x2,
                           'SST3':0x2,
                           'SST4':0x2}
+
+FLAGS = {'CHL':[],
+         'RRS':[],
+         'FLH':[],
+         'PIC':[],
+         'PAR':[],
+         'POC':[],
+         'KD490':[],
+         'FAI':['CLDICE','LAND','HIGLINT'],
+         'SST':[],
+         'NSST':[],
+         'SST3':[],
+         'SST4':[]}
 
 QUAL_ARRAY_NAME_FROM_SUITE = {'SST': 'qual_sst',
                               'NSST': 'qual_sst',

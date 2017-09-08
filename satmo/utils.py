@@ -56,7 +56,7 @@ def OC_filename_parser(filename, raiseError = True):
         end_year (int) (for climatologies only)
         Key values are set to None when not applicable
     """
-    pattern_0 = re.compile(r'(?P<sensor_code>CLIM\.|ANOM\.|[A-Z]{1})(?P<time_info>\d{3}\.|\d{7}\.|\d{13}\.)(?P<level>L0|L1A|L1B|GEO|GEO-M|L2|L3b|L3m)_.*')
+    pattern_0 = re.compile(r'(?P<sensor_code>CLIM\.|ANOM\.|[A-Z]{1})(?P<time_info>\d{3}\.|\d{7}\.|\d{13}\.)(?P<level>L0|L1A|L1B|GEO|GEO-M|L2|L2m|L3b|L3m)_.*')
     m_0 = pattern_0.search(filename)
     if m_0 is None:
         if raiseError:
@@ -192,6 +192,28 @@ def OC_filename_parser(filename, raiseError = True):
                      'anomaly': False,
                      'resolution': None,
                      'variable': None,
+                     'suite': m.group('suite'),
+                     'composite': None,
+                     'begin_year': None,
+                     'end_year': None}
+    elif m_0.group('level') == 'L2m':
+        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})(?P<time>\d{6})\.(?P<level>L2m)_(?P<suite>.*?)_(?P<variable>.*)\..*')
+        m = pattern.match(filename)
+        dt_date = datetime.strptime(m.group('date'), "%Y%j")
+        meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
+                     'sensor_code': m.group('sensor'),
+                     'date': dt_date.date(),
+                     'time': datetime.strptime(m.group('time'), "%H%M%S").time(),
+                     'year': dt_date.year,
+                     'month': dt_date.month,
+                     'doy': dt_date.timetuple().tm_yday,
+                     'dom': dt_date.timetuple().tm_mday,
+                     'level': m.group('level'),
+                     'filename': filename,
+                     'climatology': False,
+                     'anomaly': False,
+                     'resolution': None,
+                     'variable': m.group('variable'),
                      'suite': m.group('suite'),
                      'composite': None,
                      'begin_year': None,
@@ -383,6 +405,27 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
             variable = kwargs['variable']
             resolution = kwargs['resolution']
         filename_elements = ['ANOM.', year, str(doy).zfill(3), '.', level, '_', composite, '_', suite, '_', variable, '_', resolution, '.tif']
+    #####
+    # L2m
+    #####
+    elif level == 'L2m':
+        # A2008085203500.L2m_CHL_chlor_a.tif
+        # filename, suite, variable OR sensor, date, composite, nc
+        if 'filename' in kwargs:
+            filename = kwargs['filename']
+            input_meta = OC_filename_parser(filename)
+            sensor_code = input_meta['sensor_code']
+            year = input_meta['year']
+            doy = input_meta['doy']
+            time = input_meta['time'].strftime('%H%M%S')
+        else: # Assumes sensor_code, date, time and suite are provided
+            year = kwargs['date'].year
+            doy = kwargs['date'].timetuple().tm_yday
+            time = kwargs['time'].strftime('%H%M%S')
+            sensor_code = kwargs['sensor_code']
+        suite = kwargs['suite']
+        variable = kwargs['variable']
+        filename_elements = [sensor_code, year, str(doy).zfill(3), time, '.', level, '_', suite, '_', variable, '.tif']
     elif level == 'L3m':
         # filename, composite, suite, variable, resolution, nc OR sensor, date, composite, nc
         # X2014027.L3m_8DAY_SST_sst_1km.tif
