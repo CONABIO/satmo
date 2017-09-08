@@ -1,5 +1,6 @@
 import os
 from glob import glob
+import subprocess
 
 import numpy as np
 import numpy.ma as ma
@@ -13,6 +14,8 @@ from affine import Affine
 from .geo import geo_dict_from_nc, get_raster_meta
 from .utils import OC_filename_parser, OC_file_finder, is_day, OC_filename_builder
 from .visualization import make_preview
+from .errors import SeadasError
+from .global_variables import L3_SUITE_FROM_VAR
 
 def nc2tif(file, proj4string = None):
     """Generate geotiff from L3m netcdf array
@@ -646,6 +649,67 @@ def l2_append(x, bands, formula, short_name, long_name, standard_name,
         newVar[:] = formula(*[geo[x][:] for x in bands])
 
 
+def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
+             width=5000, outmode='tiff', threshold=0):
+    """Wrapper for l2mapgen seadas command line utility
 
+    Args:
+        x (str): Input file name
+        south (float): Southern border of output extent (in DD)
+        north (float): Northern border of output extent (in DD)
+        west (float): Western border of output extent (in DD)
+        east (float): Eastern border of output extent (in DD)
+        prod (str): Product to map (e.g.: 'chlor_a')
+        flags (list): List of flags to apply (see global variable FLAGS)
+        data_root (str): Root of the data archive
+        width (int): Width in pixels of the output image
+        outmode (str): See seadas l2mapgen doc
+        threshold (float): Minumum percentage of the filled pixels
 
+    Returns:
+        str: The output filename
+    """
+    # Generate automatic filename if not provided
+    if filename is None:
+        if is_day(x):
+            dn = 'day'
+        else:
+            dn = 'night'
+        filename = OC_filename_builder(level='L2m', filename=x, suite=L3_SUITE_FROM_VAR[dn][prod],
+                                       variable=prod, full_path=True, data_root=data_root)
+
+    # Create output dir in case it does not exist
+    out_dir = os.path.dirname(filename)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
+    # Prepare inputs
+    cli_args = ['l2mapgen',
+                'ifile=%s' % x,
+                'ofile=%s' % filename,
+                'prod=%s' % prod,
+                'flaguse=%s' % ','.join(flags),
+                'south=%f' % south,
+                'north=%f' % north,
+                'west=%f' % west,
+                'east=%f' % east,
+                'mask=true',
+                'width=%d' % width,
+                'outmode=%s' % outmode]
+
+    # Run cli
+    status = subprocess.call(cli_args)
+    # l2mapgen ifile=A2015077191500.L2_LAC_AFAI.nc ofile=A2015077191500.L2m_afai.tif prod=afai south=3 north=33 west=-122 east=-72 flaguse=LAND,HIGLINT,CLDICE mask=true width=5000 outmode=tiff
+
+    # Check status (return error in case )
+    if status != 0:
+        raise SeadasError('l2mapgen exited with status %d during L2 mapping' % status)
+
+    # Run gdal_edit.py -a_nodata -32767 -unsetstats filename.tif
+    subprocess.call(['gdal_edit.py',
+                     '-a_nodata',
+                     '-32767',
+                     '-unsetstats',
+                     filename])
+    return filename
 
