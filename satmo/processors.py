@@ -666,6 +666,16 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
         outmode (str): See seadas l2mapgen doc
         threshold (float): Minumum percentage of the filled pixels
 
+    Examples:
+        >>> import satmo
+        >>> from satmo.global_variables import FLAGS, L3_SUITE_FROM_VAR
+
+        >>> x = '/media/ldutrieux/LoicCONAext/satmo/aqua/L2/2015/077/A2015077191500.L2_LAC_AFAI.nc'
+        >>> data_root = '/media/ldutrieux/LoicCONAext/satmo/'
+
+        >>> satmo.l2mapgen(x=x, data_root=data_root, south=3, north=33, west=-122, east=-72,
+                           prod='afai', flags = FLAGS['AFAI'])
+
     Returns:
         str: The output filename
     """

@@ -877,7 +877,7 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root, resolution):
     L2_list = []
     for L1_file in file_list:
         try:
-            L2_file = l2gen(x=L1_file, var_list=var_list, suite='FAI',
+            L2_file = l2gen(x=L1_file, var_list=var_list, suite='AFAI',
                             data_root=data_root)
             L2_list.append(L2_file)
         except Exception as e:
@@ -888,9 +888,11 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root, resolution):
     for L2_file in L2_list:
         meta = OC_filename_parser(L2_file)
         afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
+        # TODO: pass kwargs here
         l2_append(L2_file, input_bands=afai_param['bands'],
                   formula=afai_param['formula'],
                   short_name='afai',
                   long_name=afai_param['long_name'],
                   standard_name=afai_param['standard_name'])
+        # TODO: run l2mapgen on every L2 file
     # Get a list of dates/sensor combinations
