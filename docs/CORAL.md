@@ -64,3 +64,9 @@ The /data drive was initially mounted with noexec; so I remounted it by running 
 
 Any jupyter notebook started by `loic` can be accessed remotely via browser. ([coral:9999](coral:9999)). Password is `notebook`. The notebook server running permanently (launched with `nohup jupyter notebook &`) is running from within the `satmo-dev` virtualenv.
 
+
+
+## 8 september 2017
+
+Install v7.4 of seadas
+Edit $OCDATAROOT/common/smigen_product_table.dat file to add afai
