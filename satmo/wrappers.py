@@ -16,8 +16,9 @@ from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen, l2gen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
                                BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE,
-                               BAND_MATH_FUNCTIONS)
-from .processors import L3mProcess, FileComposer, make_time_composite, l2_append
+                               BAND_MATH_FUNCTIONS, FLAGS)
+from .processors import (L3mProcess, FileComposer, make_time_composite, l2_append,
+                         l2mapgen)
 from .visualization import make_preview
 from .errors import TimeoutException
 
@@ -856,7 +857,28 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 except KeyboardInterrupt:
                     raise
 
-def nrt_wrapper_l1(var_list, north, south, west, east, data_root, resolution):
+def nrt_wrapper_l1(var_list, north, south, west, east, data_root):
+    """Wrapper to be called from nrt command line once a day
+
+    Handles subscription based download of L1A files, L2 processing, computation
+    of additional indices, and mapping of each individual file, separately to
+    longlat.
+
+    Args:
+        var_list (list): List of strings (variables to generate with l2gen). e.g.
+            ['rhos_nnn', 'nLw']
+        north (float): north latitude of bounding box in DD
+        south (float): south latitude of bounding box in DD
+        west (float): west longitude of bounding box in DD
+        east (float): east longitude of bounding box in DD
+        data_root (str): Root of the data archive
+
+    Returns:
+        None: The function is used for its side effect of running the L1A-download
+            to L2m processing chain
+
+
+    """
     # 1 - Download data
     try:
         file_list = subscriptions_download(SUBSCRIPTIONS['L1A']['day'],
@@ -888,11 +910,9 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root, resolution):
     for L2_file in L2_list:
         meta = OC_filename_parser(L2_file)
         afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
-        # TODO: pass kwargs here
-        l2_append(L2_file, input_bands=afai_param['bands'],
-                  formula=afai_param['formula'],
-                  short_name='afai',
-                  long_name=afai_param['long_name'],
-                  standard_name=afai_param['standard_name'])
+        l2_append(L2_file, **afai_param)
         # TODO: run l2mapgen on every L2 file
+        l2m_file = l2mapgen(L2_file, south=south, north=north, west=west, east=east,
+                            prod='afai', flags=FLAGS['AFAI'], data_root=data_root)
+        # TODO: cleanup intermediary files (tmp dir + non L1A files in modis L1A directories)
     # Get a list of dates/sensor combinations

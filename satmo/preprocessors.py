@@ -140,6 +140,7 @@ def l2gen(x, var_list, suite, data_root, tmp_dir=None):
             raise SeadasError('Multilevel processor exited with status %d during modis L2 processing' % status_0)
     if delete:
         os.remove(x)
+        # TODO: remove other generated intermediary files
     return output_filename
 
 # Make a class that holds all the information of a future L2 (binned) product
