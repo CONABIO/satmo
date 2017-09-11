@@ -138,9 +138,15 @@ def l2gen(x, var_list, suite, data_root, tmp_dir=None):
         status = subprocess.call(cli_elements)
         if status != 0:
             raise SeadasError('Multilevel processor exited with status %d during modis L2 processing' % status_0)
+        # Prepare list of intermediary files generated and delete them
+        dirname, basename = os.path.split(x)
+        del_files = [os.path.join(dirname, '%s%s' % (basename[:15], 'L1B_QKM')),
+                     os.path.join(dirname, '%s%s' % (basename[:15], 'L1B_HKM')),
+                     os.path.join(tmp_dir, '%s%s' % (basename[:15], 'L1B_LAC')),
+                     os.path.join(tmp_dir, '%s%s' % (basename[:15], 'GEO'))]
+        [os.remove(y) for y in del_files]
     if delete:
         os.remove(x)
-        # TODO: remove other generated intermediary files
     return output_filename
 
 # Make a class that holds all the information of a future L2 (binned) product
