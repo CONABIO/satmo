@@ -648,7 +648,7 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
 
 def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_root,
                      night=False, flags=None, width=5000, outmode='tiff',
-                     threshold=0):
+                     overwrite=False, threshold=0):
     """Runs l2mapgen for a given variable on all the files of a given date.
 
     All possible errors are caugth
@@ -668,6 +668,8 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
             variable and used
         width (int): Width in pixels of the output image
         outmode (str): See seadas l2mapgen doc
+        overwrite (bool): Overwrite existing files? Return ValueError if file exists
+            and overwrite is set to False (default)
         threshold (float): Minumum percentage of the filled pixels
 
 
@@ -690,7 +692,8 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
                 try:
                     l2mapgen(x=file, north=north, south=south, west=west,
                              east=east, prod=var, flags=flags, data_root=data_root,
-                             width=width, outmode=outmode, threshold=threshold)
+                             width=width, outmode=outmode, threshold=threshold,
+                             overwrite=overwrite)
                 except Exception as e:
                     pprint('An error occured while processing %s file. %s' % (file, e))
                 except KeyboardInterrupt:
@@ -698,7 +701,7 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
 
 def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
                      data_root, night=False, flags=None, width=5000,
-                     outmode='tiff', threshold=0, n_threads=1):
+                     outmode='tiff', overwrite=False, threshold=0, n_threads=1):
     """Batch L2m processing with parallel support; to be ran from cli
     """
     if type(begin) is str:
@@ -720,6 +723,7 @@ def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
               'flags': flags,
               'width': width,
               'outmode': outmode,
+              'overwrite': overwrite,
               'threshold': threshold}
     # Run wrapper for every date with // support
     pool = mp.Pool(n_threads)

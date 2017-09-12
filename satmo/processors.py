@@ -650,7 +650,7 @@ def l2_append(x, bands, formula, short_name, long_name, standard_name,
 
 
 def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
-             width=5000, outmode='tiff', threshold=0):
+             width=5000, outmode='tiff', threshold=0, overwrite=False):
     """Wrapper for l2mapgen seadas command line utility
 
     Args:
@@ -665,6 +665,8 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
         width (int): Width in pixels of the output image
         outmode (str): See seadas l2mapgen doc
         threshold (float): Minumum percentage of the filled pixels
+        overwrite (bool): Overwrite existing files? Return ValueError if file exists
+            and overwrite is set to False (default)
 
     Examples:
         >>> import satmo
@@ -687,6 +689,8 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
             dn = 'night'
         filename = OC_filename_builder(level='L2m', filename=x, suite=L3_SUITE_FROM_VAR[dn][prod],
                                        variable=prod, full_path=True, data_root=data_root)
+    if os.path.isfile(filename) and not overwrite:
+        raise ValueError('Error while running l2mapgen on %s; file exists and overwrite set to False' % filename)
 
     # Create output dir in case it does not exist
     out_dir = os.path.dirname(filename)
