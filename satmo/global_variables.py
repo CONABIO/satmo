@@ -91,7 +91,7 @@ STANDARD_L3_SUITES = {'RRS': {'terra': ['Rrs_412','Rrs_443','Rrs_469','Rrs_488',
 # Rrc (Rayleight corrected reflectance), used by Hu are called rhos in seadas
 
 L2_L3_SUITES_CORRESPONDENCES = {'RRS': 'OC',
-                                'FAI': 'FAI',
+                                'FAI': 'OC2',
                                 'SST': 'SST',
                                 'NSST': 'SST',
                                 'SST4': 'SST4',

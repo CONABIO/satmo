@@ -705,6 +705,7 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
                 'east=%f' % east,
                 'mask=true',
                 'width=%d' % width,
+                'threshold=%f' % threshold,
                 'outmode=%s' % outmode]
 
     # Run cli

@@ -185,6 +185,7 @@ def l2_to_l3m_wrapper(date, sensor_code, suite, variable, south, north, west, ea
     Args:
         date (str or datetime): Date to be processed
         sensor_code (str): Sensor code of the data to be processed (e.g. 'A' for aqua)
+        # TODO: ability to pass a list of variables, from which a list of SUITES will be derived, L3_SUITE_FROM_VAR
         suite (str): L3m suite to obtain (e.g. 'CHL')
         variable (str): L3m variable to process (e.g. 'chlor_a')
         north (float): north latitude of bounding box in DD
@@ -645,6 +646,63 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
     pool.map_async(functools.partial(make_time_composite,
                                      **kwargs), dateList_list).get(9999999)
 
+def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_root,
+                     night=False, flags=None, width=5000, outmode='tiff',
+                     threshold=0.):
+    """Runs l2mapgen for a given variable on all the files of a given date.
+
+    All possible errors are caugth
+
+    Args:
+        date (datetime or str): Date of L2 data to process
+        sensor_codes (list): List of strings corresponding to sensor codes to process
+        var (str): Variable to process
+        south (float): Southern border of output extent (in DD)
+        north (float): Northern border of output extent (in DD)
+        west (float): Western border of output extent (in DD)
+        east (float): Eastern border of output extent (in DD)
+        data_root (str): Root of the data archive
+        night (bool): Is night data? Default to False
+        flags (list): List of flags to apply. Defaults to None, in which case
+            default flags for the product suite are retrieved from the FLAGS global
+            variable and used
+        width (int): Width in pixels of the output image
+        outmode (str): See seadas l2mapgen doc
+        threshold (float): Minumum percentage of the filled pixels
+
+
+    """
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d")
+    # Determine L2 suite corresponding to var
+    dn = 'night' if night else 'day'
+    l3_suite = L3_SUITE_FROM_VAR[dn][var]
+    l2_suite = L2_L3_SUITES_CORRESPONDENCES[l3_suite]
+    if flags is None:
+        flags = FLAGS[l3_suite]
+
+    # Query L2 files
+    for sensor_code in sensor_codes:
+        file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+                                   suite=l2_suite, sensor_code=sensor_code)
+        if file_list:
+            for file in file_list:
+                try:
+                    l2mapgen(x=file, north=north, south=south, west=west,
+                             east=east, prod=var, flags=flags, data_root=data_root,
+                             width=width, outmode=outmode, threshold=threshold)
+                except Exception as e:
+                    pprint('An error occured while processing %s file. %s' % (file, e))
+                except KeyboardInterrupt:
+                    raise
+
+def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
+                     data_root, night=False, flags=None, width=5000,
+                     outmode='tiff', threshold=0):
+    """Batch L2m processing with parallel support; to be ran from cli
+    """
+    pass
+
 def subscriptions_download(sub_list, data_root, refined=False):
     """Update a local archive using a list of data subscription numbers
 
@@ -914,5 +972,4 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root):
         # TODO: run l2mapgen on every L2 file
         l2m_file = l2mapgen(L2_file, south=south, north=north, west=west, east=east,
                             prod='afai', flags=FLAGS['AFAI'], data_root=data_root)
-        # TODO: cleanup intermediary files (tmp dir + non L1A files in modis L1A directories)
     # Get a list of dates/sensor combinations
