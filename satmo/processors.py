@@ -715,11 +715,9 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
     if status != 0:
         raise SeadasError('l2mapgen exited with status %d during L2 mapping' % status)
 
-    # Run gdal_edit.py -a_nodata -32767 -unsetstats filename.tif
-    subprocess.call(['gdal_edit.py',
-                     '-a_nodata',
-                     '-32767',
-                     '-unsetstats',
-                     filename])
+    # Update dataset nodata value using rasterio
+    with rasterio.open(filename, 'r+') as src:
+        src.nodata = -32767
+
     return filename
 
