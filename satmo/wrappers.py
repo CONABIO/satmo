@@ -648,7 +648,7 @@ def timerange_time_compositer(begin, end, delta, var, suite, resolution,
 
 def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_root,
                      night=False, flags=None, width=5000, outmode='tiff',
-                     threshold=0.):
+                     threshold=0):
     """Runs l2mapgen for a given variable on all the files of a given date.
 
     All possible errors are caugth
@@ -698,10 +698,32 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
 
 def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
                      data_root, night=False, flags=None, width=5000,
-                     outmode='tiff', threshold=0):
+                     outmode='tiff', threshold=0, n_threads=1):
     """Batch L2m processing with parallel support; to be ran from cli
     """
-    pass
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    # Get list of individual dates between begin and end
+    ndays = (end - begin).days + 1
+    date_list = [begin + timedelta(days=x) for x in range(0, ndays)]
+    # Build kwargs
+    kwargs = {'sensor_codes': sensor_codes,
+              'var': var,
+              'south': south,
+              'north': north,
+              'west': west,
+              'east': east,
+              'data_root': data_root,
+              'night': night,
+              'flags': flags,
+              'width': width,
+              'outmode': outmode,
+              'threshold': threshold}
+    # Run wrapper for every date with // support
+    pool = mp.Pool(n_threads)
+    pool.map_async(functools.partial(l2mapgen_wrapper, **kwargs), date_list).get(9999999)
 
 def subscriptions_download(sub_list, data_root, refined=False):
     """Update a local archive using a list of data subscription numbers
