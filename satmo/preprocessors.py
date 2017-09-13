@@ -2,6 +2,7 @@ import subprocess
 from jinja2 import Environment, PackageLoader
 import os.path
 import os
+import shutil
 import bz2
 import glob
 import warnings
@@ -68,6 +69,24 @@ def bz2_compress(source, destination, compresslevel = 3, overwrite = False):
             dst.write(data)
     return out_file
 
+def getanc(x):
+    """Wrapper for the getanc.py seadas utility
+
+    Args:
+        x (str): filename of a L1 file
+
+    Returns:
+        str: The path to the generated (and moved) .anc text file
+    """
+    arg_list = ['getanc.py', x]
+    subprocess.call(arg_list)
+    # Locate anc file generated
+    wd = os.getcwd()
+    dirname, filename = os.path.split(x)
+    anc_file_src = os.path.join(wd, '%s.anc' % filename)
+    anc_file_dst = '%s.anc' % x
+    shutil.move(anc_file_src, anc_file_dst)
+    return anc_file_dst
 
 def l2gen(x, var_list, suite, data_root, tmp_dir=None):
     """Wrapper to run seadas l2gen on L1A data
@@ -426,14 +445,14 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
 
     Details:
         This is a simple no filter python wrapper around the seadas l2bin utility.
-        
+
     Args:
         file_list (list): list of L2 files (full paths)
         L3b_suite (str): Product suite to bin (see global variable STANDARD_L3_SUITES
             for corresponding variables)
         resolution (int or str): See resolve argument in l2bin doc
         night (bool): Is that night products
-        filename (str): Optional full path of output filename (L3b). If not provided, a 
+        filename (str): Optional full path of output filename (L3b). If not provided, a
             filename is automatically generated.
         data_root (str): Root of the data archive. Mandatory if filename is not provided
             ignored otherwise
@@ -443,7 +462,7 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
         str: The output filename
 
     Raises:
-        satmo.SeadasError if the seadas command exists with status 1 
+        satmo.SeadasError if the seadas command exists with status 1
 
     Example usage:
         >>> import satmo, glob
@@ -456,7 +475,9 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
     if filename is None:
         if data_root is None:
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
-        filename = OC_filename_builder(level = 'L3b', full_path = True, data_root = data_root, suite = L3b_suite, filename = file_list[0])
+        filename = OC_filename_builder(level = 'L3b', full_path = True,
+                                       data_root = data_root, suite = L3b_suite,
+                                       filename = file_list[0])
     if not (os.path.isfile(filename) and not overwrite):
         L3b_dir = os.path.dirname(filename)
         # Create directory if not already exists
@@ -471,6 +492,7 @@ def OC_l2bin(file_list, L3b_suite, resolution = 1, night = False, filename = Non
         # Get the standards products from the global variable
         l3bprod = STANDARD_L3_SUITES[L3b_suite][input_meta['sensor']]
         # BUild l3b command
+        # TODO: Pass SUITE, so that default par file is used automatically
         l2bin_arg_list = ['l2bin',
                           'l3bprod=%s' % ','.join(l3bprod),
                           'infile=%s' % file_list_file, # TODO cam be a file
