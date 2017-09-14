@@ -88,11 +88,11 @@ def getanc(x):
     shutil.move(anc_file_src, anc_file_dst)
     return anc_file_dst
 
-def l2gen(x, var_list, suite, data_root, get_anc=True, tmp_dir=None):
+def l2gen(x, var_list, suite, data_root, get_anc=True):
     """Wrapper to run seadas l2gen on L1A data
 
-    Run l2gen via multilevel_processor in the case of modis and directly with l2gen
-    command in the case of viirs. If input is a viirs L1A file, there must be a
+    Run l2gen for modis and viirs data. All intermediary files are automatically
+    generated in the case of MODIS; if input is a viirs L1A file, there must be a
     corresponging GEO file in the same folder.
 
     Args:
@@ -102,17 +102,10 @@ def l2gen(x, var_list, suite, data_root, get_anc=True, tmp_dir=None):
         data_root (str): Root of the local data archive
         get_anc (bool): Download ancillary data for improved atmospheric correction.
             Defaults to True.
-        tmp_dir (str): Path to a directory where to store intermediary output of
-            the L1A to L2 process. Defaults to None, in which case os.path.join(data_root, 'tmp')
-            is used.
 
     Returns:
         str: file name of the generated L2 file
     """
-    if tmp_dir is None:
-        tmp_dir = os.path.join(data_root, 'tmp')
-    if not os.path.exists(tmp_dir):
-        os.makedirs(tmp_dir)
     ext = os.path.splitext(x)[1]
     input_dir = os.path.dirname(x)
     output_filename = OC_filename_builder(level='L2', filename=x,
@@ -147,35 +140,41 @@ def l2gen(x, var_list, suite, data_root, get_anc=True, tmp_dir=None):
         if status != 0:
             raise SeadasError('l2gen processor exited with status %d during viirs L2 processing' % status)
     elif input_meta['sensor'] in ['aqua', 'terra']:
-        # modis L2 processing is done via multilevel_processor.py
-        template = Environment(loader=PackageLoader('satmo', 'templates')).get_template('l2process.par')
-        # Par file templating 
+        # modis L2 processing is done via modis_GEO.py + modis_L1B.py + l2gen
+        dirname, basename = os.path.split(x)
+        geo_file = os.path.join(dirname, '%s%s' % (basename[:15], 'GEO'))
+        l1b_file = os.path.join(dirname, '%s%s' % (basename[:15], 'L1B_LAC'))
+        # Run modis_GEO.py
+        geo_cli = ['modis_GEO.py',
+                   x,
+                   '--output=%s' % geo_file]
+        status = subprocess.call(geo_cli)
+        if status != 0:
+            raise SeadasError('modis_GEO.py exited with status %d during modis L2 processing' % status)
+        # Run modis_L1B.py
+        l1b_cli = ['modis_L1B.py',
+                   '--okm=%s' % l1b_file,
+                   x,
+                   geo_file]
+        status = subprocess.call(l1b_cli)
+        if status != 0:
+            raise SeadasError('modis_L1B.py exited with status %d during modis L2 processing' % status)
+        # Run l2gen
+        cli_elements = ['l2gen',
+                        'ifile=%s' % l1b_file,
+                        'geofile=%s' % geo_file,
+                        'ofile=%s' % output_filename,
+                        'l2prod=%s' % ','.join(var_list)]
         if get_anc:
-            par = template.render(ifile = x,
-                                  prod_list = var_list,
-                                  ofile = output_filename,
-                                  anc=anc)
-        else:
-            par = template.render(ifile = x,
-                                  prod_list = var_list,
-                                  ofile = output_filename)
-        # par filename creation + writing to output directory
-        par_file = os.path.join(tmp_dir, '%s_l2process.par' % randomword(10))
-        with open(par_file, "wb") as dst:
-            dst.write(par)
-        # Build multilevel processing arguments list
-        cli_elements = ['multilevel_processor.py',
-                      par_file,
-                      '--output_dir=%s' % tmp_dir]
+            cli_elements.append('par=%s' % anc)
         status = subprocess.call(cli_elements)
         if status != 0:
-            raise SeadasError('Multilevel processor exited with status %d during modis L2 processing' % status)
+            raise SeadasError('l2gen processor exited with status %d during modis L2 processing' % status)
         # Prepare list of intermediary files generated and delete them
-        dirname, basename = os.path.split(x)
         del_files = [os.path.join(dirname, '%s%s' % (basename[:15], 'L1B_QKM')),
                      os.path.join(dirname, '%s%s' % (basename[:15], 'L1B_HKM')),
-                     os.path.join(tmp_dir, '%s%s' % (basename[:15], 'L1B_LAC')),
-                     os.path.join(tmp_dir, '%s%s' % (basename[:15], 'GEO'))]
+                     l1b_file,
+                     geo_file]
         [os.remove(y) for y in del_files]
     if delete:
         os.remove(x)
