@@ -699,6 +699,54 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
                 except KeyboardInterrupt:
                     raise
 
+def l2gen_wrapper(date, sensor_codes, var_list, suite, data_root, night=False,
+                  get_anc=True):
+    """Runs l2gen on all the files of a given date.
+
+    All possible errors are caught
+
+    Args:
+        date (datetime or str): Date of L2 data to process
+        sensor_codes (list): List of strings corresponding to sensor codes to process
+        var_list (list): List of strings representing the variables to process
+        suite (str): Output L2 suite name
+        data_root (str): Root of the data archive
+        night (bool): Is night data? Default to False
+        get_anc (bool): Download ancillary data for improved atmospheric correction.
+            Defaults to True.
+
+    Examples:
+        >>> import satmo
+        >>> l2gen_wrapper(date='2004-11-21', sensor_codes=['A', 'T', 'V'],
+        >>>               var_list=['chlor_a'], data_root='/export/isilon/datos2/satmo2_data',
+        >>>               night=False, get_anc=True)
+
+    Returns:
+        list: List of processed L2 files
+    """
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d")
+    # Query L2 files
+    out_list = []
+    for sensor_code in sensor_codes:
+        file_list = OC_file_finder(data_root=data_root, date=date, level='L1A',
+                                   sensor_code=sensor_code)
+        # Filter for day/night files
+        file_list = [x for x in file_list if is_night(x) is night]
+        if file_list:
+            for file in file_list:
+                try:
+                    out = l2gen(file, var_list=var_list, suite=suite, data_root=data_root,
+                                get_anc=get_anc)
+                    out_list.append(out)
+                except Exception as e:
+                    pprint('An error occured while processing %s file. %s' % (file, e))
+                except KeyboardInterrupt:
+                    raise
+    return out_list
+
+
+
 def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
                      data_root, night=False, flags=None, width=5000,
                      outmode='tiff', overwrite=False, threshold=0, n_threads=1):
