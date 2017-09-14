@@ -699,54 +699,6 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
                 except KeyboardInterrupt:
                     raise
 
-def l2gen_wrapper(date, sensor_codes, var_list, suite, data_root, night=False,
-                  get_anc=True):
-    """Runs l2gen on all the files of a given date.
-
-    All possible errors are caught
-
-    Args:
-        date (datetime or str): Date of L2 data to process
-        sensor_codes (list): List of strings corresponding to sensor codes to process
-        var_list (list): List of strings representing the variables to process
-        suite (str): Output L2 suite name
-        data_root (str): Root of the data archive
-        night (bool): Is night data? Default to False
-        get_anc (bool): Download ancillary data for improved atmospheric correction.
-            Defaults to True.
-
-    Examples:
-        >>> import satmo
-        >>> l2gen_wrapper(date='2004-11-21', sensor_codes=['A', 'T', 'V'],
-        >>>               var_list=['chlor_a'], data_root='/export/isilon/datos2/satmo2_data',
-        >>>               night=False, get_anc=True)
-
-    Returns:
-        list: List of processed L2 files
-    """
-    if type(date) is str:
-        date = datetime.strptime(date, "%Y-%m-%d")
-    # Query L2 files
-    out_list = []
-    for sensor_code in sensor_codes:
-        file_list = OC_file_finder(data_root=data_root, date=date, level='L1A',
-                                   sensor_code=sensor_code)
-        # Filter for day/night files
-        file_list = [x for x in file_list if is_night(x) is night]
-        if file_list:
-            for file in file_list:
-                try:
-                    out = l2gen(file, var_list=var_list, suite=suite, data_root=data_root,
-                                get_anc=get_anc)
-                    out_list.append(out)
-                except Exception as e:
-                    pprint('An error occured while processing %s file. %s' % (file, e))
-                except KeyboardInterrupt:
-                    raise
-    return out_list
-
-
-
 def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
                      data_root, night=False, flags=None, width=5000,
                      outmode='tiff', overwrite=False, threshold=0, n_threads=1):
@@ -776,6 +728,75 @@ def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
     # Run wrapper for every date with // support
     pool = mp.Pool(n_threads)
     pool.map_async(functools.partial(l2mapgen_wrapper, **kwargs), date_list).get(9999999)
+
+def l2gen_wrapper(date, sensor_codes, var_list, suite, data_root, night=False,
+                  get_anc=True):
+    """Runs l2gen on all the files of a given date.
+
+    All possible errors are caught
+
+    Args:
+        date (datetime or str): Date of L2 data to process
+        sensor_codes (list): List of strings corresponding to sensor codes to process
+        var_list (list): List of strings representing the variables to process
+        suite (str): Output L2 suite name
+        data_root (str): Root of the data archive
+        night (bool): Is night data? Default to False
+        get_anc (bool): Download ancillary data for improved atmospheric correction.
+            Defaults to True.
+
+    Examples:
+        >>> import satmo
+        >>> l2gen_wrapper(date='2004-11-21', sensor_codes=['A', 'T', 'V'],
+        >>>               var_list=['chlor_a'], data_root='/export/isilon/datos2/satmo2_data',
+        >>>               suite='OC3', night=False, get_anc=True)
+
+    Returns:
+        list: List of processed L2 files
+    """
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d")
+    # Query L2 files
+    out_list = []
+    for sensor_code in sensor_codes:
+        file_list = OC_file_finder(data_root=data_root, date=date, level='L1A',
+                                   sensor_code=sensor_code)
+        # Filter for day/night files
+        file_list = [x for x in file_list if is_night(x) is night]
+        if file_list:
+            for file in file_list:
+                try:
+                    out = l2gen(file, var_list=var_list, suite=suite, data_root=data_root,
+                                get_anc=get_anc)
+                    out_list.append(out)
+                except Exception as e:
+                    pprint('An error occured while processing %s file. %s' % (file, e))
+                except KeyboardInterrupt:
+                    raise
+    return out_list
+
+
+def l2gen_batcher(begin, end, sensor_codes, var_list, suite, data_root, night=False,
+                  get_anc=True, n_threads=1):
+    """Batch L2 processing with parallel support; to be ran from cli
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    # Get list of individual dates between begin and end
+    ndays = (end - begin).days + 1
+    date_list = [begin + timedelta(days=x) for x in range(0, ndays)]
+    # Build kwargs
+    kwargs = {'sensor_codes': sensor_codes,
+              'var_list': var_list,
+              'suite': suite,
+              'get_anc': get_anc,
+              'data_root': data_root,
+              'night': night}
+    # Run wrapper for every date with // support
+    pool = mp.Pool(n_threads)
+    pool.map_async(functools.partial(l2gen_wrapper, **kwargs), date_list).get(9999999)
 
 def subscriptions_download(sub_list, data_root, refined=False):
     """Update a local archive using a list of data subscription numbers

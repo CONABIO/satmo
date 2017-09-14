@@ -10,11 +10,11 @@ from .utils import bit_pos_to_hex, resolution_to_km_str, pre_compose, processing
 from .utils import find_composite_date_list, time_limit, OC_viirs_geo_filename_builder
 from .utils import randomword
 from .wrappers import (timerange_download, timerange_extract, extract_wrapper,
-l2_to_l3m_wrapper, timerange_l2_to_l3m, auto_L3m_process,
+                       l2_to_l3m_wrapper, timerange_l2_to_l3m, auto_L3m_process,
                        timerange_auto_L3m_process, make_daily_composite,
                        timerange_daily_composite, timerange_time_compositer,
                        subscriptions_download, nrt_wrapper, l2mapgen_wrapper,
-                       l2mapgen_batcher, l2gen_wrapper)
+                       l2mapgen_batcher, l2gen_wrapper, l2gen_batcher)
 from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError, TimeoutException
 from .visualization import make_map_title, make_preview
