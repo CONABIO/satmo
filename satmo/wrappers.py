@@ -11,7 +11,7 @@ from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
                     OC_filename_parser, pre_compose, processing_meta_from_list,
-                    find_composite_date_list, time_limit)
+                    find_composite_date_list, time_limit, OC_viirs_geo_filename_builder)
 from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen, l2gen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
@@ -65,8 +65,12 @@ def timerange_download(sensors, begin, end, write_dir,\
             pprint(e.message)
             continue
         url_list = [make_download_url(x) for x in file_list]
+        # Viirs only: Build urls of GEO files and append to url list
+        geo_files = [OC_viirs_geo_filename_builder(x) for x in urls if OC_filename_parser(x)['sensor'] == 'viirs']
+        url_list += geo_files
         for url in url_list:
-            local_file = download_robust(url, write_dir, overwrite = overwrite, check_integrity = check_integrity)
+            local_file = download_robust(url, write_dir, overwrite = overwrite,
+                                         check_integrity = check_integrity)
             local_files_list.append(local_file)
     return local_files_list
 
@@ -1052,7 +1056,7 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root):
     L2_list = []
     for L1_file in file_list:
         try:
-            L2_file = l2gen(x=L1_file, var_list=var_list, suite='AFAI',
+            L2_file = l2gen(x=L1_file, var_list=var_list, suite='OC2',
                             data_root=data_root)
             L2_list.append(L2_file)
         except Exception as e:
