@@ -14,7 +14,8 @@ from .wrappers import (timerange_download, timerange_extract, extract_wrapper,
                        timerange_auto_L3m_process, make_daily_composite,
                        timerange_daily_composite, timerange_time_compositer,
                        subscriptions_download, nrt_wrapper, l2mapgen_wrapper,
-                       l2mapgen_batcher, l2gen_wrapper, l2gen_batcher)
+                       l2mapgen_batcher, l2gen_wrapper, l2gen_batcher,
+                       refined_processing_wrapper_l1, nrt_wrapper_l1)
 from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError, TimeoutException
 from .visualization import make_map_title, make_preview

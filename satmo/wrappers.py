@@ -16,7 +16,7 @@ from .preprocessors import extractJob, OC_l2bin, OC_l3mapgen, l2gen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
                                BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE,
-                               BAND_MATH_FUNCTIONS, FLAGS)
+                               BAND_MATH_FUNCTIONS, FLAGS, VARS_FROM_L2_SUITE)
 from .processors import (L3mProcess, FileComposer, make_time_composite, l2_append,
                          l2mapgen)
 from .visualization import make_preview
@@ -1014,7 +1014,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 except KeyboardInterrupt:
                     raise
 
-def nrt_wrapper_l1(var_list, north, south, west, east, data_root):
+def nrt_wrapper_l1(north, south, west, east, data_root):
     """Wrapper to be called from nrt command line once a day
 
     Handles subscription based download of L1A files, L2 processing, computation
@@ -1022,8 +1022,6 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root):
     longlat.
 
     Args:
-        var_list (list): List of strings (variables to generate with l2gen). e.g.
-            ['rhos_nnn', 'nLw']
         north (float): north latitude of bounding box in DD
         south (float): south latitude of bounding box in DD
         west (float): west longitude of bounding box in DD
@@ -1052,11 +1050,13 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root):
         # Exit function in case no files were downloaded
         return
     # Process every L1A file to L2 with error catching
-    # Would be good to have a dynamic suite here
     L2_list = []
+    # Remove Geo files from file_list
+    file_list = [x for x in file_list if OC_filename_parser(x)['level'] != 'GEO']
     for L1_file in file_list:
         try:
-            L2_file = l2gen(x=L1_file, var_list=var_list, suite='OC2',
+            sensor = OC_filename_parser(L1_file)['sensor']
+            L2_file = l2gen(x=L1_file, var_list=VARS_FROM_L2_SUITE[sensor]['day']['OC2'], suite='OC2',
                             data_root=data_root)
             L2_list.append(L2_file)
         except Exception as e:
@@ -1068,7 +1068,37 @@ def nrt_wrapper_l1(var_list, north, south, west, east, data_root):
         meta = OC_filename_parser(L2_file)
         afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
         l2_append(L2_file, **afai_param)
-        # TODO: run l2mapgen on every L2 file
         l2m_file = l2mapgen(L2_file, south=south, north=north, west=west, east=east,
-                            prod='afai', flags=FLAGS['AFAI'], data_root=data_root)
+                            prod='afai', flags=FLAGS['FAI'], data_root=data_root)
     # Get a list of dates/sensor combinations
+
+def refined_processing_wrapper_l1(north, south, west, east, data_root):
+    """Wrapper to be called from nrt command line once a day
+
+    Reprocesses L2 OC2 suite a month after initial processing for improved
+    atmospheric correction
+
+    Args:
+        north (float): north latitude of bounding box in DD
+        south (float): south latitude of bounding box in DD
+        west (float): west longitude of bounding box in DD
+        east (float): east longitude of bounding box in DD
+        data_root (str): Root of the data archive
+
+    Returns:
+        None: The function is used for its side effect of running l2gen on 1 month
+            old L1A data
+    """
+    today = datetime.today()
+    last_month = today - timedelta(30)
+
+    L2_list = l2gen_wrapper(last_month, sensor_codes=['A', 'T', 'V'], var_list=['rhos_nnn'],
+                            suite='OC2', data_root=data_root)
+
+    for L2_file in L2_list:
+        meta = OC_filename_parser(L2_file)
+        afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
+        l2_append(L2_file, **afai_param)
+        l2m_file = l2mapgen(L2_file, south=south, north=north, west=west, east=east,
+                            prod='afai', flags=FLAGS['FAI'], data_root=data_root)
+
