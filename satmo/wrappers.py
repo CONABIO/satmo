@@ -66,7 +66,7 @@ def timerange_download(sensors, begin, end, write_dir,\
             continue
         url_list = [make_download_url(x) for x in file_list]
         # Viirs only: Build urls of GEO files and append to url list
-        geo_files = [OC_viirs_geo_filename_builder(x) for x in urls if OC_filename_parser(x)['sensor'] == 'viirs']
+        geo_files = [OC_viirs_geo_filename_builder(x) for x in url_list if OC_filename_parser(x)['sensor'] == 'viirs']
         url_list += geo_files
         for url in url_list:
             local_file = download_robust(url, write_dir, overwrite = overwrite,
