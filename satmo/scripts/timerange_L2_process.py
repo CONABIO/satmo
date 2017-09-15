@@ -26,7 +26,7 @@ def main(aqua, terra, viirs, seawifs, begin, end, data_root, night,
 
     satmo.l2gen_batcher(begin=begin, end=end, sensor_codes=sensor_codes,
                         n_threads=n_threads, var_list=var_list, suite=suite,
-                        data_root=data_root, get_anc=get_anc, night=night):
+                        data_root=data_root, get_anc=get_anc, night=night)
 
 if __name__ == '__main__':
     epilog = ("""
