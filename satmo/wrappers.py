@@ -1065,11 +1065,16 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
             raise
     # For each L2 file, append AFAI to netCDF file
     for L2_file in L2_list:
-        meta = OC_filename_parser(L2_file)
-        afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
-        l2_append(L2_file, **afai_param)
-        l2m_file = l2mapgen(L2_file, south=south, north=north, west=west, east=east,
-                            prod='afai', flags=FLAGS['FAI'], data_root=data_root)
+        sensor = OC_filename_parser(L2_file)['sensor']
+        afai_param = BAND_MATH_FUNCTIONS['afai'][sensor]
+        try:
+            l2_append(L2_file, **afai_param)
+            l2mapgen(L2_file, south=south, north=north, west=west, east=east,
+                     prod='afai', flags=FLAGS['FAI'], data_root=data_root)
+        except Exception as e:
+            pprint('Problem while generating L2m file from %s. %s' % (L2_file, e))
+        except KeyboardInterrupt:
+            raise
     # Get a list of dates/sensor combinations
 
 def refined_processing_wrapper_l1(north, south, west, east, data_root, delay = 30):
@@ -1100,7 +1105,10 @@ def refined_processing_wrapper_l1(north, south, west, east, data_root, delay = 3
     for L2_file in L2_list:
         meta = OC_filename_parser(L2_file)
         afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
-        l2_append(L2_file, **afai_param)
-        l2m_file = l2mapgen(L2_file, south=south, north=north, west=west, east=east,
-                            prod='afai', flags=FLAGS['FAI'], data_root=data_root)
+        try:
+            l2_append(L2_file, **afai_param)
+            l2mapgen(L2_file, south=south, north=north, west=west, east=east,
+                     prod='afai', flags=FLAGS['FAI'], data_root=data_root)
+        except Exception as e:
+            pprint('Refined processing: Problem while generating L2m file from %s. %s' % (L2_file, e))
 
