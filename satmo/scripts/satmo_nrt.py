@@ -91,12 +91,10 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
         # be executed during the day
         schedule.every().day.at("11:00").do(l1a_refined_processing)
 
-"""
-18.30 -- l1a_nrt (5hr)---23.30---day_nrt(2hr)---1.30---day_refined(2hr)---3.30---night_refined(2hr)---5.30---night_nrt(2hr)
-Normally night download and processing should be faster (lighter files, and lesser amount of variables
-so reducing available time for night products and increasing it for day products
-could be a way to adjust timing if needed)
-"""
+# 18.30 -- l1a_nrt (5hr)---23.30---day_nrt(2hr)---1.30---day_refined(2hr)---3.30---night_refined(2hr)---5.30---night_nrt(2hr)
+# Normally night download and processing should be faster (lighter files, and lesser amount of variables
+# so reducing available time for night products and increasing it for day products
+# could be a way to adjust timing if needed)
 
     while True:
         schedule.run_pending()
