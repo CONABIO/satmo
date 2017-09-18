@@ -79,7 +79,8 @@ def getanc(x):
         str: The path to the generated (and moved) .anc text file
     """
     arg_list = ['getanc.py', x]
-    subprocess.call(arg_list)
+    FNULL = open(os.devnull, 'w')
+    subprocess.call(arg_list, stdout=FNULL, stderr=subprocess.STDOUT)
     # Locate anc file generated
     wd = os.getcwd()
     dirname, filename = os.path.split(x)
@@ -109,8 +110,8 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
     ext = os.path.splitext(x)[1]
     input_dir = os.path.dirname(x)
     output_filename = OC_filename_builder(level='L2', filename=x,
-                                                suite=suite, full_path=True,
-                                                data_root=data_root)
+                                          suite=suite, full_path=True,
+                                          data_root=data_root)
     output_dir = os.path.dirname(output_filename)
     # The delete switch determines whether or not an uncompressed file must be
     # deleted or not. viirs do not come as bz2 compressed files so this does not apply
@@ -136,7 +137,9 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
                         'l2prod=%s' % ','.join(var_list)]
         if get_anc:
             cli_elements.append('par=%s' % anc)
-        status = subprocess.call(cli_elements)
+        # l2gen is very verbose, therefore redirect output to devnull
+        FNULL = open(os.devnull, 'w')
+        status = subprocess.call(cli_elements, stdout=FNULL, stderr=subprocess.STDOUT)
         if status != 0:
             raise SeadasError('l2gen processor exited with status %d during viirs L2 processing' % status)
     elif input_meta['sensor'] in ['aqua', 'terra']:
@@ -167,7 +170,9 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
                         'l2prod=%s' % ','.join(var_list)]
         if get_anc:
             cli_elements.append('par=%s' % anc)
-        status = subprocess.call(cli_elements)
+        # l2gen is very verbose, therefore redirect output to devnull
+        FNULL = open(os.devnull, 'w')
+        status = subprocess.call(cli_elements, stdout=FNULL, stderr=subprocess.STDOUT)
         if status != 0:
             raise SeadasError('l2gen processor exited with status %d during modis L2 processing' % status)
         # Prepare list of intermediary files generated and delete them

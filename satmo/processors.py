@@ -712,8 +712,11 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
                 'threshold=%f' % threshold,
                 'outmode=%s' % outmode]
 
+    # l2mapgen is very verbose, therefore redirect output to devnull
+    FNULL = open(os.devnull, 'w')
+
     # Run cli
-    status = subprocess.call(cli_args)
+    status = subprocess.call(cli_args, stdout=FNULL, stderr=subprocess.STDOUT)
     # l2mapgen ifile=A2015077191500.L2_LAC_AFAI.nc ofile=A2015077191500.L2m_afai.tif prod=afai south=3 north=33 west=-122 east=-72 flaguse=LAND,HIGLINT,CLDICE mask=true width=5000 outmode=tiff
 
     # Check status (return error in case )
