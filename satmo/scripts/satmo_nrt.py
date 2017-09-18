@@ -5,12 +5,14 @@ Author: Loic Dutrieux
 Date: 2017-06-23
 Purpose: Command line utility to launch near real time mode of the satmo with various
     options.
-Details: The script does a bit of parsing and calls several time the nrt_wrapper function
-    in a scheduler. Changes made to this script must therefore be mirrored in nrt_wrapper.
+Details: The script does a bit of parsing and calls several time the nrt_wrapper functions
+    in a scheduler. Changes made to this script must therefore be mirrored in nrt_wrapper,
+    nrt_wrapper_l1, and refined_processing_wrapper_l1.
 """
 
 import argparse
-from satmo import nrt_wrapper, time_limit, TimeoutException
+from satmo import (nrt_wrapper, time_limit, TimeoutException,
+                   refined_processing_wrapper_l1, nrt_wrapper_l1)
 import schedule
 import time
 from pprint import pprint
@@ -24,7 +26,7 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
 
     def day_nrt():
         try:
-            with time_limit(7200):
+            with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=day_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
@@ -34,7 +36,7 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
 
     def day_refined():
         try:
-            with time_limit(7200):
+            with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='day', pp_type='refined', var_list=day_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
@@ -44,7 +46,7 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
 
     def night_nrt():
         try:
-            with time_limit(7200):
+            with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='night', pp_type='nrt', var_list=night_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
@@ -54,7 +56,7 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
 
     def night_refined():
         try:
-            with time_limit(7200):
+            with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='night', pp_type='refined', var_list=night_vars, north=north,
                             south=south, west=west, east=east, resolution=resolution, preview=preview,
                             data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
@@ -62,11 +64,39 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
         except TimeoutException:
             pprint('A processed timed out for not completing after 2hr!')
 
-    schedule.every().day.at("20:00").do(day_nrt)
-    schedule.every().day.at("06:00").do(night_nrt)
+    def l1a_nrt():
+        try:
+            with time_limit(18000 - 60): # 5 hrs - 60 seconds
+                nrt_wrapper_l1(north=north, south=south, west=west, east=east,
+                               data_root=data_root)
+        except TimeoutException:
+            pprint('A processed timed out for not completing after 5hr!')
+
+    def l1a_refined_processing():
+        try:
+            with time_limit(21600 - 60): # Almost 6 hrs
+                refined_processing_wrapper_l1(north=north, south=south, west=west,
+                                              east=east, data_root=data_root)
+        except TimeoutException:
+            pprint('A processed timed out for not completing after 6hr!')
+
+
+    schedule.every().day.at("18:30").do(l1a_nrt)
+    schedule.every().day.at("23:30").do(day_nrt)
+    schedule.every().day.at("05:30").do(night_nrt)
     if refined:
-        schedule.every().day.at("23:00").do(day_refined)
-        schedule.every().day.at("02:00").do(night_refined)
+        schedule.every().day.at("01:30").do(day_refined)
+        schedule.every().day.at("03:30").do(night_refined)
+        # Refined L1A to L2 processing does not require any download, it can therefore
+        # be executed during the day
+        schedule.every().day.at("11:00").do(l1a_refined_processing)
+
+"""
+18.30 -- l1a_nrt (5hr)---23.30---day_nrt(2hr)---1.30---day_refined(2hr)---3.30---night_refined(2hr)---5.30---night_nrt(2hr)
+Normally night download and processing should be faster (lighter files, and lesser amount of variables
+so reducing available time for night products and increasing it for day products
+could be a way to adjust timing if needed)
+"""
 
     while True:
         schedule.run_pending()
@@ -74,7 +104,7 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
 
 if __name__ == '__main__':
     epilog = ('Command Line utility to control the operational mode of the satmo system \n'
-              'Enables download of L2 data from OBPG server (NRT and refined processing), processing of L3m files for several night and \n'
+              'Enables download of L2 and L1A data from OBPG server (NRT and refined processing), processing of L3m files for several night and \n'
               'day variables, processing of daily composites, and processing of temporal composites. \n'
               'All these download and processing steps are scheduled and ran operationally. \n'
               'Daily composites and temporales composites are enabled by default \n'
@@ -100,7 +130,7 @@ if __name__ == '__main__':
                         help = 'night time variables to process')
 
     parser.add_argument('--no-refined', dest='refined', action='store_false',
-                        help='Disable download of refined processed L2 data, and L3m processing from them')
+                        help='Disable download of refined processed L2 data, reprocessing of L2 data from L1A, and L3m processing from them')
 
     parser.add_argument('--no-8DAY', dest='eight_day', action='store_false',
                         help='Disable processing of 8 days temporal composites')

@@ -1072,7 +1072,7 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
                             prod='afai', flags=FLAGS['FAI'], data_root=data_root)
     # Get a list of dates/sensor combinations
 
-def refined_processing_wrapper_l1(north, south, west, east, data_root):
+def refined_processing_wrapper_l1(north, south, west, east, data_root, delay = 30):
     """Wrapper to be called from nrt command line once a day
 
     Reprocesses L2 OC2 suite a month after initial processing for improved
@@ -1084,13 +1084,15 @@ def refined_processing_wrapper_l1(north, south, west, east, data_root):
         west (float): west longitude of bounding box in DD
         east (float): east longitude of bounding box in DD
         data_root (str): Root of the data archive
+        delay (int): Delay in number of days between data aquisition and refined
+            processing. Defaults to 30.
 
     Returns:
         None: The function is used for its side effect of running l2gen on 1 month
             old L1A data
     """
     today = datetime.today()
-    last_month = today - timedelta(30)
+    last_month = today - timedelta(delay)
 
     L2_list = l2gen_wrapper(last_month, sensor_codes=['A', 'T', 'V'], var_list=['rhos_nnn'],
                             suite='OC2', data_root=data_root)
