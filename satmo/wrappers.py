@@ -1037,7 +1037,7 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
     # 1 - Download data
     try:
         file_list = subscriptions_download(SUBSCRIPTIONS['L1A']['day'],
-                                           base_dir=data_root, refined=False)
+                                           data_root=data_root, refined=False)
     except Exception as e:
         # Exit function if the download did not work because there would be nothing
         # to do anyway
