@@ -79,8 +79,8 @@ def getanc(x):
         str: The path to the generated (and moved) .anc text file
     """
     arg_list = ['getanc.py', x]
-    FNULL = open(os.devnull, 'w')
-    subprocess.call(arg_list, stdout=FNULL, stderr=subprocess.STDOUT)
+    with open(os.devnull, 'w') as FNULL:
+        subprocess.call(arg_list, stdout=FNULL, stderr=subprocess.STDOUT)
     # Locate anc file generated
     wd = os.getcwd()
     dirname, filename = os.path.split(x)
@@ -138,8 +138,8 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
         if get_anc:
             cli_elements.append('par=%s' % anc)
         # l2gen is very verbose, therefore redirect output to devnull
-        FNULL = open(os.devnull, 'w')
-        status = subprocess.call(cli_elements, stdout=FNULL, stderr=subprocess.STDOUT)
+        with open(os.devnull, 'w') as FNULL:
+            status = subprocess.call(cli_elements, stdout=FNULL, stderr=subprocess.STDOUT)
         if status != 0:
             raise SeadasError('l2gen processor exited with status %d during viirs L2 processing' % status)
     elif input_meta['sensor'] in ['aqua', 'terra']:
@@ -151,7 +151,8 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
         geo_cli = ['modis_GEO.py',
                    x,
                    '--output=%s' % geo_file]
-        status = subprocess.call(geo_cli)
+        with open(os.devnull, 'w') as FNULL:
+            status = subprocess.call(geo_cli, stdout=FNULL, stderr=subprocess.STDOUT)
         if status != 0:
             raise SeadasError('modis_GEO.py exited with status %d during modis L2 processing' % status)
         # Run modis_L1B.py
@@ -171,8 +172,8 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
         if get_anc:
             cli_elements.append('par=%s' % anc)
         # l2gen is very verbose, therefore redirect output to devnull
-        FNULL = open(os.devnull, 'w')
-        status = subprocess.call(cli_elements, stdout=FNULL, stderr=subprocess.STDOUT)
+        with open(os.devnull, 'w') as FNULL:
+            status = subprocess.call(cli_elements, stdout=FNULL, stderr=subprocess.STDOUT)
         if status != 0:
             raise SeadasError('l2gen processor exited with status %d during modis L2 processing' % status)
         # Prepare list of intermediary files generated and delete them
