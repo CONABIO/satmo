@@ -614,7 +614,9 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
         if qual_array is not None:
             l2bin_arg_list.append('qual_prod=%s' % qual_array)
         # Execute command
-        status = subprocess.call(l2bin_arg_list)
+        with open(os.devnull, 'w') as FNULL:
+            # Run cli
+            status = subprocess.call(l2bin_arg_list, stdout=FNULL, stderr=subprocess.STDOUT)
         if status == 1:
             raise SeadasError('l2bin exited with status 1')
     return filename
@@ -677,7 +679,9 @@ def l3mapgen(x, variable, south, north, west, east, filename = None,
                           'apply_pal=0', # Otherwise color map is applied which implies generating a byte image only
                           'oformat=tiff',
                           'projection="%s"' % proj]
-        status = subprocess.call(l3map_arg_list)
+        with open(os.devnull, 'w') as FNULL:
+            # Run cli
+            status = subprocess.call(l3map_arg_list, stdout=FNULL, stderr=subprocess.STDOUT)
         if status == 1:
             raise SeadasError('l3mapgen exited with status 1 for input file %s' % x)
         # Update dataset nodata value using rasterio
