@@ -1,6 +1,7 @@
 import os
 from glob import glob
 import subprocess
+import random
 
 import numpy as np
 import numpy.ma as ma
@@ -12,10 +13,12 @@ from pyproj import Proj
 from affine import Affine
 
 from .geo import geo_dict_from_nc, get_raster_meta
-from .utils import OC_filename_parser, OC_file_finder, is_day, OC_filename_builder
+from .utils import (OC_filename_parser, OC_file_finder, is_day,
+                    OC_filename_builder, to_km)
 from .visualization import make_preview
 from .errors import SeadasError
-from .global_variables import L3_SUITE_FROM_VAR
+from .global_variables import (L3_SUITE_FROM_VAR, QUAL_ARRAY_NAME_FROM_SUITE,
+                               STANDARD_L3_SUITES, FLAGS)
 
 def nc2tif(file, proj4string = None):
     """Generate geotiff from L3m netcdf array
@@ -537,6 +540,150 @@ class L3mProcess(BasicBinMap):
         out_array = fun(*array_list)
         self.set_variable(out_array)
 
+def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
+          filename = None, data_root = None, overwrite = False, flags = None):
+    """Run l2bin for a list of L2 files
+
+    Details:
+        This is a simple no filter python wrapper around the seadas l2bin utility.
+
+    Args:
+        file_list (list): list of L2 files (full paths)
+        L3b_suite (str): Product suite to bin (see global variable STANDARD_L3_SUITES
+            for corresponding variables)
+        var_list (list): Optional list of variables to include in the produced L3b file.
+            If None (default but not recommanded), a list of standard variables is
+            retrieved fom the global variable (STANDARD_L3_SUITES)
+        resolution (int or str): See resolve argument in l2bin doc
+        night (bool): Is that night products
+        filename (str): Optional full path of output filename (L3b). If not provided, a
+            filename is automatically generated.
+        data_root (str): Root of the data archive. Mandatory if filename is not provided
+            ignored otherwise
+        overwrite (bool): Overwrite file if already exists? Defaults to False
+        flags (list): A list of flags to mask invalid data (e.g. ['CLDICE', 'LAND', 'HIGLINT'])
+            If None (default), a default list of flag for the L3 suite is fetched from
+            the global variable FLAGS
+
+    Returns:
+        str: The output filename
+
+    Raises:
+        satmo.SeadasError if the seadas command exists with status 1
+
+    Example usage:
+        >>> import satmo, glob
+
+        >>> infiles = glob.glob('/home/ldutrieux/sandbox/satmo2_data/aqua/L2/2016/001/*L2*nc')
+        >>> satmo.OC_l2bin(infiles, 'CHL', data_root = '/home/ldutrieux/sandbox/satmo2_data')
+    """
+    input_meta = OC_filename_parser(file_list[0])
+    # Generate filename if it hasn't been provided
+    if filename is None:
+        if data_root is None:
+            raise ValueError('data_root argument must be provided if filename is left empty (None)')
+        filename = OC_filename_builder(level = 'L3b', full_path = True,
+                                       data_root = data_root, suite = L3b_suite,
+                                       filename = file_list[0])
+    if flags is None:
+        flags = FLAGS[L3b_suite]
+    if not (os.path.isfile(filename) and not overwrite):
+        L3b_dir = os.path.dirname(filename)
+        # Create directory if not already exists
+        if not os.path.exists(L3b_dir):
+            os.makedirs(L3b_dir)
+        # Create text file with input L2 files
+        file_list_file = os.path.join(L3b_dir, 'L2_file_list_%d%03d_%d' % \
+                                     (input_meta['year'], input_meta['doy'], random.randint(1,9999)))
+        with open(file_list_file, 'w') as dst:
+            for item in file_list:
+                dst.write(item + '\n')
+        # Get the standards products from the global variable
+        if var_list is None:
+            var_list = STANDARD_L3_SUITES[L3b_suite][input_meta['sensor']]
+        # BUild l3b command
+        l2bin_arg_list = ['l2bin',
+                          'l3bprod=%s' % ','.join(var_list),
+                          'infile=%s' % file_list_file,
+                          'resolve=' + str(resolution),
+                          'ofile=%s' % filename,
+                          'flaguse=%s' % ','.join(flags),
+                          'night=%d' % int(night),
+                          'prodtype=regional']
+        qual_array = QUAL_ARRAY_NAME_FROM_SUITE[L3b_suite]
+        if qual_array is not None:
+            l2bin_arg_list.append('qual_prod=%s' % qual_array)
+        # Execute command
+        status = subprocess.call(l2bin_arg_list)
+        if status == 1:
+            raise SeadasError('l2bin exited with status 1')
+    return filename
+
+def l3mapgen(x, variable, south, north, west, east, filename = None,
+             resolution = 1000, proj = None, data_root = None, overwrite = False):
+    """Run l3mapgen from a l3b file
+
+    Args:
+        x (str): Path to input L3b file
+        variable (str): variable to warp (should exist in the L3b file) (e.g.: sst, chlor_a, Rrs_555, ...)
+        south (int or float): south latitude of mapped file extent
+        north (int or float): north latitude of mapped file extent
+        west (int or float): west longitude of mapped file extent
+        east (int or float): east longitude of mapped file extent
+        filename (str): Optional full path of output filename (L3m). If not provided, a
+            filename is automatically generated.
+        resolution (int): MApping resolution in meters. Defaults to 1000
+        proj (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+            on the provided extent is used.
+        data_root (str): Root of the data archive. Mandatory if filename is not provided
+            ignored otherwise
+        overwrite (bool): Overwrite file if already exists? Defaults to False
+
+    Returns:
+        str: The output filename
+
+    Raises:
+        satmo.SeadasError if the seadas command exists with status 1
+    """
+    # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
+    input_meta = OC_filename_parser(x)
+    resolution = '%dm' % resolution
+    # build file if it doesn't yet exist
+    if filename is None:
+        if data_root is None:
+            raise ValueError('data_root argument must be provided if filename is left empty (None)')
+        filename = OC_filename_builder(level = 'L3m', full_path = True,
+                                       data_root = data_root, filename = x, composite = 'DAY',
+                                       variable = variable, resolution = to_km(resolution))
+    if not (os.path.isfile(filename) and not overwrite):
+        # Handle projection options
+        if proj is None:
+            proj = 'smi'
+        # Create directory if not already exists
+        L3m_dir = os.path.dirname(filename)
+        if not os.path.exists(L3m_dir):
+            os.makedirs(L3m_dir)
+        # filename, composite, variable, resolution, (nc)
+        l3map_arg_list = ['l3mapgen',
+                          'ifile=%s' % x,
+                          'ofile=%s' % filename,
+                          'resolution=%s' % resolution,
+                          'south=%.1f' % south,
+                          'north=%.1f' % north,
+                          'west=%.1f' % west,
+                          'east=%.1f' % east,
+                          'product=%s' % variable,
+                          'interp=area',
+                          'apply_pal=0', # Otherwise color map is applied which implies generating a byte image only
+                          'oformat=tiff',
+                          'projection="%s"' % proj]
+        status = subprocess.call(l3map_arg_list)
+        if status == 1:
+            raise SeadasError('l3mapgen exited with status 1 for input file %s' % x)
+        # Update dataset nodata value using rasterio
+        with rasterio.open(filename, 'r+') as src:
+            src.nodata = -32767
+    return filename
 
 def make_time_composite(date_list, var, suite, resolution, composite,
                         data_root, sensor_code='X', fun='mean', filename=None,

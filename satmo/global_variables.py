@@ -39,6 +39,7 @@ DATA_LEVELS = ['L0', 'L1A', 'L1B', 'L2', 'L2m', 'L3b', 'L3m']
 
 
 # See seadas defaults in /seadas/run/data/{sensor}/l2bin_defaults_{suite}.par
+# IMportant to add an empty list if suite does not exist for a particular sensor
 STANDARD_L3_SUITES = {'RRS': {'terra': ['Rrs_412','Rrs_443','Rrs_469','Rrs_488',
                                             'Rrs_531','Rrs_547','Rrs_555','Rrs_645',
                                             'Rrs_667','Rrs_678'],
@@ -86,7 +87,8 @@ STANDARD_L3_SUITES = {'RRS': {'terra': ['Rrs_412','Rrs_443','Rrs_469','Rrs_488',
                               'aqua': ['fai', 'afai'],
                               'viirs': ['afai']},
                             'FLH': {'aqua': ['nflh', 'ipar'],
-                                    'terra': ['nflh', 'ipar']}}
+                                    'terra': ['nflh', 'ipar'],
+                                    'viirs': []}}
 
 # Rrc (Rayleight corrected reflectance), used by Hu are called rhos in seadas
 
