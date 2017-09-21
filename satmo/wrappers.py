@@ -16,9 +16,10 @@ from .preprocessors import l2gen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
                                BIT_MASK_FROM_L3_SUITE, QUAL_ARRAY_NAME_FROM_SUITE,
-                               BAND_MATH_FUNCTIONS, FLAGS, VARS_FROM_L2_SUITE)
+                               BAND_MATH_FUNCTIONS, FLAGS, VARS_FROM_L2_SUITE,
+                               SENSOR_CODES, STANDARD_L3_SUITES)
 from .processors import (L3mProcess, FileComposer, make_time_composite, l2_append,
-                         l2mapgen)
+                         l2mapgen, l3mapgen, l2bin)
 from .visualization import make_preview
 from .errors import TimeoutException
 
@@ -694,6 +695,161 @@ def l2gen_batcher(begin, end, sensor_codes, var_list, suite, data_root, night=Fa
     # Run wrapper for every date with // support
     pool = mp.Pool(n_threads)
     pool.map_async(functools.partial(l2gen_wrapper, **kwargs), date_list).get(9999999)
+
+def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
+                    binning_resolution = 1, mapping_resolution = 1000,
+                    day_vars = None, night_vars = None, flags = None,
+                    proj = None, overwrite = True):
+    """Wrapper to run l2bin and l3mapgen for a list of variables and a given date
+
+    The function automatically handles the production of the right intermediary
+    L3b files.
+
+    Args:
+        date (str or datetime): Date of the data to process
+        sensor_codes (list): List to sensor codes to include in the processing
+        south (int or float): south latitude of mapped file extent
+        north (int or float): north latitude of mapped file extent
+        west (int or float): west longitude of mapped file extent
+        east (int or float): east longitude of mapped file extent
+        data_root (str): Root of the data archive.
+        binning_resolution (int or str): See resolve argument in l2bin doc
+        mapping_resolution (int): Resolution of the output L3m file in meters
+        day_vars (list): List of day variables to map (will result in one L3m file being
+            produced for each var and each sensor)
+        night_vars (list): List of night variables to map (will result in one L3m file being
+            produced for each var and each sensor)
+        flags (list): A list of flags to mask invalid data (e.g. ['CLDICE', 'LAND', 'HIGLINT'])
+            If None (default), a default list of flag for the L3 suite is fetched from
+            the global variable FLAGS. When processing several variables belonging to
+            different suites, it is not recommended to set a fixed list of flags, since they
+            normally differ between suites.
+        proj (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+            on the provided extent is used.
+        overwrite (bool): Overwrite existing final (L3m) and intermediary (L3b) files
+
+    Returns:
+        This function is used for its side effects of binning and then mapping data,
+        producing as a result various L3b and L3m files
+    """
+    # Day processing
+    # For each sensor
+    if day_vars is not None:
+        for sensor_code in sensor_codes:
+            sensor = SENSOR_CODES[sensor_code]
+            # Get list of L3 suite (day)
+            l3_suites = [L3_SUITE_FROM_VAR['day'][var] for var in day_vars]
+            # Remove duplicates
+            l3_suites = list(set(l3_suites))
+            # Get final list of variables
+            var_dict = {}
+            for l3_suite in l3_suites:
+                var_dict[l3_suite] = list(set(day_vars).intersection(STANDARD_L3_SUITES[l3_suite][sensor]))
+            # For each suite
+            for suite in l3_suites:
+                if var_dict[suite]: # Check that list is not empty
+                    # Determine corresponding L2 suite
+                    l2_suite = L2_L3_SUITES_CORRESPONDENCES[suite]
+                    # Identify L2 input files
+                    try:
+                        l2_file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+                                                      suite=l2_suite, sensor_code=sensor_code)
+                        # Filter to keep day data only
+                        l2_file_list = [x for x in l2_file_list if is_day(x)]
+                        # Run l2bin
+                        l3b_file = l2bin(file_list=l2_file_list, L3b_suite=suite, var_list=var_dict[suite],
+                                         resolution=binning_resolution, night=False, data_root=data_root,
+                                         overwrite=overwrite, flags=flags)
+                    except Exception as e:
+                        pprint('Error generating l3b file for %s, %s, %s' % (suite, date.strftime('%Y-%m-%d'), e))
+                        continue
+                    except KeyboardInterrupt:
+                        raise
+                    # for each var in var_list
+                    for var in var_dict[suite]:
+                        try:
+                            # Run l3mapgen
+                            l3mapgen(x=l3b_file, variable=var, south=south, north=north,
+                                     west=west, east=east, resolution=mapping_resolution,
+                                     proj=proj, data_root=data_root, overwrite=overwrite)
+                        except Exception as e:
+                            pprint('Error generating l3m file for %s, %s, %s' % (var, date.strftime('%Y-%m-%d'), e))
+                        except KeyboardInterrupt:
+                            raise
+    # Night processing
+    if night_vars is not None:
+        for sensor_code in sensor_codes:
+            sensor = SENSOR_CODES[sensor_code]
+            # Get list of L3 suite (day)
+            l3_suites = [L3_SUITE_FROM_VAR['night'][var] for var in night_vars]
+            # Remove duplicates
+            l3_suites = list(set(l3_suites))
+            # Get final list of variables
+            var_dict = {}
+            for l3_suite in l3_suites:
+                var_dict[l3_suite] = list(set(day_vars).intersection(STANDARD_L3_SUITES[l3_suite][sensor]))
+            # For each suite
+            for suite in l3_suites:
+                if var_dict[suite]: # Check that list is not empty
+                    # Determine corresponding L2 suite
+                    l2_suite =  L2_L3_SUITES_CORRESPONDENCES[suite]
+                    try:
+                        # Identify L2 input files
+                        l2_file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+                                                      suite=l2_suite, sensor_code=sensor_code)
+                        # Filter to keep night data only
+                        l2_file_list = [x for x in l2_file_list if is_night(x)]
+                        # Run l2bin
+                        l3b_file = l2bin(file_list=l2_file_list, L3b_suite=suite, var_list=var_dict[suite],
+                                         resolution=binning_resolution, night=True, data_root=data_root,
+                                         overwrite=overwrite, flags=flags)
+                    except Exception as e:
+                        pprint('Error generating l3b file for %s, %s, %s' % (suite, date.strftime('%Y-%m-%d'), e))
+                        continue
+                    except KeyboardInterrupt:
+                        raise
+                    for var in var_dict[suite]:
+                        try:
+                            # Run l3mapgen
+                            l3mapgen(x=l3b_file, variable=var, south=south, north=north,
+                                     west=west, east=east, resolution=mapping_resolution,
+                                     proj=proj, data_root=data_root, overwrite=overwrite)
+                        except Exception as e:
+                            pprint('Error generating l3m file for %s, %s, %s' % (var, date.strftime('%Y-%m-%d'), e))
+                        except KeyboardInterrupt:
+                            raise
+
+def bin_map_batcher(begin, end, sensor_codes, south, north, west, east, data_root,
+                    binning_resolution = 1, mapping_resolution = 1000,
+                    day_vars = None, night_vars = None, flags = None,
+                    proj = None, overwrite = True, n_threads = 1):
+    """Batch processing of L3m data from L2 for several dates, sensors and variables
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    # Get list of individual dates between begin and end
+    ndays = (end - begin).days + 1
+    date_list = [begin + timedelta(days=x) for x in range(0, ndays)]
+    # Build kwargs
+    kwargs = {'sensor_codes': sensor_codes,
+              'south': south,
+              'north': north,
+              'west': west,
+              'east': east,
+              'data_root': data_root,
+              'binning_resolution': binning_resolution,
+              'mapping_resolution': mapping_resolution,
+              'day_vars': day_vars,
+              'night_vars': night_vars,
+              'flags': flags,
+              'proj': proj,
+              'overwrite': overwrite}
+    # Run wrapper for every date with // support
+    pool = mp.Pool(n_threads)
+    pool.map_async(functools.partial(bin_map_wrapper, **kwargs), date_list).get(9999999)
+
 
 def subscriptions_download(sub_list, data_root, refined=False):
     """Update a local archive using a list of data subscription numbers
