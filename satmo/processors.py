@@ -879,3 +879,41 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
 
     return filename
 
+def l3bin(file_list, north, south, west, east, data_root=None, composite=None,
+          filename=None, overwrite=False):
+    """Simple wrapper for seadas l3bin
+
+    Used for temporal compositing
+
+    Args:
+        file_list (list): List of input L3b files
+        south (float): Southern border of output extent (in DD)
+        north (float): Northern border of output extent (in DD)
+        west (float): Western border of output extent (in DD)
+        east (float): Eastern border of output extent (in DD)
+        data_root (str): Root of the data archive
+        composite (str): Compositing period (DAY, 8DAY, MON)
+        filename (str): Optional output filename
+        overwrite (bool): Overwrite existing files?
+
+    Return:
+        str: The output filename. Mostly used for its side effects of generating
+            a L3b temporal composite file.
+    """
+    # TODO: Need to find a smart way to build output filename from inputs
+    #   - Maybe asking for begin date of the composite in args
+    #   - Modify OC_filename_builder ?
+    #   - Deal with it only in l3bin_wrapper... and ask for filename here
+    # Write file list to text file
+    cli_args = ['l3bin',
+                'in=%s' % file_list,
+                'loneast=%f' % east,
+                'lonwest=%f' % west,
+                'latnorth=%f' % north,
+                'latsouth=%f' % south,
+                'out=%s' % filename]
+    with open(os.devnull, 'w') as FNULL:
+        # Run cli
+        status = subprocess.call(cli_args, stdout=FNULL, stderr=subprocess.STDOUT)
+    if status != 0:
+        raise SeadasError('l2mapgen exited with status %d during L2 mapping' % status)
