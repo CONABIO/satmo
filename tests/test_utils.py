@@ -225,10 +225,10 @@ class TestUtils(unittest.TestCase):
         f2 = 'aqua/L2/2008/085/A2008085203500.L2_LAC_OC.nc'
         d3_0 = {'level': 'L2', 'filename': 'A2008085203500.L1A_LAC.bz2', 'suite': 'OC', 'full_path': True, 'data_root': '/media/system/satmo/'}
         f3 = '/media/system/satmo/aqua/L2/2008/085/A2008085203500.L2_LAC_OC.nc'
-        d4_0 = {'level': 'L3b', 'filename': 'A2004005203500.L2_LAC_OC.nc', 'suite': 'CHL'}
-        d4_1 = {'level': 'L3b', 'sensor_code': 'A', 'date': datetime(2004, 01, 5), 'suite': 'CHL'}
+        d4_0 = {'level': 'L3b', 'filename': 'A2004005203500.L2_LAC_OC.nc', 'suite': 'CHL', 'composite': 'DAY'}
+        d4_1 = {'level': 'L3b', 'sensor_code': 'A', 'date': datetime(2004, 01, 5), 'suite': 'CHL', 'composite': 'DAY'}
         f4 = 'A2004005.L3b_DAY_CHL.nc'
-        d5_0 = {'level': 'L3b', 'sensor_code': 'A', 'date': datetime(2004, 01, 5), 'suite': 'CHL', 'full_path': True}
+        d5_0 = {'level': 'L3b', 'sensor_code': 'A', 'date': datetime(2004, 01, 5), 'suite': 'CHL', 'full_path': True, 'composite': 'DAY'}
         f5 = 'aqua/L3b/2004/005/A2004005.L3b_DAY_CHL.nc'
         d6_0 = {'level': 'L3m', 'climatology': True, 'doy': 27, 'composite': '8DAY', 'suite': 'SST', 'variable': 'sst', 'resolution': '1km',
                 'begin_year': 2000, 'end_year': 2015}

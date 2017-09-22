@@ -302,7 +302,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
         'L2':
             filename and suite OR sensor_code, suite, date, and time
         'L3b':
-            filename and suite OR sensor_code, date, suite
+            filename, composite and suite OR sensor_code, date, composite, suite
         'L3m' climatology:
             (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter
             # TODO: There could be a problem with the leap year when using date
@@ -365,8 +365,9 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
             year = kwargs['date'].year
             doy = kwargs['date'].timetuple().tm_yday
             sensor_code = kwargs['sensor_code']
+        composite = kwargs['composite']
         suite = kwargs['suite']
-        filename_elements = [sensor_code, year, str(doy).zfill(3), '.', level, '_', 'DAY', '_', suite, '.nc']
+        filename_elements = [sensor_code, year, str(doy).zfill(3), '.', level, '_', composite, '_', suite, '.nc']
     #####
     # L3m CLIM
     #####
