@@ -922,6 +922,25 @@ def processing_meta_from_list(file_list):
             out.append(item)
     return out
 
+def get_date_list(file_list):
+    """Get the list of dates covered by a list of files
+
+    Meant to be used within nrt_wrapper to determine generate inputs to run bin_map_wrapper
+
+    Args:
+        x (list): A list of valid (parsable with OC_filename_parser) Ocean color filenames
+
+    Returns:
+        list: A list of datetime.
+    """
+    def _get_date(x):
+        d = OC_filename_parser(x)['date']
+        dt = datetime.combine(d, time())
+        return dt
+    date_list = [_get_date(x) for x in file_list]
+    date_list_unique = list(set(date_list))
+    return date_list_unique
+
 def find_composite_date_list(date, delta):
     """Find, given a date and delta, all the dates that compose the composite to
         to which the input date belong
