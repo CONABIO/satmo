@@ -979,6 +979,16 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
     if not dl_list:
         # Exit function in case no files were downloaded
         return
+    # Generate l2m files for each file and each variable (in an error catcher so that when it
+    # attempts to produce a chlor_a l2m file from a SST L2 it gets ignored)
+    for var in var_list:
+        for f in dl_list:
+            try:
+                suite = L3_SUITE_FROM_VAR[day_or_night][var]
+                l2mapgen(f, south=south, north=north, west=west, east=east,
+                         prod=var, flags=FLAGS[suite], data_root=data_root)
+            except Exception as e:
+                pprint('L2m file not generated for %s, variable %s. %s' % (f, var, e))
     date_list = get_date_list(dl_list)
     for dt in date_list:
         bin_map_wrapper(date=dt, sensor_codes=['A', 'T', 'V'], north=north,
