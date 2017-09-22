@@ -11,7 +11,8 @@ from .download import download_robust
 from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
                     OC_filename_parser, pre_compose, processing_meta_from_list,
-                    find_composite_date_list, time_limit, OC_viirs_geo_filename_builder)
+                    find_composite_date_list, time_limit, OC_viirs_geo_filename_builder,
+                    get_date_list)
 from .preprocessors import l2gen
 
 from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_SUITE_FROM_VAR,
@@ -894,9 +895,8 @@ def subscriptions_download(sub_list, data_root, refined=False):
         raise
 
 def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
-                data_root, resolution, preview=False, daily_compose=False,
-                eight_day=False, sixteen_day=False, month=False,
-                compositing_function='mean'):
+                data_root, binning_resolution = 1, mapping_resolution = 1000,
+                eight_day=False, month=False, flags=None, proj=None):
     """Main wrapper to be called from CLI for NRT operation of the system
 
     Args:
@@ -908,16 +908,16 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         west (float): west longitude of bounding box in DD
         east (float): east longitude of bounding box in DD
         data_root (str): Root of the data archive
-        resolution (int): Outout resolution in the unit of the output
-            coordinate reference system.
-        preview (bool): Generate a png previews. Defaults to False
-        daily_compose (bool): Generate daily composites (defaults to False)
+        binning_resolution (int or str): See resolve argument in l2bin doc
+        mapping_resolution (int): Resolution of the output L3m file in meters
+        flags (list): A list of flags to mask invalid data (e.g. ['CLDICE', 'LAND', 'HIGLINT'])
+            If None (default), a default list of flag for the L3 suite is fetched from
+            the global variable FLAGS. When processing several variables belonging to
+            different suites, it is not recommended to set a fixed list of flags, since they
+            normally differ between suites.
+        proj (str): Optional proj4 string. If None (default), a longlat is used
         eight_day (bool): Generate 8 days temporal composites (defaults to False)
-        sixteen_day (bool): Generate 16 days temporal composites (defaults to False)
         month (bool): Generate monthly temporal composites (defaults to False)
-        compositing_function (str): Function to be used to generate coposites
-            (temporal and daily composites). Can be 'mean' (default), 'median',
-            'min', or 'max'
 
     Return:
         The function is used for it's side effects of downloading data, and processing
@@ -928,9 +928,9 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         >>> import satmo
 
         >>> satmo.nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=['chlor_a', 'sst', 'nflh', 'Kd_490'],
-                              north=33, south=3, west=-122, east=-72, resolution=2000, preview=False,
-                              data_root='/export/isilon/datos2/satmo2_data/', daily_compose=True,
-                              eight_day=True, sixteen_day=True, compositing_function='mean')
+                              north=33, south=3, west=-122, east=-72,
+                              data_root='/export/isilon/datos2/satmo2_data/',
+                              eight_day=True)
 
     Details:
         How to adapt this function?
@@ -942,9 +942,6 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
             - Every change that involves changing the function argument should be passed to the CLI
                 (satmo_nrt.py)
     """
-    # Argument coherence check
-    if (eight_day or sixteen_day or month) and not daily_compose:
-        raise ValueError('temporal composites are generated from daily composites, so that daily_compose must be set to True for if eight_day, sixteen_day or month are used.')
     # Run subscription download on one type of subscription
     if pp_type == 'refined':
         refined = True
@@ -959,8 +956,14 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         day = False
     else:
         raise ValueError('day_or_night must be one of \'day\' or \'night\'')
-    # Build resolution string, to be used for compositing functions
-    resolution_str = resolution_to_km_str(resolution)
+    # Define day_var and night vars (legacy from previous version of the function)
+    if day:
+        day_vars = var_list
+        night_vars = None
+    else:
+        day_vars = None
+        night_vars = var_list
+    # List of subscriptions for download
     sub_list = SUBSCRIPTIONS['L2'][pp_type][day_or_night]
     # Query subscriptions and download corresponding data (update local data archive) 
     try:
@@ -976,92 +979,14 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
     if not dl_list:
         # Exit function in case no files were downloaded
         return
-    dict_list = processing_meta_from_list(dl_list)
-    for item in dict_list:
-        # Compare list of potential variable with the list of variables supplied
-        vars_to_process = list(set(var_list).intersection(item['products']))
-        for var in vars_to_process:
-            try:
-                suite = L3_SUITE_FROM_VAR[day_or_night][var]
-                auto_L3m_process(date=item['date'], sensor_code=item['sensor_code'],
-                                 suite=suite, var=var, north=north,
-                                 south=south, west=west, east=east, data_root=data_root,
-                                 resolution=resolution, day=day, bit_mask=BIT_MASK_FROM_L3_SUITE[suite],
-                                 overwrite=True, preview=preview)
-            except Exception as e:
-                pprint('%s not processed for %s sensor. %s' % (var, item['sensor'], e))
-            except KeyboardInterrupt:
-                raise
-    # Produce daily composites
-    if daily_compose:
-        # Get date_list from dict_list
-        date_list = list(set([x['date'] for x in dict_list]))
-        for fecha in date_list:
-            for var in var_list:
-                try:
-                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
-                    make_daily_composite(date=fecha, variable=var, suite=suite,
-                                         data_root=data_root, resolution=resolution_str,
-                                         sensor_codes = 'all',
-                                         fun=compositing_function, preview=preview,
-                                         overwrite=True)
-                except Exception as e:
-                    pprint('%s daily composite not processed. %s' % (var, e))
-                except KeyboardInterrupt:
-                    raise
-    # Produce 8DAY composites
-    if eight_day:
-        # Get date_list from dict_list
-        date_list = list(set([x['date'] for x in dict_list]))
-        for fecha in date_list:
-            for var in var_list:
-                try:
-                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
-                    fecha_list = find_composite_date_list(fecha, 8)
-                    make_time_composite(date_list=fecha_list, var=var, suite=suite,
-                                       resolution=resolution_str, composite='8DAY',
-                                       data_root=data_root, sensor_code='X', fun=compositing_function,
-                                       overwrite=True, preview=preview)
-                except Exception as e:
-                    pprint('%s 8 day composite not processed. %s' % (var, e))
-                except KeyboardInterrupt:
-                    raise
+    date_list = get_date_list(dl_list)
+    for dt in date_list:
+        bin_map_wrapper(date=dt, sensor_codes=['A', 'T', 'V'], north=north,
+                        south=south, west=west, east=east, data_root=data_root,
+                        binning_resolution=binning_resolution,
+                        mapping_resolution=mapping_resolution, day_vars=day_vars,
+                        night_vars=night_vars, flags=flags, proj=proj, overwrite=True)
 
-    # Produce 16DAY composites
-    if sixteen_day:
-        # Get date_list from dict_list
-        date_list = list(set([x['date'] for x in dict_list]))
-        for fecha in date_list:
-            for var in var_list:
-                try:
-                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
-                    fecha_list = find_composite_date_list(fecha, 16)
-                    make_time_composite(date_list=fecha_list, var=var, suite=suite,
-                                       resolution=resolution_str, composite='16DAY',
-                                       data_root=data_root, sensor_code='X', fun=compositing_function,
-                                       overwrite=True, preview=preview)
-                except Exception as e:
-                    pprint('%s 16 day composite not processed. %s' % (var, e))
-                except KeyboardInterrupt:
-                    raise
-
-    # Produce monthly composites
-    if month:
-        # Get date_list from dict_list
-        date_list = list(set([x['date'] for x in dict_list]))
-        for fecha in date_list:
-            for var in var_list:
-                try:
-                    suite = L3_SUITE_FROM_VAR[day_or_night][var]
-                    fecha_list = find_composite_date_list(fecha, 'month')
-                    make_time_composite(date_list=fecha_list, var=var, suite=suite,
-                                       resolution=resolution_str, composite='MO',
-                                       data_root=data_root, sensor_code='X', fun=compositing_function,
-                                       overwrite=True, preview=preview)
-                except Exception as e:
-                    pprint('%s monthly composite not processed. %s' % (var, e))
-                except KeyboardInterrupt:
-                    raise
 
 def nrt_wrapper_l1(north, south, west, east, data_root):
     """Wrapper to be called from nrt command line once a day

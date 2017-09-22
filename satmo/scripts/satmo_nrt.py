@@ -21,16 +21,17 @@ from pprint import pprint
 # it's hanging, and it should be stopped to not affect the other tasks). This is likely to happen in case of
 # the internet connection momentarily breaks during download. All processes are launched with at least 3 hr interval
 
-def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_compose,
-         data_root, resolution, north, south, west, east, preview, compositing_function):
+def main(day_vars, night_vars, refined, eight_day, month, data_root,
+         binning_resolution, mapping_resolution, north, south, west, east,
+         flags, proj):
 
     def day_nrt():
         try:
             with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=day_vars, north=north,
-                            south=south, west=west, east=east, resolution=resolution, preview=preview,
-                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
+                            south=south, west=west, east=east, binning_resolution=binning_resolution,
+                            mapping_resolution=mapping_resolution, data_root=data_root,
+                            eight_day=eight_day, month=month, flags=flags, proj=proj)
         except TimeoutException:
             pprint('A process timed out for not completing after 2hr!')
 
@@ -38,9 +39,9 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
         try:
             with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='day', pp_type='refined', var_list=day_vars, north=north,
-                            south=south, west=west, east=east, resolution=resolution, preview=preview,
-                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
+                            south=south, west=west, east=east, binning_resolution=binning_resolution,
+                            mapping_resolution=mapping_resolution, data_root=data_root,
+                            eight_day=eight_day, month=month, flags=flags, proj=proj)
         except TimeoutException:
             pprint('A processed timed out for not completing after 2hr!')
 
@@ -48,9 +49,9 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
         try:
             with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='night', pp_type='nrt', var_list=night_vars, north=north,
-                            south=south, west=west, east=east, resolution=resolution, preview=preview,
-                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
+                            south=south, west=west, east=east, binning_resolution=binning_resolution,
+                            mapping_resolution=mapping_resolution, data_root=data_root,
+                            eight_day=eight_day, month=month, flags=flags, proj=proj)
         except TimeoutException:
             pprint('A processed timed out for not completing after 2hr!')
 
@@ -58,9 +59,9 @@ def main(day_vars, night_vars, refined, eight_day, month, sixteen_day, daily_com
         try:
             with time_limit(7200 - 60):
                 nrt_wrapper(day_or_night='night', pp_type='refined', var_list=night_vars, north=north,
-                            south=south, west=west, east=east, resolution=resolution, preview=preview,
-                            data_root=data_root, daily_compose=daily_compose, eight_day=eight_day,
-                            sixteen_day=sixteen_day, month=month, compositing_function=compositing_function)
+                            south=south, west=west, east=east, binning_resolution=binning_resolution,
+                            mapping_resolution=mapping_resolution, data_root=data_root,
+                            eight_day=eight_day, month=month, flags=flags, proj=proj)
         except TimeoutException:
             pprint('A processed timed out for not completing after 2hr!')
 
@@ -111,7 +112,7 @@ if __name__ == '__main__':
               'Example usage:\n'
               '------------------\n\n'
               'satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --north 33 --south 3 --west -122 \n'
-              '--east -72 -d /export/isilon/datos2/satmo2_data/ -r 2000')
+              '--east -72 -d /export/isilon/datos2/satmo2_data/')
 
     parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
 
@@ -133,24 +134,25 @@ if __name__ == '__main__':
     parser.add_argument('--no-8DAY', dest='eight_day', action='store_false',
                         help='Disable processing of 8 days temporal composites')
 
-    parser.add_argument('--no-16DAY', dest='sixteen_day', action='store_false',
-                        help='Disable processing of 16 days temporal composites')
-
     parser.add_argument('--no-month', dest='month', action='store_false',
                         help='Disable processing of monthly temporal composites')
-
-    parser.add_argument('--no-daily_compose', dest='daily_compose', action='store_false',
-                        help='Disable processing of daily composites. Because temporal composites are produced from daily composites, you must disable temporal composites when disabling daily composites.')
 
     parser.add_argument("-d", "--data_root",
                         required=True,
                         type = str,
                         help="Root of the local archive")
 
-    parser.add_argument("-r", "--resolution",
-                        required=True,
+    parser.add_argument("-map_res", "--mapping_resolution",
+                        required=False,
                         type = int,
-                        help="Output resolution (in meters)")
+                        help="Output resolution in meters (defaults to 1000)")
+    parser.set_defaults(mapping_resolution=1000)
+
+    parser.add_argument("-bin_res", "--binning_resolution",
+                        required=False,
+                        type = str,
+                        help="Output resolution in meters (defaults to 1000)")
+    parser.set_defaults(binning_resolution='1')
 
     parser.add_argument('-north', '--north',
                         type = float,
@@ -172,12 +174,21 @@ if __name__ == '__main__':
                         required = True,
                         help = 'Western most boundary in DD')
 
-    parser.add_argument('--preview', action='store_true',
-                        help = 'Generate png previews in addition to geotiffs')
+    parser.add_argument('-p', '--proj',
+                        type = str,
+                        required = False,
+                        help = ('Optional Coordinate reference system of the output in proj4 format,'
+                                ' or any predifined crs name in seadas l3mapgen. If None is provided,'
+                                ' +proj=eqc +lon_0=0 is used'))
+    parser.set_defaults(proj=None)
 
-    parser.add_argument('--fun', dest='compositing_function', type=str,
-                       help='Compositing function for generating daily and temporal coposites. Default to mean. Other options are min, max, and median')
-    parser.set_defaults(compositing_function='mean')
+    parser.add_argument('-flags', '--flags',
+                        required = False,
+                        nargs = '*',
+                        help = ('List of flags to use in the binning step. If not provided defaults are retrieved'
+                                ' for each L3 suite independently from the satmo global variable FLAGS'))
+    parser.set_defaults(flags=None)
+
     parsed_args = parser.parse_args()
 
     main(**vars(parsed_args))
