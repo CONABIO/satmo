@@ -44,9 +44,9 @@ Examples usage
 -------------------
 
 # Process chlor_a, night sst, sst, and chl_ocx for viirs, aqua and terra between 2000 and 2017
-timerange_bin_map.py --aqua --terra --viirs -b 2000-01-01 -e 2017-12-31 -south 3 -north 33 -west -122 -east -72\
-        -d /export/isilon/datos2/satmo2_data -bin_res 1 -map_res 1000 -day_vars chlor_a chl_ocx sst\
-        -night_vars sst -multi 6
+timerange_bin_map.py --aqua --terra --viirs -b 2000-01-01 -e 2017-12-31 -south 3 -north 33 -west -122 -east -72 \
+-d /export/isilon/datos2/satmo2_data -bin_res 1 -map_res 1000 -day_vars chlor_a chl_ocx sst \
+-night_vars sst -multi 6
     """
 
     parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -130,8 +130,9 @@ timerange_bin_map.py --aqua --terra --viirs -b 2000-01-01 -e 2017-12-31 -south 3
                                 ' for each L3 suite independently from the satmo global variable FLAGS'))
     parser.set_defaults(flags=None)
 
-    parser.add_argument('--no-overwrite', action='store_false',
+    parser.add_argument('--no-overwrite', action='store_false', dest='overwrite',
                        help = 'Disable defaults overwritting of existing files')
+    parser.set_defaults(overwrite=True)
 
     parser.add_argument('-multi', '--n_threads',
                         type = int,
