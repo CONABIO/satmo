@@ -11,4 +11,4 @@
 - `matplotlib.basemap` installed for testing (131 MB package) using `pip install https://github.com/matplotlib/basemap/archive/v1.0.7rel.tar.gz`
 
 
-Add `Alternative floating algae index:afai:dimensionless:linear:-1:1:F:default` to $OCDATAROOT/common/smigen_product_table.dat to allow l2mapgen to work with custom products
+Add `Alternative floating algae index:afai:dimensionless:linear:-1:1:F:default` and `floating algae index:fai:dimensionless:linear:-1:1:F:default` to $OCDATAROOT/common/smigen_product_table.dat to allow l2mapgen to work with custom products
