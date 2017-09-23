@@ -307,35 +307,6 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.to_km('2000m'), '2km')
         self.assertEqual(satmo.to_km('1km'), '1km')
 
-
-    def test_make_path(self):
-        file_name = 'T2013001043500.L1A_LAC'
-        self.assertEqual(satmo.make_file_path(file_name), 'terra/L1A/2013/001/T2013001043500.L1A_LAC')
-        self.assertEqual(satmo.make_file_path(file_name, add_file = False), 'terra/L1A/2013/001')
-        self.assertEqual(satmo.make_file_path(file_name, add_file = False, doy = False), 'terra/L1A/2013')
-        self.assertEqual(satmo.make_file_path(file_name, add_file = True, doy = False), 'terra/L1A/2013/T2013001043500.L1A_LAC')
-        self.assertEqual(satmo.make_file_path(file_name, add_file = True, doy = False, level = 'L3m'), 'terra/L3m/2013')
-        with self.assertRaises(ValueError):
-            satmo.make_file_path(file_name, add_file = False, doy = True, level = 'L3M')
-
-    def test_make_file_name(self):
-        file_name = 'T2005007002500.L2_LAC_OC.nc'
-        self.assertEqual(satmo.make_file_name(file_name, 'L3b', 'SST'), 'T2005007.L3b_DAY_SST.nc')
-        self.assertEqual(satmo.make_file_name(file_name, 'L3b', 'SST4', '.tif'), 'T2005007.L3b_DAY_SST4.tif')
-        with self.assertRaises(ValueError):
-            satmo.make_file_name(file_name, 'L3c', 'SST')
-
-    def test_file_path_from_sensor_date(self):
-        date_dt = datetime(2007, 02, 23) # doy: 54
-        date_str = '2007-02-23'
-        sensor = 'aqua'
-        data_root = '/media/user/data/test'
-        self.assertEqual(satmo.file_path_from_sensor_date('aqua', date_dt, data_root), '/media/user/data/test/aqua/L1A/2007/054')
-        self.assertEqual(satmo.file_path_from_sensor_date('aqua', date_str, data_root, 'L2'), '/media/user/data/test/aqua/L2/2007/054')
-        self.assertEqual(satmo.file_path_from_sensor_date('aqua', date_str, data_root, 'L3m', doy = False), '/media/user/data/test/aqua/L3m/2007')
-        with self.assertRaises(ValueError):
-            satmo.file_path_from_sensor_date('aqua', date_dt, data_root, 'L3')
-
     def test_bit_pos_to_hex(self):
         self.assertEqual(satmo.bit_pos_to_hex([7, 4, 0, 1, 8]), int(0x193))
         self.assertEqual(satmo.bit_pos_to_hex([7, 4, 0, 1]), int(0x93))

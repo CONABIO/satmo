@@ -10,8 +10,8 @@ import string
 import random
 import re
 
-from .utils import (super_glob, OC_filename_parser, make_file_path,
-                    make_file_name, is_day, OC_filename_builder, to_km,
+from .utils import (OC_filename_parser,
+                    is_day, OC_filename_builder, to_km,
                     OC_viirs_geo_filename_builder, randomword)
 from .errors import SeadasError
 from .global_variables import STANDARD_L3_SUITES

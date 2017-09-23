@@ -8,7 +8,7 @@ import warnings
 
 from .query import query_from_extent, make_download_url, get_subscription_urls
 from .download import download_robust
-from .utils import (file_path_from_sensor_date, OC_file_finder, is_day,
+from .utils import (OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
                     OC_filename_parser, pre_compose, processing_meta_from_list,
                     find_composite_date_list, time_limit, OC_viirs_geo_filename_builder,
