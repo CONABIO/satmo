@@ -219,7 +219,7 @@ def OC_filename_parser(filename, raiseError = True):
                      'begin_year': None,
                      'end_year': None}
     elif m_0.group('level') == 'L3b':
-        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})\.(?P<level>L3b)_(.*?)_(?P<suite>.*)\..*')
+        pattern = re.compile(r'(?P<sensor>[A-Z])(?P<date>\d{7})\.(?P<level>L3b)_(?P<composite>.*?)_(?P<suite>.*)\..*')
         m = pattern.match(filename)
         dt_date = datetime.strptime(m.group('date'), "%Y%j")
         meta_dict = {'sensor': SENSOR_CODES[m.group('sensor')],
@@ -237,7 +237,7 @@ def OC_filename_parser(filename, raiseError = True):
                      'resolution': None,
                      'variable': None,
                      'suite': m.group('suite'),
-                     'composite': None,
+                     'composite': m.group('composite'),
                      'begin_year': None,
                      'end_year': None}
     elif m_0.group('level') == 'L3m':
@@ -566,7 +566,7 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
         - 'L3m':
             data_root, date, level, suite, variable, (sensor_code), resolution, composite
         - 'L3b':
-            data_root, date, level, suite, (sensor_code), composite
+            data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite
 
 
     Returns:

@@ -49,7 +49,7 @@ class TestUtils(unittest.TestCase):
         d3 = {'anomaly': False,
              'begin_year': None,
              'climatology': False,
-             'composite': None,
+             'composite': 'DAY',
              'date': date(2004, 1, 5),
              'dom': 5,
              'doy': 5,
