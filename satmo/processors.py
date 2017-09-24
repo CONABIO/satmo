@@ -879,8 +879,7 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
 
     return filename
 
-def l3bin(file_list, north, south, west, east, data_root=None, composite=None,
-          filename=None, overwrite=False):
+def l3bin(file_list, north, south, west, east, filename, overwrite=False):
     """Simple wrapper for seadas l3bin
 
     Used for temporal compositing
@@ -891,8 +890,6 @@ def l3bin(file_list, north, south, west, east, data_root=None, composite=None,
         north (float): Northern border of output extent (in DD)
         west (float): Western border of output extent (in DD)
         east (float): Eastern border of output extent (in DD)
-        data_root (str): Root of the data archive
-        composite (str): Compositing period (DAY, 8DAY, MON)
         filename (str): Optional output filename
         overwrite (bool): Overwrite existing files?
 
@@ -905,15 +902,81 @@ def l3bin(file_list, north, south, west, east, data_root=None, composite=None,
     #   - Modify OC_filename_builder ?
     #   - Deal with it only in l3bin_wrapper... and ask for filename here
     # Write file list to text file
-    cli_args = ['l3bin',
-                'in=%s' % file_list,
-                'loneast=%f' % east,
-                'lonwest=%f' % west,
-                'latnorth=%f' % north,
-                'latsouth=%f' % south,
-                'out=%s' % filename]
-    with open(os.devnull, 'w') as FNULL:
-        # Run cli
-        status = subprocess.call(cli_args, stdout=FNULL, stderr=subprocess.STDOUT)
-    if status != 0:
-        raise SeadasError('l2mapgen exited with status %d during L2 mapping' % status)
+    # l3bin suite logique should be:
+        # l3bin: list of input files and filename need to be provided
+        # l3bin_wrapper: Take a list of dates, and a list of suites
+        # l3bin_map_wrapper: take a list of dates and a list of variables
+        # l3bin_map_batcher: begin, end, delta and list of variables
+    # TODO: Verify this overwrite logic, I have a doubt (taken fron l2bin, and probably used in many
+        # more utils
+    output_meta = OC_filename_parser(filename)
+    if not (os.path.isfile(filename) and not overwrite):
+        L3b_dir = os.path.dirname(filename)
+        # Create directory if not already exists
+        if not os.path.exists(L3b_dir):
+            os.makedirs(L3b_dir)
+        # Create text file with input L2 files
+        file_list_file = os.path.join(L3b_dir, 'L3b_file_list_%s_%d%03d_%d' % \
+                                     (output_meta['composite'], output_meta['year'],
+                                      output_meta['doy'], random.randint(1,9999)))
+        with open(file_list_file, 'w') as dst:
+            for item in file_list:
+                dst.write(item + '\n')
+        cli_args = ['l3bin',
+                    'in=%s' % file_list_file,
+                    'loneast=%f' % east,
+                    'lonwest=%f' % west,
+                    'latnorth=%f' % north,
+                    'latsouth=%f' % south,
+                    'out=%s' % filename]
+        with open(os.devnull, 'w') as FNULL:
+            # Run cli
+            status = subprocess.call(cli_args, stdout=FNULL, stderr=subprocess.STDOUT)
+        if status != 0:
+            raise SeadasError('l3bin exited with status %d during temporal binning' % status)
+    else:
+        raise ValueError('File exists, set overwrite to True for overwriting file')
+    return filename
+
+def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east, composite,
+                  overwrite=False):
+    """Wrapper to run l3bin without having to name explicitely input or output files
+
+    Args:
+        sensor_codes (list): List of sensor codes to include (e.g.: ['A', 'T', 'V']
+        date_list (list): List of dates
+        suite_list (list): List of L3 suites to include
+        south (float): Southern border of output extent (in DD)
+        north (float): Northern border of output extent (in DD)
+        west (float): Western border of output extent (in DD)
+        east (float): Eastern border of output extent (in DD)
+        composite (str): Composite type (8DAY, MON)
+        overwrite (bool): Overwrite existing files?
+
+    Returns:
+        list: List of L3b files generated. Mostly used for its side effect of generating
+        temporally composited L3b files from daily L3b files.
+    """
+    out_list = []
+    for sensor_code in sensor_codes:
+        for suite in suite_list:
+            file_list = []
+            for date in date_list:
+                file = OC_file_finder(data_root=data_root, date=date, level='L3b',
+                                      suite=suite, sensor_code=sensor_code,
+                                      composite=composite)
+                if file:
+                    file_list.append(file[0])
+            filename = OC_filename_builder(level='L3b', full_path=True,
+                                           data_root=data_root, date=min(date_list),
+                                           sensor_code=sensor_code, suite=suite,
+                                           composite=composite)
+            try:
+                out_file = l3bin(file_list=file_list, north=north, south=south, west=west,
+                                 east=east, filename=filename, overwrite=overwrite)
+                out_list.append(out_file)
+            except Exception as e:
+                pprint('l3bin: %s could not be produced. %s' % (filename, e))
+    return out_list
+
+
