@@ -587,6 +587,59 @@ def l2gen_wrapper(date, sensor_codes, var_list, suite, data_root, night=False,
                     raise
     return out_list
 
+def l2_append_wrapper(date, sensor_codes, var, suite, data_root):
+    """Wrapper to run l2_append on all matching files of a given date
+
+    Args:
+        date (datetime or str): Date of L2 data to process
+        sensor_codes (list): List of strings corresponding to sensor codes to process
+        var (str): Short name of the variable to process. Must exist in the
+            global variable BAND_MATH_FUNCTIONS.
+        suite (str): Suite name of the L2 files containing the required input
+            bands.
+        data_root (str): Root of the data archive
+
+    Return:
+        list: The list of files to which a variable was appended. However, the
+        function is mostly used for its side effect of appending a variable
+        to each file of a list of netcdf files.
+    """
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d")
+    # Query L2 files
+    out_list = []
+    for sensor_code in sensor_codes:
+        sensor = SENSOR_CODES[sensor_code]
+        file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+                                   sensor_code=sensor_code, suite=suite)
+        if file_list:
+            for file in file_list:
+                try:
+                    kwargs = BAND_MATH_FUNCTIONS[var][sensor]
+                    out = l2_append(file, **kwargs)
+                    out_list.append(out)
+                except Exception as e:
+                    pprint('An error occured while appending variable %s to %s. %s' % (var, file, e))
+
+def l2_append_batcher(begin, end, sensor_codes, var, suite, data_root,
+                      n_threads=1):
+    """Compute a new variable and append it to existing L2 files in batch mode
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    # Get list of individual dates between begin and end
+    ndays = (end - begin).days + 1
+    date_list = [begin + timedelta(days=x) for x in range(0, ndays)]
+    # Build kwargs
+    kwargs = {'sensor_codes': sensor_codes,
+              'var': var,
+              'suite': suite,
+              'data_root': data_root}
+    # Run wrapper for every date with // support
+    pool = mp.Pool(n_threads)
+    pool.map_async(functools.partial(l2_append_wrapper, **kwargs), date_list).get(9999999)
 
 def l2gen_batcher(begin, end, sensor_codes, var_list, suite, data_root, night=False,
                   get_anc=True, n_threads=1):

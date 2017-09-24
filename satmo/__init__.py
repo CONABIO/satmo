@@ -13,7 +13,7 @@ from .wrappers import (timerange_download, auto_L3m_process, timerange_auto_L3m_
                        subscriptions_download, nrt_wrapper, l2mapgen_wrapper,
                        l2mapgen_batcher, l2gen_wrapper, l2gen_batcher,
                        refined_processing_wrapper_l1, nrt_wrapper_l1, bin_map_wrapper,
-                       bin_map_batcher)
+                       bin_map_batcher, l2_append_wrapper, l2gen_batcher)
 from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError, TimeoutException
 from .visualization import make_map_title, make_preview
