@@ -899,7 +899,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
             try:
                 suite = L3_SUITE_FROM_VAR[day_or_night][var]
                 l2mapgen(f, south=south, north=north, west=west, east=east,
-                         prod=var, flags=FLAGS[suite], data_root=data_root)
+                         prod=var, flags=FLAGS[suite], data_root=data_root, overwrite=True)
             except Exception as e:
                 pprint('L2m file not generated for %s, variable %s. %s' % (f, var, e))
     date_list = get_date_list(dl_list)

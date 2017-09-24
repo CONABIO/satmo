@@ -584,7 +584,7 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
         filename = OC_filename_builder(level = 'L3b', full_path = True,
                                        data_root = data_root, suite = L3b_suite,
-                                       filename = file_list[0])
+                                       filename = file_list[0], composite='DAY')
     if flags is None:
         flags = FLAGS[L3b_suite]
     if not (os.path.isfile(filename) and not overwrite):
