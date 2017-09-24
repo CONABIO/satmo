@@ -528,6 +528,8 @@ def OC_path_finder(data_root, date, level, sensor_code = None, composite = None,
         path_elements = [data_root, 'combined', 'L3m', '%s_anom' % composite, date.year, str(date.timetuple().tm_yday).zfill(3)]
     elif level == 'L3m':
         path_elements = [data_root, sensor, level, composite, date.year, str(date.timetuple().tm_yday).zfill(3)]
+    elif level == 'L3b':
+        path_elements = [data_root, sensor, level, date.year, str(date.timetuple().tm_yday).zfill(3)]
     else:
         path_elements = [data_root, sensor, level, date.year, str(date.timetuple().tm_yday).zfill(3)]
     path_pattern = os.path.join(*[str(x) for x in path_elements])
@@ -563,6 +565,9 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
             data_root, date, level, suite, (sensor_code)
         - 'L3m':
             data_root, date, level, suite, variable, (sensor_code), resolution, composite
+        - 'L3b':
+            data_root, date, level, suite, (sensor_code), composite
+
 
     Returns:
         A list of filenames (empty if no matches)
@@ -581,6 +586,10 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
                                 str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
                                 composite, '_', suite, '_', variable, '_',
                                 resolution, '.tif'])
+    elif level == 'L3b':
+        file.pattern = ''.join([sensor_code, str(date.year),
+                                str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
+                                composite, '_', suite, '.nc'])
     else:
         raise ValueError('Unsuported data level')
     full_pattern = os.path.join(path_pattern, file_pattern)
@@ -616,7 +625,7 @@ def is_day(filename):
     """
     dt_time = OC_filename_parser(filename)['time']
     # 12pm threshold validated against a full year for aqua, terra, viirs
-    if dt_time > time(12, 0): 
+    if dt_time > time(12, 0):
         return True
     else:
         return False
