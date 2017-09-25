@@ -11,7 +11,7 @@ import re
 
 from .utils import (filename_parser,
                     is_day, filename_builder, to_km,
-                    OC_viirs_geo_filename_builder, randomword)
+                    viirs_geo_filename_builder, randomword)
 from .errors import SeadasError
 from .global_variables import STANDARD_L3_SUITES
 
@@ -128,7 +128,7 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
         os.makedirs(output_dir)
     # Split in two different paths (modis --> multilevel_processor, viirs --> l2gen)
     if input_meta['sensor'] == 'viirs':
-        geo_file = OC_viirs_geo_filename_builder(x)
+        geo_file = viirs_geo_filename_builder(x)
         cli_elements = ['l2gen',
                         'ifile=%s' % x,
                         'geofile=%s' % geo_file,

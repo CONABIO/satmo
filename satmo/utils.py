@@ -596,7 +596,7 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
     file_list = glob.glob(full_pattern)
     return file_list
 
-def OC_viirs_geo_filename_builder(x):
+def viirs_geo_filename_builder(x):
     """Builds the viirs geo filename corresponding to a L1A file
 
     Args:

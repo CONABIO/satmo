@@ -316,9 +316,9 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.resolution_to_km_str(3000), '3km')
 
     def test_viirs_geo_filename_builder(self):
-        self.assertEqual(satmo.OC_viirs_geo_filename_builder('/media/ldutrieux/LoicCONAext/satmo/viirs/L1A/2017/241/V2017241160000.L1A_SNPP.nc'),
+        self.assertEqual(satmo.viirs_geo_filename_builder('/media/ldutrieux/LoicCONAext/satmo/viirs/L1A/2017/241/V2017241160000.L1A_SNPP.nc'),
                          '/media/ldutrieux/LoicCONAext/satmo/viirs/L1A/2017/241/V2017241160000.GEO-M_SNPP.nc')
-        self.assertEqual(satmo.OC_viirs_geo_filename_builder('V2017241160000.L1A_SNPP.nc'),
+        self.assertEqual(satmo.viirs_geo_filename_builder('V2017241160000.L1A_SNPP.nc'),
                          'V2017241160000.GEO-M_SNPP.nc')
 
 if __name__ == '__main__':
