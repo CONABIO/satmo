@@ -13,11 +13,12 @@ from .wrappers import (timerange_download, auto_L3m_process, timerange_auto_L3m_
                        subscriptions_download, nrt_wrapper, l2mapgen_wrapper,
                        l2mapgen_batcher, l2gen_wrapper, l2gen_batcher,
                        refined_processing_wrapper_l1, nrt_wrapper_l1, bin_map_wrapper,
-                       bin_map_batcher, l2_append_wrapper, l2gen_batcher)
+                       bin_map_batcher, l2_append_wrapper, l2gen_batcher, l3bin_wrapper)
 from .geo import geo_dict_from_nc, get_raster_meta
 from .errors import HttpResourceNotAvailable, SeadasError, TimeoutException
 from .visualization import make_map_title, make_preview
 from .processors import (nc2tif, FileComposer, BasicBinMap, L3mProcess,
-                         make_time_composite, l2_append, l2mapgen, l2bin, l3mapgen)
+                         make_time_composite, l2_append, l2mapgen, l2bin, l3mapgen,
+                         l3bin)
 
 __version__ = "0.1"

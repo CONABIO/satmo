@@ -587,7 +587,7 @@ def file_finder(data_root, date, level, suite = None, variable = None, sensor_co
                                 composite, '_', suite, '_', variable, '_',
                                 resolution, '.tif'])
     elif level == 'L3b':
-        file.pattern = ''.join([sensor_code, str(date.year),
+        file_pattern = ''.join([sensor_code, str(date.year),
                                 str(date.timetuple().tm_yday).zfill(3), '.', level, '_',
                                 composite, '_', suite, '.nc'])
     else:

@@ -20,7 +20,7 @@ from .global_variables import (L2_L3_SUITES_CORRESPONDENCES, SUBSCRIPTIONS, L3_S
                                BAND_MATH_FUNCTIONS, FLAGS, VARS_FROM_L2_SUITE,
                                SENSOR_CODES, STANDARD_L3_SUITES)
 from .processors import (L3mProcess, FileComposer, make_time_composite, l2_append,
-                         l2mapgen, l3mapgen, l2bin)
+                         l2mapgen, l3mapgen, l2bin, l3bin)
 from .visualization import make_preview
 from .errors import TimeoutException
 
@@ -816,6 +816,47 @@ def bin_map_batcher(begin, end, sensor_codes, south, north, west, east, data_roo
     # Run wrapper for every date with // support
     pool = mp.Pool(n_threads)
     pool.map_async(functools.partial(bin_map_wrapper, **kwargs), date_list).get(9999999)
+
+def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
+                  composite, data_root, overwrite=False):
+    """Wrapper to run l3bin without having to name explicitely input or output files
+
+    Args:
+        sensor_codes (list): List of sensor codes to include (e.g.: ['A', 'T', 'V']
+        date_list (list): List of dates
+        suite_list (list): List of L3 suites to include
+        south (float): Southern border of output extent (in DD)
+        north (float): Northern border of output extent (in DD)
+        west (float): Western border of output extent (in DD)
+        east (float): Eastern border of output extent (in DD)
+        composite (str): Composite type (8DAY, MON)
+        overwrite (bool): Overwrite existing files?
+
+    Returns:
+        list: List of L3b files generated. Mostly used for its side effect of generating
+        temporally composited L3b files from daily L3b files.
+    """
+    out_list = []
+    for sensor_code in sensor_codes:
+        for suite in suite_list:
+            file_list = []
+            for date in date_list:
+                file = file_finder(data_root=data_root, date=date, level='L3b',
+                                   suite=suite, sensor_code=sensor_code,
+                                   composite='DAY')
+                if file:
+                    file_list.append(file[0])
+            filename = filename_builder(level='L3b', full_path=True,
+                                        data_root=data_root, date=min(date_list),
+                                        sensor_code=sensor_code, suite=suite,
+                                        composite=composite)
+            try:
+                out_file = l3bin(file_list=file_list, north=north, south=south, west=west,
+                                 east=east, filename=filename, overwrite=overwrite)
+                out_list.append(out_file)
+            except Exception as e:
+                pprint('l3bin: %s could not be produced. %s' % (filename, e))
+    return out_list
 
 
 def subscriptions_download(sub_list, data_root, refined=False):
