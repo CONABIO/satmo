@@ -843,7 +843,7 @@ def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
                 pprint('l3bin: %s could not be produced. %s' % (filename, e))
     return out_list
 
-def l3bin_map_wrapper(sensor_codes, date_list, var_list, south, north, west, east,
+def l3bin_map_wrapper(date_list, sensor_codes, var_list, south, north, west, east,
                       composite, data_root, mapping_resolution=1000, night=False,
                       proj=None, overwrite=False):
     """Run l3bin and l3mapgen for a list of dates, sensor_codes, and variables
