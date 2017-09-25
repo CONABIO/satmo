@@ -26,7 +26,6 @@ setup(name='satmo',
       packages=find_packages(),
       install_requires=[
           'requests',
-          'future',
           'python-dateutil',
           'pyproj',
           'affine',

@@ -1,8 +1,3 @@
-from future.standard_library import install_aliases
-install_aliases()
-
-import urllib.parse
-
 import requests
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
@@ -10,7 +5,7 @@ import re
 from datetime import datetime
 import os.path
 
-def query_from_extent(sensors, date_begin, per, north, south, west, east, day = True,\
+def query_from_extent(sensors, date_begin, per, north, south, west, east, day = True,
                       night = True, product = 'L1A', base_url = 'https://oceancolor.gsfc.nasa.gov/cgi/browse.pl'):
     """Query L1A data for a given period and spatial extent
 
@@ -36,7 +31,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
         base_url (str): 'api' host
 
     Returns:
-        List of filenames
+         list: List of filenames
 
     """
     # Instantiate a requests session and set number of retries and pause between them
@@ -68,19 +63,19 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     day = (date_begin - datetime(1970, 1, 1)).days
     # BUild dictionary of arguments
     query0_args = {'sub': 'level1or2list',
-              'per': per,
-              'day': day,
-              'sen': sensors,
-              'dnm': dnm,
-              'prm': 'TC',
-              'typ': typ,
-              'n': north,
-              's': south,
-              'w': west,
-              'e': east}
+                   'per': per,
+                   'day': day,
+                   'sen': sensors,
+                   'dnm': dnm,
+                   'prm': 'TC',
+                   'typ': typ,
+                   'n': north,
+                   's': south,
+                   'w': west,
+                   'e': east}
     # This first query will return an html page from which the order id can be retrieved
     # and used to send a second request
-    r0 = s.get('?'.join([base_url, urllib.parse.urlencode(query0_args)]))
+    r0 = s.get(base_url, params=query0_args)
     if r0.status_code != 200:
         raise requests.HTTPError
     # regular expression to find the orderid in the html page
@@ -89,7 +84,7 @@ def query_from_extent(sensors, date_begin, per, north, south, west, east, day = 
     query1_args = {'sub': 'filenamelist',
                    'id': m.group(1),
                    'prm': prm}
-    r1 = s.get('?'.join([base_url, urllib.parse.urlencode(query1_args)]))
+    r1 = s.get(base_url, params=query1_args)
     if r1.status_code != 200:
         raise requests.HTTPError
     file_list = r1.text.split('\n')
