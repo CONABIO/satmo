@@ -72,11 +72,11 @@ timerange_bin_map.py --aqua --terra --viirs -b 2000-01-01 -e 2017-12-31 -south 3
                         help = 'Posterior time-range boundary in yyyy-mm-dd')
 
     parser.add_argument('-day_vars', '--day_vars', nargs = '*',
-                        required = True,
+                        required = False, default=None,
                         help = 'Day time L3m variables to process (e.g. chlor_a). Can receive multiple arguments')
 
     parser.add_argument('-night_vars', '--night_vars', nargs = '*',
-                        required = True,
+                        required = False, default=None,
                         help = 'Night time L3m variables to process (e.g. sst). Can receive multiple arguments')
 
     parser.add_argument("-d", "--data_root",
