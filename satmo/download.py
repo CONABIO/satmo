@@ -113,9 +113,7 @@ def download_robust(url, base_dir, n_retries = 5, pause_retries = 10, overwrite 
         except HttpResourceNotAvailable:
             warnings.warn(url + ' not downloaded. Not found on server')
             return None
-        except KeyboardInterrupt:
-            raise
-        except:
+        except Exception as e:
             warnings.warn(url + ' not downloaded. Unknown reason')
             return None
     warnings.warn(url + ' not downloaded. Max retries reached')

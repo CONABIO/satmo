@@ -157,8 +157,6 @@ def make_daily_composite_error_catcher(date, variable, suite, data_root, resolut
     except Exception as e:
         pprint('%s composite, could not be processed, reason: %s' % (str(date),
                                                                 str(e)))
-    except KeyboardInterrupt:
-        raise
 
 
 def timerange_daily_composite(begin, end, variable, suite, data_root,
@@ -317,8 +315,6 @@ def auto_L3m_process_with_error_catcher(date, sensor_code, suite, var, north, so
     except TimeoutException as e:
         pprint('date %s, sensor %s could not be processed, Process timed out after 120 seconds' %
                (str(date), str(sensor_code)))
-    except KeyboardInterrupt:
-        raise
 
 def timerange_auto_L3m_process(begin, end, sensor_codes, suite, var, north, south, west, east,
                                data_root, resolution, day=True, bit_mask =
@@ -508,8 +504,6 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
                              overwrite=overwrite)
                 except Exception as e:
                     pprint('An error occured while processing %s file. %s' % (file, e))
-                except KeyboardInterrupt:
-                    raise
 
 def l2mapgen_batcher(begin, end, sensor_codes, var, south, north, west, east,
                      data_root, night=False, flags=None, width=5000,
@@ -583,8 +577,6 @@ def l2gen_wrapper(date, sensor_codes, var_list, suite, data_root, night=False,
                     out_list.append(out)
                 except Exception as e:
                     pprint('An error occured while processing %s file. %s' % (file, e))
-                except KeyboardInterrupt:
-                    raise
     return out_list
 
 def l2_append_wrapper(date, sensor_codes, var, suite, data_root):
@@ -730,8 +722,6 @@ def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
                     except Exception as e:
                         pprint('Error generating l3b file for %s, %s, %s' % (suite, date.strftime('%Y-%m-%d'), e))
                         continue
-                    except KeyboardInterrupt:
-                        raise
                     # for each var in var_list
                     for var in var_dict[suite]:
                         try:
@@ -741,8 +731,6 @@ def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
                                      proj=proj, data_root=data_root, overwrite=overwrite)
                         except Exception as e:
                             pprint('Error generating l3m file for %s, %s, %s' % (var, date.strftime('%Y-%m-%d'), e))
-                        except KeyboardInterrupt:
-                            raise
     # Night processing
     if night_vars is not None:
         for sensor_code in sensor_codes:
@@ -773,8 +761,6 @@ def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
                     except Exception as e:
                         pprint('Error generating l3b file for %s, %s, %s' % (suite, date.strftime('%Y-%m-%d'), e))
                         continue
-                    except KeyboardInterrupt:
-                        raise
                     for var in var_dict[suite]:
                         try:
                             # Run l3mapgen
@@ -783,8 +769,6 @@ def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
                                      proj=proj, data_root=data_root, overwrite=overwrite)
                         except Exception as e:
                             pprint('Error generating l3m file for %s, %s, %s' % (var, date.strftime('%Y-%m-%d'), e))
-                        except KeyboardInterrupt:
-                            raise
 
 def bin_map_batcher(begin, end, sensor_codes, south, north, west, east, data_root,
                     binning_resolution = 1, mapping_resolution = 1000,
@@ -953,8 +937,6 @@ def subscriptions_download(sub_list, data_root, refined=False):
     except Exception as e:
         pprint('There was a problem on %s with download. %s' % (datetime.now().strftime('%d %h at %H:%M'), e))
         return []
-    except KeyboardInterrupt:
-        raise
 
 def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                 data_root, binning_resolution = 1, mapping_resolution = 1000,
@@ -1035,8 +1017,6 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         # to do anyway
         pprint('Data download did not work properly. %s' % e)
         return
-    except KeyboardInterrupt:
-        raise
     # Check that something got downloaded
     if not dl_list:
         # Exit function in case no files were downloaded
@@ -1089,8 +1069,6 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
         # to do anyway
         pprint('Data download did not work properly. %s' % e)
         return
-    except KeyboardInterrupt:
-        raise
     # Check that something got downloaded
     if not file_list:
         # Exit function in case no files were downloaded
@@ -1107,8 +1085,6 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
             L2_list.append(L2_file)
         except Exception as e:
             pprint('Problem while generating L2 file from %s. %s' % (L1_file, e))
-        except KeyboardInterrupt:
-            raise
     # For each L2 file, append AFAI to netCDF file
     for L2_file in L2_list:
         sensor = filename_parser(L2_file)['sensor']
@@ -1119,8 +1095,6 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
                      prod='afai', flags=FLAGS['FAI'], data_root=data_root)
         except Exception as e:
             pprint('Problem while generating L2m file from %s. %s' % (L2_file, e))
-        except KeyboardInterrupt:
-            raise
         try:
             fai_param = BAND_MATH_FUNCTIONS['fai'][sensor]
             l2_append(L2_file, **fai_param)
@@ -1128,9 +1102,6 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
                      prod='fai', flags=FLAGS['FAI'], data_root=data_root)
         except Exception as e:
             pprint('Problem while generating L2m file from %s. %s' % (L2_file, e))
-        except KeyboardInterrupt:
-            raise
-    # Get a list of dates/sensor combinations
 
 def refined_processing_wrapper_l1(north, south, west, east, data_root, delay = 30):
     """Wrapper to be called from nrt command line once a day
