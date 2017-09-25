@@ -132,7 +132,7 @@ def make_preview(file):
 
     cbar = plt.colorbar(fraction=0.025)
     cbar.ax.tick_params(labelsize=20)
-    plt.savefig(fig_name, dpi=300, transparent=True)
+    plt.savefig(fig_name, dpi=300, transparent=True, bbox_inches='tight')
     plt.close(fig)
     return fig_name
 
