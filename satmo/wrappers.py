@@ -896,6 +896,38 @@ def l3bin_map_wrapper(sensor_codes, date_list, var_list, south, north, west, eas
                         pprint('Error while running l3mapgen on %s, %s composite. %s' % (var, composite, e))
 
 
+def l3bin_map_batcher(begin, end, delta, sensor_codes, var_list, south, north,
+                      west, east, composite, data_root, mapping_resolution=1000,
+                      night=False, proj=None, overwrite=False, n_threads=1):
+    """Takes a begin date, an end date and a compositing period to batch process temporal composites
+
+    Uses the l3bin and l3mapgen seadas utilities and support parallel processing
+
+    Args:
+        begin (datetime.datetime or str): Begin date of the first composite
+        end (datetime.datetime or str): Begin date of the last composite
+        delta (int or str): composite length in days if int, 'month' if str.
+    """
+    if type(begin) is str:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+    if type(end) is str:
+        end = datetime.strptime(end, "%Y-%m-%d")
+    dateList_list = pre_compose(begin, end, delta)
+    kwargs = {'sensor_codes': sensor_codes,
+              'var_list': var_list,
+              'south': south,
+              'north': north,
+              'west': west,
+              'east': east,
+              'composite': composite,
+              'data_root': data_root,
+              'mapping_resolution': mapping_resolution,
+              'night': night,
+              'proj': proj,
+              'overwrite': overwrite}
+    # Run wrapper for every date with // support
+    pool = mp.Pool(n_threads)
+    pool.map_async(functools.partial(l3bin_map_wrapper, **kwargs), dateList_list).get(9999999)
 
 
 def subscriptions_download(sub_list, data_root, refined=False):
