@@ -494,7 +494,7 @@ def path_builder(filename, data_root = None, add_file = True):
     file_path = os.path.join(*path_elements)
     return file_path
 
-def OC_path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology = False, search = True):
+def path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology = False, search = True):
     """Builds and find existing paths from meta information
 
     Builds a pseudo path name using provided metadata and runs glob.glob on it
@@ -574,7 +574,7 @@ def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor
     """
     if type(date) is str:
         date = datetime.strptime(date, "%Y-%m-%d")
-    path_pattern = OC_path_finder(data_root = data_root, level = level, date = date, composite = composite, search = False, sensor_code = sensor_code)
+    path_pattern = path_finder(data_root = data_root, level = level, date = date, composite = composite, search = False, sensor_code = sensor_code)
     if sensor_code is None:
         sensor_code = '*'
     if level == 'L1A':
