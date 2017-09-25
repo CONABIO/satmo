@@ -8,7 +8,7 @@ import warnings
 
 from .query import query_from_extent, make_download_url, get_subscription_urls
 from .download import download_robust
-from .utils import (OC_file_finder, is_day,
+from .utils import (file_finder, is_day,
                     is_night, resolution_to_km_str, filename_builder,
                     filename_parser, pre_compose, processing_meta_from_list,
                     find_composite_date_list, time_limit, viirs_geo_filename_builder,
@@ -112,7 +112,7 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
     """
     # Search the files that correspond to a date/variable, etc Do not restrict
     # sensor code
-    file_list = OC_file_finder(data_root=data_root, date=date, level='L3m',
+    file_list = file_finder(data_root=data_root, date=date, level='L3m',
                                suite=suite, variable=variable,
                                resolution=resolution, composite='DAY',
                                sensor_code=None)
@@ -497,7 +497,7 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
 
     # Query L2 files
     for sensor_code in sensor_codes:
-        file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+        file_list = file_finder(data_root=data_root, date=date, level='L2',
                                    suite=l2_suite, sensor_code=sensor_code)
         if file_list:
             for file in file_list:
@@ -571,7 +571,7 @@ def l2gen_wrapper(date, sensor_codes, var_list, suite, data_root, night=False,
     # Query L2 files
     out_list = []
     for sensor_code in sensor_codes:
-        file_list = OC_file_finder(data_root=data_root, date=date, level='L1A',
+        file_list = file_finder(data_root=data_root, date=date, level='L1A',
                                    sensor_code=sensor_code)
         # Filter for day/night files
         file_list = [x for x in file_list if is_night(x) is night]
@@ -610,7 +610,7 @@ def l2_append_wrapper(date, sensor_codes, var, suite, data_root):
     out_list = []
     for sensor_code in sensor_codes:
         sensor = SENSOR_CODES[sensor_code]
-        file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+        file_list = file_finder(data_root=data_root, date=date, level='L2',
                                    sensor_code=sensor_code, suite=suite)
         if file_list:
             for file in file_list:
@@ -719,7 +719,7 @@ def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
                     l2_suite = L2_L3_SUITES_CORRESPONDENCES[suite]
                     # Identify L2 input files
                     try:
-                        l2_file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+                        l2_file_list = file_finder(data_root=data_root, date=date, level='L2',
                                                       suite=l2_suite, sensor_code=sensor_code)
                         # Filter to keep day data only
                         l2_file_list = [x for x in l2_file_list if is_day(x)]
@@ -762,7 +762,7 @@ def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
                     l2_suite =  L2_L3_SUITES_CORRESPONDENCES[suite]
                     try:
                         # Identify L2 input files
-                        l2_file_list = OC_file_finder(data_root=data_root, date=date, level='L2',
+                        l2_file_list = file_finder(data_root=data_root, date=date, level='L2',
                                                       suite=l2_suite, sensor_code=sensor_code)
                         # Filter to keep night data only
                         l2_file_list = [x for x in l2_file_list if is_night(x)]

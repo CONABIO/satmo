@@ -13,7 +13,7 @@ from pyproj import Proj
 from affine import Affine
 
 from .geo import geo_dict_from_nc, get_raster_meta
-from .utils import (filename_parser, OC_file_finder, is_day,
+from .utils import (filename_parser, file_finder, is_day,
                     filename_builder, to_km)
 from .visualization import make_preview
 from .errors import SeadasError
@@ -261,7 +261,7 @@ class BasicBinMap(object):
                 Defaults to None.
             var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
         """
-        file_list = OC_file_finder(data_root, date, level = 'L2', suite = suite, sensor_code = sensor_code)
+        file_list = file_finder(data_root, date, level = 'L2', suite = suite, sensor_code = sensor_code)
         file_list = [x for x in file_list if is_day(x) == day]
         if len(file_list) == 0:
             raise IOError('No L2 files found')
@@ -730,7 +730,7 @@ def make_time_composite(date_list, var, suite, resolution, composite,
     # Search for the list of files
     file_list = []
     for date in date_list:
-        file_query = OC_file_finder(data_root=data_root, date=date, level='L3m', suite=suite,
+        file_query = file_finder(data_root=data_root, date=date, level='L3m', suite=suite,
                                     sensor_code=sensor_code, resolution=resolution,
                                     variable=var, composite='DAY')
         if file_query:
@@ -962,7 +962,7 @@ def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
         for suite in suite_list:
             file_list = []
             for date in date_list:
-                file = OC_file_finder(data_root=data_root, date=date, level='L3b',
+                file = file_finder(data_root=data_root, date=date, level='L3b',
                                       suite=suite, sensor_code=sensor_code,
                                       composite=composite)
                 if file:

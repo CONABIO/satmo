@@ -539,7 +539,7 @@ def path_finder(data_root, date, level, sensor_code = None, composite = None, an
     return path_pattern
 
 
-def OC_file_finder(data_root, date, level, suite = None, variable = None, sensor_code = None, resolution = None, composite = None):
+def file_finder(data_root, date, level, suite = None, variable = None, sensor_code = None, resolution = None, composite = None):
     """Finds existing files on the system from meta information (date, level, variable, sensor_code, ...)
 
     Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly
