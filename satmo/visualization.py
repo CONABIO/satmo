@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import warnings
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
