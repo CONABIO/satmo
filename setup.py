@@ -13,9 +13,6 @@ with open('satmo/__init__.py') as f:
 # 
 extra_reqs = {'docs': ['sphinx', 'sphinx-rtd-theme']}
 extra_reqs['all'] = list(set(itertools.chain(*extra_reqs.values())))
-# TODO: The package has an optional dependency on matplotlib-basemap, but
-# this is difficult to mention in this file, even as extra dependency since
-# it is not on pypi. Replace by cartopy
 
 setup(name='satmo',
       version=version,
@@ -37,6 +34,8 @@ setup(name='satmo',
           'rasterio',
           'netCDF4',
           'matplotlib',
+          'cartopy',
+          'scipy',
           'numpy',
           'schedule',
           'pint'],

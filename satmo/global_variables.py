@@ -105,12 +105,22 @@ L2_L3_SUITES_CORRESPONDENCES = {'RRS': 'OC',
 
 
 
-INDICES = {'chlor_a' : {'algorithm':{'OC3':{'modis': {'reflectances': 'RRS',
-                                                     'bands': ['blue', 'green']},
-                                                     'RRS': {'blue': [],
-                                                          'green': []}}},
-                        'stretch': {'vmax': 10},
-                        'log': True}}
+VIZ_PARAMS = {'chlor_a' : {'stretch': {'vmax': 15},
+                           'log': True,
+                           'cmap': 'jet'},
+              'chl_ocx' : {'stretch': {'vmax': 15},
+                           'log': True,
+                           'cmap': 'jet'},
+              'Kd_490' : {'stretch': {'vmax': 6},
+                           'log': True,
+                           'cmap': 'jet'},
+              'sst': {'stretch': {'vmin': 15, 'vmax': 35},
+                      'log': False,
+                      'cmap': 'RdYlBu_r'},
+              'nflh': {'stretch': {'vmin': 0, 'vmax': 0.5},
+                      'log': False,
+                      'cmap': 'jet'}}
+# cmap examples at https://matplotlib.org/examples/color/colormaps_reference.html
 
 COMPOSITES = {'DAY': 'Daily',
               '8DAY': '8 day composite',
