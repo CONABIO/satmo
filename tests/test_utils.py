@@ -274,7 +274,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.filename_builder(**d12_0), f12)
         self.assertEqual(satmo.filename_builder(**d13_0), f13)
 
-    def test_OC_path_builder(self):
+    def test_path_builder(self):
 
         d1 = {'filename': 'A2005004002500.L1A_LAC.bz2', 'add_file': False}
         p1 = 'aqua/L1A/2005/004'
@@ -293,14 +293,14 @@ class TestUtils(unittest.TestCase):
         d8 = {'filename': 'V2017241160000.GEO-M_SNPP.nc', 'add_file': True}
         p8 = 'viirs/L1A/2017/241/V2017241160000.GEO-M_SNPP.nc'
 
-        self.assertEqual(satmo.OC_path_builder(**d1), p1)
-        self.assertEqual(satmo.OC_path_builder(**d2), p2)
-        self.assertEqual(satmo.OC_path_builder(**d3), p3)
-        self.assertEqual(satmo.OC_path_builder(**d4), p4)
-        self.assertEqual(satmo.OC_path_builder(**d5), p5)
-        self.assertEqual(satmo.OC_path_builder(**d6), p6)
-        self.assertEqual(satmo.OC_path_builder(**d7), p7)
-        self.assertEqual(satmo.OC_path_builder(**d8), p8)
+        self.assertEqual(satmo.path_builder(**d1), p1)
+        self.assertEqual(satmo.path_builder(**d2), p2)
+        self.assertEqual(satmo.path_builder(**d3), p3)
+        self.assertEqual(satmo.path_builder(**d4), p4)
+        self.assertEqual(satmo.path_builder(**d5), p5)
+        self.assertEqual(satmo.path_builder(**d6), p6)
+        self.assertEqual(satmo.path_builder(**d7), p7)
+        self.assertEqual(satmo.path_builder(**d8), p8)
 
     def test_to_km(self):
         self.assertEqual(satmo.to_km('1000m'), '1km')

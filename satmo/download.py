@@ -7,7 +7,7 @@ import warnings
 import contextlib
 from pprint import pprint
 
-from .utils import OC_path_builder
+from .utils import path_builder
 from .errors import HttpResourceNotAvailable
 
 def download_file(url, write_dir, overwrite = False, check_integrity = False, timeout = 15):
@@ -79,7 +79,7 @@ def download_to_tree(url, base_dir, overwrite = False, check_integrity = False):
     Returns:
         str: The filename of the downloaded file
     """
-    write_dir = OC_path_builder(url, data_root=base_dir, add_file = False)
+    write_dir = path_builder(url, data_root=base_dir, add_file = False)
     file_path = download_file(url, write_dir, overwrite = overwrite, check_integrity = check_integrity)
     return file_path
 

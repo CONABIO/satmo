@@ -4,7 +4,7 @@ from .download import download_robust, download_to_tree, download_file
 from .preprocessors import (bz2_unpack, bz2_compress, l2gen, getanc)
 from .query import make_download_url, query_from_extent, get_subscription_urls
 from .utils import is_day, is_night, to_km
-from .utils import filename_parser, filename_builder, OC_path_builder, OC_path_finder, OC_file_finder
+from .utils import filename_parser, filename_builder, path_builder, OC_path_finder, OC_file_finder
 from .utils import bit_pos_to_hex, resolution_to_km_str, pre_compose, processing_meta_from_list
 from .utils import find_composite_date_list, time_limit, viirs_geo_filename_builder
 from .utils import randomword, get_date_list

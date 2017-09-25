@@ -274,8 +274,8 @@ def filename_builder(level, climatology = False, anomaly = False, full_path = Fa
         keywork arguments:
             climatology (bool): Does the filename correspond to climatology data
             anomaly (bool): Does the filename correspond to anomaly data
-            full_path (bool): Should file path be computed (using OC_path_builder)
-            data_root (str): To be used in combination with full_path = True, see OC_path_builder()
+            full_path (bool): Should file path be computed (using path_builder)
+            data_root (str): To be used in combination with full_path = True, see path_builder()
                 doc for more details
         kwargs:
             General kwargs:
@@ -456,11 +456,11 @@ def filename_builder(level, climatology = False, anomaly = False, full_path = Fa
     # Join filename elements
     filename_out = ''.join(str(x) for x in filename_elements)
     if full_path:
-        filename_out = OC_path_builder(filename_out, data_root = data_root, add_file = True)
+        filename_out = path_builder(filename_out, data_root = data_root, add_file = True)
     return filename_out
 
 
-def OC_path_builder(filename, data_root = None, add_file = True):
+def path_builder(filename, data_root = None, add_file = True):
     """Universal path builder for Ocean color files
 
     Builds a file path from its filename
