@@ -622,7 +622,8 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
     return filename
 
 def l3mapgen(x, variable, south, north, west, east, filename = None,
-             resolution = 1000, proj = None, data_root = None, overwrite = False):
+             resolution = 1000, proj = None, data_root = None, composite = 'DAY',
+             overwrite = False):
     """Run l3mapgen from a l3b file
 
     Args:
@@ -639,6 +640,8 @@ def l3mapgen(x, variable, south, north, west, east, filename = None,
             on the provided extent is used.
         data_root (str): Root of the data archive. Mandatory if filename is not provided
             ignored otherwise
+        composite (str): Compositing period (DAY, 8DAY, MON). Used for building output filename
+            Defaults to DAY
         overwrite (bool): Overwrite file if already exists? Defaults to False
 
     Returns:
@@ -655,8 +658,8 @@ def l3mapgen(x, variable, south, north, west, east, filename = None,
         if data_root is None:
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
         filename = filename_builder(level = 'L3m', full_path = True,
-                                       data_root = data_root, filename = x, composite = 'DAY',
-                                       variable = variable, resolution = to_km(resolution))
+                                    data_root = data_root, filename = x, composite = composite,
+                                    variable = variable, resolution = to_km(resolution))
     if not (os.path.isfile(filename) and not overwrite):
         # Handle projection options
         if proj is None:

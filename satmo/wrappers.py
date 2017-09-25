@@ -829,6 +829,7 @@ def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
         north (float): Northern border of output extent (in DD)
         west (float): Western border of output extent (in DD)
         east (float): Eastern border of output extent (in DD)
+        data_root (str): Root of the data archive
         composite (str): Composite type (8DAY, MON)
         overwrite (bool): Overwrite existing files?
 
@@ -857,6 +858,55 @@ def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
             except Exception as e:
                 pprint('l3bin: %s could not be produced. %s' % (filename, e))
     return out_list
+
+def l3bin_map_wrapper():
+    """Run l3bin and l3mapgen for a list of dates, sensor_codes, and variables
+
+    automatically retrieve suites that need to be processed from variables
+
+    Args:
+        sensor_codes (list): List of sensor codes to include (e.g.: ['A', 'T', 'V']
+        date_list (list): List of dates
+        var_list (list): List of variables to process
+        south (float): Southern border of output extent (in DD)
+        north (float): Northern border of output extent (in DD)
+        west (float): Western border of output extent (in DD)
+        east (float): Eastern border of output extent (in DD)
+        data_root (str): Root of the data archive
+        composite (str): Composite type (8DAY, MON)
+        resolution (int): MApping resolution in meters. Defaults to 1000
+        night (bool): Is it night processing?
+        overwrite (bool): Overwrite existing files?
+    """
+    dn = 'night' if night else 'day'
+    # Get suite list from var_list
+    suite_list = []
+    for var in var_list:
+        suite = L3_SUITE_FROM_VAR[dn][var]
+        suite_list.append(suite)
+    # Reduce list to unique suite values
+    suite_list = list(set(suite_list))
+    # Run l3bin_wrapper on these parameters
+    l3b_file_list = l3bin_wrapper()
+    # identify input file
+    if not l3b_file_list:
+        # Exit in case no L3b temporal composite files were produced
+        return
+    for sensor_code in sensor_codes:
+        file_list = [x for x in l3b_file_list if filename_parser(x)['sensor_code'] == sensor_code]
+        if file_list:
+            for var in var_list:
+                suite = L3_SUITE_FROM_VAR[dn][var]
+                file = [x for x in file_list if filename_parser(x)['suite'] == suite]
+                if file:
+                    try:
+                        l3mapgen(file[0], variable=var, south=south, north=north,
+                                 west=west, east=east, resolution=resolution, proj=proj,
+                                 data_root=data_root, composite=composite, overwrite=overwrite)
+                    except Exception as e:
+                        pprint('Error while running l3mapgen on %s, %s composite. %s' % (var, composite, e))
+
+
 
 
 def subscriptions_download(sub_list, data_root, refined=False):
