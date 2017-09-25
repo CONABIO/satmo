@@ -860,6 +860,7 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
                 'east=%f' % east,
                 'mask=true',
                 'width=%d' % width,
+                'apply_pal=0',
                 'threshold=%f' % threshold,
                 'outmode=%s' % outmode]
 
@@ -963,8 +964,8 @@ def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
             file_list = []
             for date in date_list:
                 file = file_finder(data_root=data_root, date=date, level='L3b',
-                                      suite=suite, sensor_code=sensor_code,
-                                      composite=composite)
+                                   suite=suite, sensor_code=sensor_code,
+                                   composite=composite)
                 if file:
                     file_list.append(file[0])
             filename = filename_builder(level='L3b', full_path=True,
