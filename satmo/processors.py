@@ -13,7 +13,7 @@ from pyproj import Proj
 from affine import Affine
 
 from .geo import geo_dict_from_nc, get_raster_meta
-from .utils import (OC_filename_parser, OC_file_finder, is_day,
+from .utils import (filename_parser, OC_file_finder, is_day,
                     OC_filename_builder, to_km)
 from .visualization import make_preview
 from .errors import SeadasError
@@ -42,7 +42,7 @@ def nc2tif(file, proj4string = None):
     # Get geo dict
     geo_dict = geo_dict_from_nc(file, proj4string)
     # Retrieve var name from file name
-    var = OC_filename_parser(file)['variable']
+    var = filename_parser(file)['variable']
     # Read array
     with nc.Dataset(file) as src:
         dtype = str(src.variables[var].dtype)
@@ -116,7 +116,7 @@ class FileComposer(Composer):
         """
         _, ext = os.path.splitext(file)
         if ext == '.nc':
-            var = OC_filename_parser(file)['variable']
+            var = filename_parser(file)['variable']
             # Read array
             with nc.Dataset(file) as src:
                 array = src.variables[var][:]
@@ -577,7 +577,7 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
         >>> infiles = glob.glob('/home/ldutrieux/sandbox/satmo2_data/aqua/L2/2016/001/*L2*nc')
         >>> satmo.OC_l2bin(infiles, 'CHL', data_root = '/home/ldutrieux/sandbox/satmo2_data')
     """
-    input_meta = OC_filename_parser(file_list[0])
+    input_meta = filename_parser(file_list[0])
     # Generate filename if it hasn't been provided
     if filename is None:
         if data_root is None:
@@ -648,7 +648,7 @@ def l3mapgen(x, variable, south, north, west, east, filename = None,
         satmo.SeadasError if the seadas command exists with status 1
     """
     # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
-    input_meta = OC_filename_parser(x)
+    input_meta = filename_parser(x)
     resolution = '%dm' % resolution
     # build file if it doesn't yet exist
     if filename is None:
@@ -909,7 +909,7 @@ def l3bin(file_list, north, south, west, east, filename, overwrite=False):
         # l3bin_map_batcher: begin, end, delta and list of variables
     # TODO: Verify this overwrite logic, I have a doubt (taken fron l2bin, and probably used in many
         # more utils
-    output_meta = OC_filename_parser(filename)
+    output_meta = filename_parser(filename)
     if not (os.path.isfile(filename) and not overwrite):
         L3b_dir = os.path.dirname(filename)
         # Create directory if not already exists

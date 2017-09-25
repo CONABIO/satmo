@@ -4,7 +4,7 @@ from datetime import datetime, date, time
 
 class TestUtils(unittest.TestCase):
 
-    def test_OC_filename_parser(self):
+    def test_filename_parser(self):
         f1 = 'getfile/A2005004002500.L1A_LAC.bz2'
         d1 = {'anomaly': False,
              'begin_year': None,
@@ -204,16 +204,16 @@ class TestUtils(unittest.TestCase):
              'time': time(20, 35, 00),
              'variable': 'chlor_a',
              'year': 2008}
-        self.assertEqual(satmo.OC_filename_parser(f1), d1)
-        self.assertEqual(satmo.OC_filename_parser(f2), d2)
-        self.assertEqual(satmo.OC_filename_parser(f3), d3)
-        self.assertEqual(satmo.OC_filename_parser(f4), d4)
-        self.assertEqual(satmo.OC_filename_parser(f5), d5)
-        self.assertEqual(satmo.OC_filename_parser(f6), d6)
-        self.assertEqual(satmo.OC_filename_parser(f7), d7)
-        self.assertEqual(satmo.OC_filename_parser(f8), d8)
-        self.assertEqual(satmo.OC_filename_parser(f9), d9)
-        self.assertEqual(satmo.OC_filename_parser(f10), d10)
+        self.assertEqual(satmo.filename_parser(f1), d1)
+        self.assertEqual(satmo.filename_parser(f2), d2)
+        self.assertEqual(satmo.filename_parser(f3), d3)
+        self.assertEqual(satmo.filename_parser(f4), d4)
+        self.assertEqual(satmo.filename_parser(f5), d5)
+        self.assertEqual(satmo.filename_parser(f6), d6)
+        self.assertEqual(satmo.filename_parser(f7), d7)
+        self.assertEqual(satmo.filename_parser(f8), d8)
+        self.assertEqual(satmo.filename_parser(f9), d9)
+        self.assertEqual(satmo.filename_parser(f10), d10)
 
     def test_OC_filename_builder(self):
 

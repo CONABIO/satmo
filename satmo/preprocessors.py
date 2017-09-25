@@ -9,7 +9,7 @@ import string
 import random
 import re
 
-from .utils import (OC_filename_parser,
+from .utils import (filename_parser,
                     is_day, OC_filename_builder, to_km,
                     OC_viirs_geo_filename_builder, randomword)
 from .errors import SeadasError
@@ -116,7 +116,7 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
     # deleted or not. viirs do not come as bz2 compressed files so this does not apply
     # for them
     delete = False
-    input_meta = OC_filename_parser(x)
+    input_meta = filename_parser(x)
     if ext == '.bz2':
         x = bz2_unpack(x, input_dir)
         delete = True

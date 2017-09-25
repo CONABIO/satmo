@@ -8,7 +8,7 @@ import netCDF4 as nc
 from pint import UnitRegistry
 ureg = UnitRegistry()
 
-from .utils import OC_filename_parser
+from .utils import filename_parser
 
 
 def geo_dict_from_nc(nc_file, proj4string = None):
@@ -96,7 +96,7 @@ def get_raster_meta(x, **kwargs):
     """
     _, ext = os.path.splitext(x)
     if ext == '.nc':
-        var = OC_filename_parser(x)['variable']
+        var = filename_parser(x)['variable']
         # Get spatial elements from ncdf file
         meta = geo_dict_from_nc(x, **kwargs)
         # Get geophysical variable specific elements

@@ -21,7 +21,7 @@ import warnings
 
 from .global_variables import SENSOR_CODES, COMPOSITES, VIZ_PARAMS
 from .geo import geo_dict_from_nc
-from .utils import OC_filename_parser
+from .utils import filename_parser
 
 def make_map_title(file):
     """Generate figure title from file name
@@ -50,7 +50,7 @@ def make_map_title(file):
         str: Figure title
     """
     try:
-        meta_dict = OC_filename_parser(file, raiseError = True)
+        meta_dict = filename_parser(file, raiseError = True)
     except:
         return os.path.basename(file)
     try:
@@ -79,7 +79,7 @@ def make_preview(file):
 
     """
     # Retrieve color stretch information of available
-    var = OC_filename_parser(file)['variable']
+    var = filename_parser(file)['variable']
     try:
         stretch = VIZ_PARAMS[var]['stretch']
         log = VIZ_PARAMS[var]['log']

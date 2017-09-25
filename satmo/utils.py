@@ -17,7 +17,7 @@ from .global_variables import SENSOR_CODES, DATA_LEVELS, VARS_FROM_L2_SUITE
 # unit database for pint
 ureg = UnitRegistry()
 
-def OC_filename_parser(filename, raiseError = True):
+def filename_parser(filename, raiseError = True):
     """File parser for ocean color products
 
     Extract metadata information from a typical ocean color file name
@@ -337,7 +337,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
         # filename and suite (OC, SST, SST4) OR sensor, date, time, sensor, suite, 
         if 'filename' in kwargs:
             filename = kwargs['filename']
-            input_meta = OC_filename_parser(filename)
+            input_meta = filename_parser(filename)
             sensor_code = input_meta['sensor_code']
             year = input_meta['year']
             doy = input_meta['doy']
@@ -357,7 +357,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
         # filename and suite OR sensor, date, suite
         if 'filename' in kwargs:
             filename = kwargs['filename']
-            input_meta = OC_filename_parser(filename)
+            input_meta = filename_parser(filename)
             sensor_code = input_meta['sensor_code']
             year = input_meta['year']
             doy = input_meta['doy']
@@ -391,7 +391,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
         # ANOM.2014027.L3m_8DAY_SST_sst_1km.tif
         if 'filename' in kwargs:
             filename = kwargs['filename']
-            input_meta = OC_filename_parser(filename)
+            input_meta = filename_parser(filename)
             year = input_meta['year']
             doy = input_meta['doy']
             composite = input_meta['composite']
@@ -414,7 +414,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
         # filename, suite, variable OR sensor, date, composite, nc
         if 'filename' in kwargs:
             filename = kwargs['filename']
-            input_meta = OC_filename_parser(filename)
+            input_meta = filename_parser(filename)
             sensor_code = input_meta['sensor_code']
             year = input_meta['year']
             doy = input_meta['doy']
@@ -439,7 +439,7 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
             pass
         if 'filename' in kwargs:
             filename = kwargs['filename']
-            input_meta = OC_filename_parser(filename)
+            input_meta = filename_parser(filename)
             year = input_meta['year']
             doy = input_meta['doy']
             sensor_code = input_meta['sensor_code']
@@ -474,7 +474,7 @@ def OC_path_builder(filename, data_root = None, add_file = True):
     Returns:
         str: path associated to filename
     """
-    file_meta = OC_filename_parser(filename)
+    file_meta = filename_parser(filename)
     if file_meta['level'] == 'L3m':
         if file_meta['climatology']:
             path_elements = ['combined', file_meta['level'], '%s_clim' % file_meta['composite'], str(file_meta['doy']).zfill(3)]
@@ -623,7 +623,7 @@ def is_day(filename):
     Returns:
         Boolean, True if day file, False otherwise
     """
-    dt_time = OC_filename_parser(filename)['time']
+    dt_time = filename_parser(filename)['time']
     # 12pm threshold validated against a full year for aqua, terra, viirs
     if dt_time > time(12, 0):
         return True
@@ -787,7 +787,7 @@ def processing_meta_from_list(file_list):
             and hence kick-off the right processing chains.
 
     Arguments:
-        file_list (list): A list of file names parsable by OC_filename_parser
+        file_list (list): A list of file names parsable by filename_parser
 
     Return:
         A list of unique dictionaries containing processing information.
@@ -818,7 +818,7 @@ def processing_meta_from_list(file_list):
     def _processing_meta_from_name(x):
         """Function to generate with the appropriate keys from a single list item
         """
-        d = OC_filename_parser(x)
+        d = filename_parser(x)
         sensor = d['sensor']
         day_night = 'day' if is_day(x) else 'night'
         out_dict = {'date': datetime.combine(d['date'], datetime.min.time()),
@@ -840,13 +840,13 @@ def get_date_list(file_list):
     Meant to be used within nrt_wrapper to determine generate inputs to run bin_map_wrapper
 
     Args:
-        x (list): A list of valid (parsable with OC_filename_parser) Ocean color filenames
+        x (list): A list of valid (parsable with filename_parser) Ocean color filenames
 
     Returns:
         list: A list of datetime.
     """
     def _get_date(x):
-        d = OC_filename_parser(x)['date']
+        d = filename_parser(x)['date']
         dt = datetime.combine(d, time())
         return dt
     date_list = [_get_date(x) for x in file_list]

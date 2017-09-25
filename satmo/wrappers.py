@@ -10,7 +10,7 @@ from .query import query_from_extent, make_download_url, get_subscription_urls
 from .download import download_robust
 from .utils import (OC_file_finder, is_day,
                     is_night, resolution_to_km_str, OC_filename_builder,
-                    OC_filename_parser, pre_compose, processing_meta_from_list,
+                    filename_parser, pre_compose, processing_meta_from_list,
                     find_composite_date_list, time_limit, OC_viirs_geo_filename_builder,
                     get_date_list)
 from .preprocessors import l2gen
@@ -68,7 +68,7 @@ def timerange_download(sensors, begin, end, write_dir,\
             continue
         url_list = [make_download_url(x) for x in file_list]
         # Viirs only: Build urls of GEO files and append to url list
-        geo_files = [OC_viirs_geo_filename_builder(x) for x in url_list if OC_filename_parser(x)['sensor'] == 'viirs']
+        geo_files = [OC_viirs_geo_filename_builder(x) for x in url_list if filename_parser(x)['sensor'] == 'viirs']
         url_list += geo_files
         for url in url_list:
             local_file = download_robust(url, write_dir, overwrite = overwrite,
@@ -119,7 +119,7 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
     # Filter in case only a subset of the sensors is asked
     if sensor_codes == 'all':
         sensor_codes = ['A', 'T', 'V']
-    file_list = [x for x in file_list if OC_filename_parser(x)['sensor_code'] in sensor_codes]
+    file_list = [x for x in file_list if filename_parser(x)['sensor_code'] in sensor_codes]
     # Given a date (string or datetime), a variable (e.g. chlor_a) and a list of sensors, make 
     compositing_class = FileComposer(*file_list)
     # Run the compositing method using string provided in fun= argument
@@ -1002,10 +1002,10 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
     # Process every L1A file to L2 with error catching
     L2_list = []
     # Remove Geo files from file_list
-    file_list = [x for x in file_list if OC_filename_parser(x)['level'] != 'GEO']
+    file_list = [x for x in file_list if filename_parser(x)['level'] != 'GEO']
     for L1_file in file_list:
         try:
-            sensor = OC_filename_parser(L1_file)['sensor']
+            sensor = filename_parser(L1_file)['sensor']
             L2_file = l2gen(x=L1_file, var_list=VARS_FROM_L2_SUITE[sensor]['day']['OC2'], suite='OC2',
                             data_root=data_root)
             L2_list.append(L2_file)
@@ -1015,7 +1015,7 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
             raise
     # For each L2 file, append AFAI to netCDF file
     for L2_file in L2_list:
-        sensor = OC_filename_parser(L2_file)['sensor']
+        sensor = filename_parser(L2_file)['sensor']
         try:
             afai_param = BAND_MATH_FUNCTIONS['afai'][sensor]
             l2_append(L2_file, **afai_param)
@@ -1062,7 +1062,7 @@ def refined_processing_wrapper_l1(north, south, west, east, data_root, delay = 3
                             suite='OC2', data_root=data_root)
 
     for L2_file in L2_list:
-        meta = OC_filename_parser(L2_file)
+        meta = filename_parser(L2_file)
         try:
             afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
             l2_append(L2_file, **afai_param)
