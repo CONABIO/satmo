@@ -859,7 +859,9 @@ def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
                 pprint('l3bin: %s could not be produced. %s' % (filename, e))
     return out_list
 
-def l3bin_map_wrapper():
+def l3bin_map_wrapper(sensor_codes, date_list, var_list, south, north, west, east,
+                      composite, data_root, mapping_resolution=1000, night=False,
+                      proj=None, overwrite=False):
     """Run l3bin and l3mapgen for a list of dates, sensor_codes, and variables
 
     automatically retrieve suites that need to be processed from variables
@@ -887,7 +889,10 @@ def l3bin_map_wrapper():
     # Reduce list to unique suite values
     suite_list = list(set(suite_list))
     # Run l3bin_wrapper on these parameters
-    l3b_file_list = l3bin_wrapper()
+    l3b_file_list = l3bin_wrapper(sensor_codes=sensor_codes, date_list=date_list,
+                                  suite_list=suite_list, south=south, north=north,
+                                  west=west, east=east, composite=composite,
+                                  data_root=data_root, overwrite=overwrite)
     # identify input file
     if not l3b_file_list:
         # Exit in case no L3b temporal composite files were produced
@@ -901,7 +906,7 @@ def l3bin_map_wrapper():
                 if file:
                     try:
                         l3mapgen(file[0], variable=var, south=south, north=north,
-                                 west=west, east=east, resolution=resolution, proj=proj,
+                                 west=west, east=east, resolution=mapping_resolution, proj=proj,
                                  data_root=data_root, composite=composite, overwrite=overwrite)
                     except Exception as e:
                         pprint('Error while running l3mapgen on %s, %s composite. %s' % (var, composite, e))
