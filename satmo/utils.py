@@ -265,7 +265,7 @@ def filename_parser(filename, raiseError = True):
                      'end_year': None}
     return meta_dict
 
-def OC_filename_builder(level, climatology = False, anomaly = False, full_path = False, data_root = None, **kwargs):
+def filename_builder(level, climatology = False, anomaly = False, full_path = False, data_root = None, **kwargs):
     """Utility to build valid ocean color filenames for every level
 
     Args:
@@ -315,8 +315,8 @@ def OC_filename_builder(level, climatology = False, anomaly = False, full_path =
         > import satmo
         > from datetime import datetime, time
         >
-        > satmo.OC_filename_builder('L2', filename = 'T2001117063500.L1A_LAC.bz2', suite = 'OC', full_path = True, data_root = '/export/isilon/datos2/satmo2_data')
-        > satmo.OC_filename_builder('L2', sensor_code = 'T', date = '1987-11-21', time = time(6, 35, 0), suite = 'OC')
+        > satmo.filename_builder('L2', filename = 'T2001117063500.L1A_LAC.bz2', suite = 'OC', full_path = True, data_root = '/export/isilon/datos2/satmo2_data')
+        > satmo.filename_builder('L2', sensor_code = 'T', date = '1987-11-21', time = time(6, 35, 0), suite = 'OC')
 
     Returns:
         str: a syntactically ocean color filename

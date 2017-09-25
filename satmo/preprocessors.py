@@ -10,7 +10,7 @@ import random
 import re
 
 from .utils import (filename_parser,
-                    is_day, OC_filename_builder, to_km,
+                    is_day, filename_builder, to_km,
                     OC_viirs_geo_filename_builder, randomword)
 from .errors import SeadasError
 from .global_variables import STANDARD_L3_SUITES
@@ -108,7 +108,7 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
     """
     ext = os.path.splitext(x)[1]
     input_dir = os.path.dirname(x)
-    output_filename = OC_filename_builder(level='L2', filename=x,
+    output_filename = filename_builder(level='L2', filename=x,
                                           suite=suite, full_path=True,
                                           data_root=data_root)
     output_dir = os.path.dirname(output_filename)

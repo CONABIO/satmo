@@ -14,7 +14,7 @@ from affine import Affine
 
 from .geo import geo_dict_from_nc, get_raster_meta
 from .utils import (filename_parser, OC_file_finder, is_day,
-                    OC_filename_builder, to_km)
+                    filename_builder, to_km)
 from .visualization import make_preview
 from .errors import SeadasError
 from .global_variables import (L3_SUITE_FROM_VAR, QUAL_ARRAY_NAME_FROM_SUITE,
@@ -582,7 +582,7 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
     if filename is None:
         if data_root is None:
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
-        filename = OC_filename_builder(level = 'L3b', full_path = True,
+        filename = filename_builder(level = 'L3b', full_path = True,
                                        data_root = data_root, suite = L3b_suite,
                                        filename = file_list[0], composite='DAY')
     if flags is None:
@@ -654,7 +654,7 @@ def l3mapgen(x, variable, south, north, west, east, filename = None,
     if filename is None:
         if data_root is None:
             raise ValueError('data_root argument must be provided if filename is left empty (None)')
-        filename = OC_filename_builder(level = 'L3m', full_path = True,
+        filename = filename_builder(level = 'L3m', full_path = True,
                                        data_root = data_root, filename = x, composite = 'DAY',
                                        variable = variable, resolution = to_km(resolution))
     if not (os.path.isfile(filename) and not overwrite):
@@ -745,7 +745,7 @@ def make_time_composite(date_list, var, suite, resolution, composite,
     func()
     # Generate filename if not provided
     if filename is None:
-        filename = OC_filename_builder(level='L3m', full_path=True,
+        filename = filename_builder(level='L3m', full_path=True,
                                        data_root=data_root, date=min(date_list),
                                        sensor_code=sensor_code,
                                        suite=suite,
@@ -838,7 +838,7 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
             dn = 'day'
         else:
             dn = 'night'
-        filename = OC_filename_builder(level='L2m', filename=x, suite=L3_SUITE_FROM_VAR[dn][prod],
+        filename = filename_builder(level='L2m', filename=x, suite=L3_SUITE_FROM_VAR[dn][prod],
                                        variable=prod, full_path=True, data_root=data_root)
     if os.path.isfile(filename) and not overwrite:
         raise ValueError('Error while running l2mapgen on %s; file exists and overwrite set to False' % filename)
@@ -899,7 +899,7 @@ def l3bin(file_list, north, south, west, east, filename, overwrite=False):
     """
     # TODO: Need to find a smart way to build output filename from inputs
     #   - Maybe asking for begin date of the composite in args
-    #   - Modify OC_filename_builder ?
+    #   - Modify filename_builder ?
     #   - Deal with it only in l3bin_wrapper... and ask for filename here
     # Write file list to text file
     # l3bin suite logique should be:
@@ -967,7 +967,7 @@ def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
                                       composite=composite)
                 if file:
                     file_list.append(file[0])
-            filename = OC_filename_builder(level='L3b', full_path=True,
+            filename = filename_builder(level='L3b', full_path=True,
                                            data_root=data_root, date=min(date_list),
                                            sensor_code=sensor_code, suite=suite,
                                            composite=composite)

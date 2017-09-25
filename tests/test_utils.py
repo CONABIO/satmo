@@ -215,7 +215,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(satmo.filename_parser(f9), d9)
         self.assertEqual(satmo.filename_parser(f10), d10)
 
-    def test_OC_filename_builder(self):
+    def test_filename_builder(self):
 
         d1_0 = {'level': 'L2', 'filename': 'A2008085203500.L1A_LAC.bz2', 'suite': 'OC'}
         d1_1 = {'level': 'L2', 'sensor_code': 'A', 'date': datetime(2008, 03, 25), 'time': time(20, 35, 00), 'suite': 'OC'}
@@ -254,25 +254,25 @@ class TestUtils(unittest.TestCase):
         d13_0 = {'level': 'L2m', 'filename': 'A2008085203500.L2_LAC_OC.nc', 'suite': 'CHL', 'variable': 'chlor_a'}
 
 
-        self.assertEqual(satmo.OC_filename_builder(**d1_0), f1)
-        self.assertEqual(satmo.OC_filename_builder(**d1_1), f1)
-        self.assertEqual(satmo.OC_filename_builder(**d1_2), f1)
-        self.assertEqual(satmo.OC_filename_builder(**d2_0), f2)
-        self.assertEqual(satmo.OC_filename_builder(**d3_0), f3)
-        self.assertEqual(satmo.OC_filename_builder(**d4_0), f4)
-        self.assertEqual(satmo.OC_filename_builder(**d4_1), f4)
-        self.assertEqual(satmo.OC_filename_builder(**d5_0), f5)
-        self.assertEqual(satmo.OC_filename_builder(**d6_0), f6)
-        self.assertEqual(satmo.OC_filename_builder(**d6_1), f6)
-        self.assertEqual(satmo.OC_filename_builder(**d7_0), f7)
-        self.assertEqual(satmo.OC_filename_builder(**d8_0), f8)
-        self.assertEqual(satmo.OC_filename_builder(**d8_1), f8)
-        self.assertEqual(satmo.OC_filename_builder(**d9_0), f9)
-        self.assertEqual(satmo.OC_filename_builder(**d10_0), f10)
-        self.assertEqual(satmo.OC_filename_builder(**d10_1), f10)
-        self.assertEqual(satmo.OC_filename_builder(**d11_0), f11)
-        self.assertEqual(satmo.OC_filename_builder(**d12_0), f12)
-        self.assertEqual(satmo.OC_filename_builder(**d13_0), f13)
+        self.assertEqual(satmo.filename_builder(**d1_0), f1)
+        self.assertEqual(satmo.filename_builder(**d1_1), f1)
+        self.assertEqual(satmo.filename_builder(**d1_2), f1)
+        self.assertEqual(satmo.filename_builder(**d2_0), f2)
+        self.assertEqual(satmo.filename_builder(**d3_0), f3)
+        self.assertEqual(satmo.filename_builder(**d4_0), f4)
+        self.assertEqual(satmo.filename_builder(**d4_1), f4)
+        self.assertEqual(satmo.filename_builder(**d5_0), f5)
+        self.assertEqual(satmo.filename_builder(**d6_0), f6)
+        self.assertEqual(satmo.filename_builder(**d6_1), f6)
+        self.assertEqual(satmo.filename_builder(**d7_0), f7)
+        self.assertEqual(satmo.filename_builder(**d8_0), f8)
+        self.assertEqual(satmo.filename_builder(**d8_1), f8)
+        self.assertEqual(satmo.filename_builder(**d9_0), f9)
+        self.assertEqual(satmo.filename_builder(**d10_0), f10)
+        self.assertEqual(satmo.filename_builder(**d10_1), f10)
+        self.assertEqual(satmo.filename_builder(**d11_0), f11)
+        self.assertEqual(satmo.filename_builder(**d12_0), f12)
+        self.assertEqual(satmo.filename_builder(**d13_0), f13)
 
     def test_OC_path_builder(self):
 

@@ -9,7 +9,7 @@ import warnings
 from .query import query_from_extent, make_download_url, get_subscription_urls
 from .download import download_robust
 from .utils import (OC_file_finder, is_day,
-                    is_night, resolution_to_km_str, OC_filename_builder,
+                    is_night, resolution_to_km_str, filename_builder,
                     filename_parser, pre_compose, processing_meta_from_list,
                     find_composite_date_list, time_limit, OC_viirs_geo_filename_builder,
                     get_date_list)
@@ -127,7 +127,7 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
     func()
     # Generate filename if not provided
     if filename is None:
-        filename = OC_filename_builder(level='L3m', full_path=True,
+        filename = filename_builder(level='L3m', full_path=True,
                                        data_root=data_root, date=date,
                                        sensor_code='X',
                                        suite=suite,
@@ -258,7 +258,7 @@ def auto_L3m_process(date, sensor_code, suite, var, north, south, west, east,
 
     # Generate output filename 
     resolution_str = resolution_to_km_str(resolution)
-    filename = OC_filename_builder(level='L3m', full_path=True, nc=False,
+    filename = filename_builder(level='L3m', full_path=True, nc=False,
                                    data_root=data_root, date=date,
                                    sensor_code=sensor_code, suite=suite,
                                    variable=var, composite='DAY',
