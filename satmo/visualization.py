@@ -1,6 +1,11 @@
+import warnings
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+# Silence a warning that is in fact caused by a bug in this version of cartopy
+# https://github.com/SciTools/cartopy/issues/839
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import matplotlib.ticker as mticker
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
