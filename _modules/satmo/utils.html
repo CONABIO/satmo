@@ -1,0 +1,1140 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>satmo.utils &mdash; satmo 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="satmo 0.2 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Users Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>satmo.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for satmo.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">dateutil.relativedelta</span> <span class="k">import</span> <span class="n">relativedelta</span>
+<span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pint</span> <span class="k">import</span> <span class="n">UnitRegistry</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="k">import</span> <span class="n">TimeoutException</span>
+<span class="kn">from</span> <span class="nn">.global_variables</span> <span class="k">import</span> <span class="n">SENSOR_CODES</span><span class="p">,</span> <span class="n">DATA_LEVELS</span><span class="p">,</span> <span class="n">VARS_FROM_L2_SUITE</span>
+
+
+<span class="c1"># unit database for pint</span>
+<span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+
+<div class="viewcode-block" id="filename_parser"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.filename_parser">[docs]</a><span class="k">def</span> <span class="nf">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">raiseError</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;File parser for ocean color products</span>
+
+<span class="sd">    Extract metadata information from a typical ocean color file name</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): String containing an ocean color file filename</span>
+<span class="sd">        raiseError (bool): Behavior when no valid pattern is found.</span>
+<span class="sd">        True (default) returns a ValueError, false returns a dictionnaries of</span>
+<span class="sd">            Nones</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        The parser will probably fail for the following products:</span>
+<span class="sd">        - L0</span>
+<span class="sd">        - Sentinel 3</span>
+<span class="sd">        - Meris for levels lower than L2</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionnary with the following keys:</span>
+<span class="sd">        sensor (str)</span>
+<span class="sd">        sensor_code (str)</span>
+<span class="sd">        date (datetime.date)</span>
+<span class="sd">        time (datetime.time)</span>
+<span class="sd">        year (int)</span>
+<span class="sd">        month (int)</span>
+<span class="sd">        doy (int)</span>
+<span class="sd">        dom (int)</span>
+<span class="sd">        level (str)</span>
+<span class="sd">        filename (str)</span>
+<span class="sd">        climatology (bool)</span>
+<span class="sd">        anomaly (bool)</span>
+<span class="sd">        resolution (str)</span>
+<span class="sd">        variable (str)</span>
+<span class="sd">        suite (str)</span>
+<span class="sd">        composite (str) e.g.: DAY, 8DAY, ...</span>
+<span class="sd">        begin_year (int) (for climatologies only)</span>
+<span class="sd">        end_year (int) (for climatologies only)</span>
+<span class="sd">        Key values are set to None when not applicable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pattern_0</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor_code&gt;CLIM\.|ANOM\.|[A-Z]</span><span class="si">{1}</span><span class="s1">)(?P&lt;time_info&gt;\d</span><span class="si">{3}</span><span class="s1">\.|\d</span><span class="si">{7}</span><span class="s1">\.|\d</span><span class="si">{13}</span><span class="s1">\.)(?P&lt;level&gt;L0|L1A|L1B|GEO|GEO-M|L2|L2m|L3b|L3m)_.*&#39;</span><span class="p">)</span>
+    <span class="n">m_0</span> <span class="o">=</span> <span class="n">pattern_0</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">raiseError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No valid data name found for </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span>
+                         <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+            <span class="k">return</span> <span class="n">meta_dict</span>
+    <span class="c1"># filename with eventual prefixes removed</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+    <span class="c1"># Treat each level indepndently</span>
+    <span class="k">if</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;CLIM.&#39;</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;CLIM\.(?P&lt;doy&gt;\d</span><span class="si">{3}</span><span class="s1">)\.(?P&lt;level&gt;[A-Za-z1-3]{3,4})_(?P&lt;composite&gt;.*?)&#39;</span> \
+                             <span class="sa">r</span><span class="s1">&#39;_(?P&lt;suite&gt;.*?)_(?P&lt;variable&gt;.*)_(?P&lt;resolution&gt;.*?)_(?P&lt;begin_year&gt;\d</span><span class="si">{4}</span><span class="s1">)_(?P&lt;end_year&gt;\d</span><span class="si">{4}</span><span class="s1">)\..*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;doy&#39;</span><span class="p">)),</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;resolution&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;suite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;composite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;begin_year&#39;</span><span class="p">)),</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;end_year&#39;</span><span class="p">))}</span>
+
+    <span class="k">elif</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ANOM.&#39;</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ANOM\.(?P&lt;date&gt;\d</span><span class="si">{7}</span><span class="s1">)\.(?P&lt;level&gt;[A-Za-z1-3]{3,4})_(?P&lt;composite&gt;.*?)&#39;</span> \
+                              <span class="s1">&#39;_(?P&lt;suite&gt;.*?)_(?P&lt;variable&gt;.*)_(?P&lt;resolution&gt;.*?)\..*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dt_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span> <span class="s2">&quot;%Y%j&quot;</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">,</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_mday</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;resolution&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;suite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;composite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;L1A&#39;</span><span class="p">,</span> <span class="s1">&#39;L1B&#39;</span><span class="p">]:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor&gt;[A-Z])(?P&lt;date&gt;\d</span><span class="si">{7}</span><span class="s1">)(?P&lt;time&gt;\d</span><span class="si">{6}</span><span class="s1">)\.(?P&lt;level&gt;[A-Za-z1-3]{3,4})_.*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dt_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span> <span class="s2">&quot;%Y%j&quot;</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="n">SENSOR_CODES</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">)],</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">),</span> <span class="s2">&quot;%H%M%S&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">,</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_mday</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;GEO&#39;</span><span class="p">,</span> <span class="s1">&#39;GEO-M&#39;</span><span class="p">]:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor&gt;[A-Z])(?P&lt;date&gt;\d</span><span class="si">{7}</span><span class="s1">)(?P&lt;time&gt;\d</span><span class="si">{6}</span><span class="s1">)\..*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dt_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span> <span class="s2">&quot;%Y%j&quot;</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="n">SENSOR_CODES</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">)],</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">),</span> <span class="s2">&quot;%H%M%S&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">,</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_mday</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="s1">&#39;GEO&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;L2&#39;</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor&gt;[A-Z])(?P&lt;date&gt;\d</span><span class="si">{7}</span><span class="s1">)(?P&lt;time&gt;\d</span><span class="si">{6}</span><span class="s1">)\.(?P&lt;level&gt;L2)_(.*?)_(?P&lt;suite&gt;.*)\..*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dt_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span> <span class="s2">&quot;%Y%j&quot;</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="n">SENSOR_CODES</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">)],</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">),</span> <span class="s2">&quot;%H%M%S&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">,</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_mday</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;suite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;L2m&#39;</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor&gt;[A-Z])(?P&lt;date&gt;\d</span><span class="si">{7}</span><span class="s1">)(?P&lt;time&gt;\d</span><span class="si">{6}</span><span class="s1">)\.(?P&lt;level&gt;L2m)_(?P&lt;suite&gt;.*?)_(?P&lt;variable&gt;.*)\..*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dt_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span> <span class="s2">&quot;%Y%j&quot;</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="n">SENSOR_CODES</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">)],</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">),</span> <span class="s2">&quot;%H%M%S&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">,</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_mday</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;suite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;L3b&#39;</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor&gt;[A-Z])(?P&lt;date&gt;\d</span><span class="si">{7}</span><span class="s1">)\.(?P&lt;level&gt;L3b)_(?P&lt;composite&gt;.*?)_(?P&lt;suite&gt;.*)\..*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dt_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span> <span class="s2">&quot;%Y%j&quot;</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="n">SENSOR_CODES</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">)],</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">,</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_mday</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;suite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;composite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">m_0</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;L3m&#39;</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor&gt;[A-Z])(?P&lt;date&gt;\d</span><span class="si">{7}</span><span class="s1">)\.(?P&lt;level&gt;L3m)_(?P&lt;composite&gt;.*?)&#39;</span> \
+                             <span class="sa">r</span><span class="s1">&#39;_(?P&lt;suite&gt;.*?)_(?P&lt;variable&gt;.*)_(?P&lt;resolution&gt;.*)\..*&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dt_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span> <span class="s2">&quot;%Y%j&quot;</span><span class="p">)</span>
+        <span class="n">meta_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="n">SENSOR_CODES</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">)],</span>
+                     <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;sensor&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                     <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                     <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                     <span class="s1">&#39;doy&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">,</span>
+                     <span class="s1">&#39;dom&#39;</span><span class="p">:</span> <span class="n">dt_date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_mday</span><span class="p">,</span>
+                     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                     <span class="s1">&#39;climatology&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;anomaly&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;resolution&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;suite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;composite&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;begin_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;end_year&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">meta_dict</span></div>
+
+<div class="viewcode-block" id="filename_builder"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.filename_builder">[docs]</a><span class="k">def</span> <span class="nf">filename_builder</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">climatology</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">anomaly</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Utility to build valid ocean color filenames for every level</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Positional arguments:</span>
+<span class="sd">            level (str): the data level of the desired filename</span>
+<span class="sd">        keywork arguments:</span>
+<span class="sd">            climatology (bool): Does the filename correspond to climatology data</span>
+<span class="sd">            anomaly (bool): Does the filename correspond to anomaly data</span>
+<span class="sd">            full_path (bool): Should file path be computed (using path_builder)</span>
+<span class="sd">            data_root (str): To be used in combination with full_path = True, see path_builder()</span>
+<span class="sd">                doc for more details</span>
+<span class="sd">        kwargs:</span>
+<span class="sd">            General kwargs:</span>
+<span class="sd">                None</span>
+<span class="sd">            level specific kwargs (See details section to know which kwargs are required for each chosen level):</span>
+<span class="sd">                filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)</span>
+<span class="sd">                suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)</span>
+<span class="sd">                sensor_code (str): e.g.: &#39;A&#39;, &#39;V&#39;, &#39;X&#39;</span>
+<span class="sd">                date (datetime.datetime or str). IN the case of climatologies the year is ignored so that &#39;1970-05-01&#39; can</span>
+<span class="sd">                be specified for example</span>
+<span class="sd">                time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))</span>
+<span class="sd">                doy (str or int): Day of the year</span>
+<span class="sd">                composite (str): e.g. DAY, 8DAY, 16DAY, etc</span>
+<span class="sd">                variable (str)</span>
+<span class="sd">                resolution (str): e.g. &#39;1km&#39;</span>
+<span class="sd">                begin_year (int or str): for climatologies, see CONVENTIONS.md</span>
+<span class="sd">                end_year (int or str): for climatologies, see CONVENTIONS.md</span>
+<span class="sd">                nc (bool): Should extension be &#39;.nc&#39; (instead of &#39;.tif&#39;) (Only useful for L3m level, to distinguish between</span>
+<span class="sd">                    tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</span>
+
+
+<span class="sd">    Details:</span>
+<span class="sd">        Each level= chosen requires different kwargs.</span>
+<span class="sd">        &#39;L2&#39;:</span>
+<span class="sd">            filename and suite OR sensor_code, suite, date, and time</span>
+<span class="sd">        &#39;L3b&#39;:</span>
+<span class="sd">            filename, composite and suite OR sensor_code, date, composite, suite</span>
+<span class="sd">        &#39;L3m&#39; climatology:</span>
+<span class="sd">            (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter</span>
+<span class="sd">            # TODO: There could be a problem with the leap year when using date</span>
+<span class="sd">        &#39;L3m&#39; anomaly:</span>
+<span class="sd">            filename OR date, composite, suite, variable, resolution</span>
+<span class="sd">        &#39;L3m&#39;:</span>
+<span class="sd">            filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)</span>
+
+<span class="sd">    Example usage:</span>
+<span class="sd">        &gt; import satmo</span>
+<span class="sd">        &gt; from datetime import datetime, time</span>
+<span class="sd">        &gt;</span>
+<span class="sd">        &gt; satmo.filename_builder(&#39;L2&#39;, filename = &#39;T2001117063500.L1A_LAC.bz2&#39;, suite = &#39;OC&#39;, full_path = True, data_root = &#39;/export/isilon/datos2/satmo2_data&#39;)</span>
+<span class="sd">        &gt; satmo.filename_builder(&#39;L2&#39;, sensor_code = &#39;T&#39;, date = &#39;1987-11-21&#39;, time = time(6, 35, 0), suite = &#39;OC&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: a syntactically ocean color filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DATA_LEVELS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid level set&quot;</span><span class="p">)</span>
+    <span class="c1"># Convert kwargs[&#39;date&#39;] to datetime if it exists and is of type str</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="c1">#####</span>
+    <span class="c1"># L2</span>
+    <span class="c1">#####</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L2&#39;</span><span class="p">:</span>
+        <span class="c1"># A2008085203500.L2_LAC_OC.nc</span>
+        <span class="c1"># filename and suite (OC, SST, SST4) OR sensor, date, time, sensor, suite, </span>
+        <span class="k">if</span> <span class="s1">&#39;filename&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+            <span class="n">input_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H%M%S&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># Assumes sensor_code, date, time and suite are provided</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H%M%S&#39;</span><span class="p">)</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+        <span class="n">filename_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">sensor_code</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doy</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">time</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;LAC&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;.nc&#39;</span><span class="p">]</span>
+    <span class="c1">#####</span>
+    <span class="c1"># L3b</span>
+    <span class="c1">#####</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3b&#39;</span><span class="p">:</span>
+        <span class="c1"># A2004005.L3b_DAY_CHL.nc</span>
+        <span class="c1"># filename and suite OR sensor, date, suite</span>
+        <span class="k">if</span> <span class="s1">&#39;filename&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+            <span class="n">input_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+        <span class="n">composite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">]</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+        <span class="n">filename_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">sensor_code</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doy</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">composite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;.nc&#39;</span><span class="p">]</span>
+    <span class="c1">#####</span>
+    <span class="c1"># L3m CLIM</span>
+    <span class="c1">#####</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3m&#39;</span> <span class="ow">and</span> <span class="n">climatology</span><span class="p">:</span>
+        <span class="c1"># CLIM.027.L3m_8DAY_SST_sst_1km_2000_2015.tif</span>
+        <span class="k">if</span> <span class="s1">&#39;date&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]</span>
+        <span class="n">composite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">]</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+        <span class="n">begin_year</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;begin_year&#39;</span><span class="p">]</span>
+        <span class="n">end_year</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;end_year&#39;</span><span class="p">]</span>
+        <span class="n">filename_elements</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CLIM.&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doy</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">composite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">begin_year</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">end_year</span><span class="p">,</span> <span class="s1">&#39;.tif&#39;</span><span class="p">]</span>
+    <span class="c1">#####</span>
+    <span class="c1"># L3m ANOM</span>
+    <span class="c1">#####</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3m&#39;</span> <span class="ow">and</span> <span class="n">anomaly</span><span class="p">:</span>
+        <span class="c1"># ANOM.2014027.L3m_8DAY_SST_sst_1km.tif</span>
+        <span class="k">if</span> <span class="s1">&#39;filename&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+            <span class="n">input_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]</span>
+            <span class="n">composite</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">]</span>
+            <span class="n">resolution</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+            <span class="n">suite</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+            <span class="n">variable</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+            <span class="n">composite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">]</span>
+            <span class="n">suite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+            <span class="n">variable</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span>
+            <span class="n">resolution</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+        <span class="n">filename_elements</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ANOM.&#39;</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doy</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">composite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="s1">&#39;.tif&#39;</span><span class="p">]</span>
+    <span class="c1">#####</span>
+    <span class="c1"># L2m</span>
+    <span class="c1">#####</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L2m&#39;</span><span class="p">:</span>
+        <span class="c1"># A2008085203500.L2m_CHL_chlor_a.tif</span>
+        <span class="c1"># filename, suite, variable OR sensor, date, composite, nc</span>
+        <span class="k">if</span> <span class="s1">&#39;filename&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+            <span class="n">input_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H%M%S&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># Assumes sensor_code, date, time and suite are provided</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H%M%S&#39;</span><span class="p">)</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span>
+        <span class="n">filename_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">sensor_code</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doy</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">time</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="s1">&#39;.tif&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3m&#39;</span><span class="p">:</span>
+        <span class="c1"># filename, composite, suite, variable, resolution, nc OR sensor, date, composite, nc</span>
+        <span class="c1"># X2014027.L3m_8DAY_SST_sst_1km.tif</span>
+        <span class="c1"># X2014027.L3m_8DAY_SST_sst_1km.nc</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.tif&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;nc&#39;</span><span class="p">]:</span>
+                <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.nc&#39;</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="s1">&#39;filename&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+            <span class="n">input_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+            <span class="n">suite</span> <span class="o">=</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">doy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+            <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">]</span>
+            <span class="n">suite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]</span>
+        <span class="n">composite</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">]</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+        <span class="n">filename_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">sensor_code</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doy</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">composite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">ext</span><span class="p">]</span>
+    <span class="c1"># Join filename elements</span>
+    <span class="n">filename_out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">filename_elements</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">full_path</span><span class="p">:</span>
+        <span class="n">filename_out</span> <span class="o">=</span> <span class="n">path_builder</span><span class="p">(</span><span class="n">filename_out</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">add_file</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filename_out</span></div>
+
+
+<div class="viewcode-block" id="path_builder"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.path_builder">[docs]</a><span class="k">def</span> <span class="nf">path_builder</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">add_file</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Universal path builder for Ocean color files</span>
+
+<span class="sd">    Builds a file path from its filename</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): syntactically correct ocean color file filename</span>
+<span class="sd">        data_root (str): OPtional root folder prepended to generated path</span>
+<span class="sd">            defaults to None</span>
+<span class="sd">        add_file (bool): append filename to generated path? Defaults to False</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: path associated to filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;L3m&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;climatology&#39;</span><span class="p">]:</span>
+            <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;combined&#39;</span><span class="p">,</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_clim&#39;</span> <span class="o">%</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;anomaly&#39;</span><span class="p">]:</span>
+            <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;combined&#39;</span><span class="p">,</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_anom&#39;</span> <span class="o">%</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">],</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">],</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;composite&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GEO&#39;</span><span class="p">:</span>
+        <span class="c1"># Geo files go alongside L1A (useful when downloading viirs L1A)</span>
+        <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">],</span> <span class="s1">&#39;L1A&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">],</span> <span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">add_file</span><span class="p">:</span>
+        <span class="n">path_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_meta</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">data_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path_elements</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data_root</span><span class="p">)</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">path_elements</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
+
+<div class="viewcode-block" id="path_finder"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.path_finder">[docs]</a><span class="k">def</span> <span class="nf">path_finder</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">sensor_code</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">composite</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">anomaly</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">climatology</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">search</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Builds and find existing paths from meta information</span>
+
+<span class="sd">    Builds a pseudo path name using provided metadata and runs glob.glob on it</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data_root (str): Root of the data archive</span>
+<span class="sd">        date (str or datetime): Date of the directory to find</span>
+<span class="sd">        level (str): Data level</span>
+<span class="sd">        sensor_code (str): Sensor of the directory to find. If None (default), is replaced by * in a glob search</span>
+<span class="sd">        composite (str): Composite period of the directory to find (only for L3m, climatologies and anomalies)</span>
+<span class="sd">        anomaly (bool): Are we looking for a directory of anomalies</span>
+<span class="sd">        climatology (bool): Are we looking for a directory of climatologies</span>
+<span class="sd">        search (bool): Should the function return the output of glob.glob() on the generated. Otherwise the glob pattern</span>
+<span class="sd">            itself is returned. Defaults to True</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        if composite or anomaly is True, you only need to provide composite and date</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of existing paths matching the &#39;query&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sensor_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sensor</span> <span class="o">=</span> <span class="n">SENSOR_CODES</span><span class="p">[</span><span class="n">sensor_code</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sensor</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+    <span class="k">if</span> <span class="n">climatology</span><span class="p">:</span>
+        <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_root</span><span class="p">,</span> <span class="s1">&#39;combined&#39;</span><span class="p">,</span> <span class="s1">&#39;L3m&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_clim&#39;</span> <span class="o">%</span> <span class="n">composite</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">anomaly</span><span class="p">:</span>
+        <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_root</span><span class="p">,</span> <span class="s1">&#39;combined&#39;</span><span class="p">,</span> <span class="s1">&#39;L3m&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_anom&#39;</span> <span class="o">%</span> <span class="n">composite</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3m&#39;</span><span class="p">:</span>
+        <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_root</span><span class="p">,</span> <span class="n">sensor</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">composite</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3b&#39;</span><span class="p">:</span>
+        <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_root</span><span class="p">,</span> <span class="n">sensor</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">path_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_root</span><span class="p">,</span> <span class="n">sensor</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">path_pattern</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">path_elements</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">search</span><span class="p">:</span>
+        <span class="n">path_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">path_pattern</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path_list</span>
+    <span class="k">return</span> <span class="n">path_pattern</span></div>
+
+
+<div class="viewcode-block" id="file_finder"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.file_finder">[docs]</a><span class="k">def</span> <span class="nf">file_finder</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">suite</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">variable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sensor_code</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">composite</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds existing files on the system from meta information (date, level, variable, sensor_code, ...)</span>
+
+<span class="sd">    Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly</span>
+<span class="sd">    targetted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:</span>
+<span class="sd">        - list all L2 files required to produce a L3b binned product (don&#39;t forget filtering using isDay() as well)</span>
+<span class="sd">        - list all L3m files from a same date but from different sensors in order to produce cross sensor composites</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data_root (str): Root of the data archive</span>
+<span class="sd">        date (str or datetime): Date of the directory to find</span>
+<span class="sd">        level (str): Data level</span>
+<span class="sd">        suite (str): Product suite (e.g. &#39;OC&#39;, &#39;CHL&#39;, &#39;SST&#39;)</span>
+<span class="sd">        variable (str): Product variable (e.g. &#39;sst&#39;, &#39;chlor_a&#39;)</span>
+<span class="sd">        sensor_code (str): Sensor code (e.g. &#39;A&#39;, &#39;T&#39;, &#39;V&#39;) of the files to query. If None (default), is replaced by * in a glob search</span>
+<span class="sd">        resolution (str): e.g. &#39;1km&#39;</span>
+<span class="sd">        composite (str): Composite period of the files to query</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        Required arguments differ depending on the level set. See list below:</span>
+<span class="sd">        - &#39;L1A&#39;:</span>
+<span class="sd">            data_root, date, level, (sensor_code)</span>
+<span class="sd">        - &#39;L2&#39;:</span>
+<span class="sd">            data_root, date, level, suite, (sensor_code)</span>
+<span class="sd">        - &#39;L3m&#39;:</span>
+<span class="sd">            data_root, date, level, suite, variable, (sensor_code), resolution, composite</span>
+<span class="sd">        - &#39;L3b&#39;:</span>
+<span class="sd">            data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of filenames (empty if no matches)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">path_pattern</span> <span class="o">=</span> <span class="n">path_finder</span><span class="p">(</span><span class="n">data_root</span> <span class="o">=</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">level</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">composite</span> <span class="o">=</span> <span class="n">composite</span><span class="p">,</span> <span class="n">search</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">sensor_code</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sensor_code</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sensor_code</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L1A&#39;</span><span class="p">:</span>
+        <span class="n">file_pattern</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sensor_code</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;*.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L2&#39;</span><span class="p">:</span>
+        <span class="n">file_pattern</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sensor_code</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;*.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;.nc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3m&#39;</span><span class="p">:</span>
+        <span class="n">file_pattern</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sensor_code</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">),</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                                <span class="n">composite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                                <span class="n">resolution</span><span class="p">,</span> <span class="s1">&#39;.tif&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s1">&#39;L3b&#39;</span><span class="p">:</span>
+        <span class="n">file_pattern</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sensor_code</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">),</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span>
+                                <span class="n">composite</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="s1">&#39;.nc&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unsuported data level&#39;</span><span class="p">)</span>
+    <span class="n">full_pattern</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_pattern</span><span class="p">,</span> <span class="n">file_pattern</span><span class="p">)</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">full_pattern</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_list</span></div>
+
+<div class="viewcode-block" id="viirs_geo_filename_builder"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.viirs_geo_filename_builder">[docs]</a><span class="k">def</span> <span class="nf">viirs_geo_filename_builder</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Builds the viirs geo filename corresponding to a L1A file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (str): L1A viirs filename</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        str: A viirs geo filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dirname</span><span class="p">,</span> <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">basename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;L1A&#39;</span><span class="p">,</span> <span class="s1">&#39;GEO-M&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_day"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.is_day">[docs]</a><span class="k">def</span> <span class="nf">is_day</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Logical function to check whether a file is a night or a day file</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        Because time reported in file names are GMT times and not local</span>
+<span class="sd">        times, this function has been customized for the satmo project area</span>
+<span class="sd">        and is only valid for that area</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): file name of a dataset</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Boolean, True if day file, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt_time</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+    <span class="c1"># 12pm threshold validated against a full year for aqua, terra, viirs</span>
+    <span class="k">if</span> <span class="n">dt_time</span> <span class="o">&gt;</span> <span class="n">time</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="is_night"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.is_night">[docs]</a><span class="k">def</span> <span class="nf">is_night</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Logical function to check whether a file is a night or a day file</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        Because time reported in file names are GMT times and not local</span>
+<span class="sd">        times, this function has been customized for the satmo project area</span>
+<span class="sd">        and is only valid for that area</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): file name of a dataset</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Boolean, True if night file, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">is_day</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="to_km"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.to_km">[docs]</a><span class="k">def</span> <span class="nf">to_km</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert distance string to its km equivalent</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (str): A distance (resolution) string with unit (e.g.: &#39;1000m&#39;)</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        str: A string of the form &#39;xxkm&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">resolution_km</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">km&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">resolution_km</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="resolution_to_km_str"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.resolution_to_km_str">[docs]</a><span class="k">def</span> <span class="nf">resolution_to_km_str</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Builds a string with unit in km from an int (resolution in m)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (str): Typically a resolution in meters</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        str: A string of the form &#39;xxkm&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">resolution_m</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
+    <span class="n">resolution_km</span> <span class="o">=</span> <span class="n">resolution_m</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">km&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">resolution_km</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bit_pos_to_hex"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.bit_pos_to_hex">[docs]</a><span class="k">def</span> <span class="nf">bit_pos_to_hex</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes a list containing bit positions and returns the corresponding</span>
+<span class="sd">    integer</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (list): A list of bit position (e.g.: [0,3] for 1001, aka 9)</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        The integer corresponding to the list of bit position provided in the</span>
+<span class="sd">        list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bit_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">bit_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">bit_list</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">bit</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<span class="k">def</span> <span class="nf">_range_dt</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Internal function to make a list of dates with a given delta and</span>
+<span class="sd">        resetted to first of January on every year jump</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        begin (datetime.datetime): Begin date of the first composite</span>
+<span class="sd">        end (datetime.datetime): Begin date of the last composite</span>
+<span class="sd">        delta (int): composite length in days</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        A list of datetime.datetime corresponding to first day of each</span>
+<span class="sd">            composite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_keeper</span> <span class="o">=</span> <span class="n">begin</span>
+    <span class="n">date_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">time_keeper</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+        <span class="n">date_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time_keeper</span><span class="p">)</span>
+        <span class="n">year_next_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_keeper</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">if</span> <span class="n">year_next_step</span> <span class="o">!=</span> <span class="n">time_keeper</span><span class="o">.</span><span class="n">year</span><span class="p">:</span>
+            <span class="c1"># Reset to first of January of the new year</span>
+            <span class="n">time_keeper</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year_next_step</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time_keeper</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">date_list</span>
+
+<span class="k">def</span> <span class="nf">_diff_month</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;INternal function to compute the number of months between two dates</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d1 (datatime.datetime): posterior date</span>
+<span class="sd">        d2 (datatime.datetime): anterior date</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        The integer corresponding to the number of months between the two dates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">d2</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">*</span> <span class="mi">12</span> <span class="o">+</span> <span class="n">d1</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="n">d2</span><span class="o">.</span><span class="n">month</span>
+
+<span class="k">def</span> <span class="nf">_month_dates_from_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;INternal function to return all the dates of the month to which belong the input</span>
+<span class="sd">        date provided</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dt (datetime.datetime): Date</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        A list of dates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nday</span> <span class="o">=</span> <span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span> <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nday</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">days</span>
+
+<div class="viewcode-block" id="pre_compose"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.pre_compose">[docs]</a><span class="k">def</span> <span class="nf">pre_compose</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prepare a list of list of datetime to run with a compositing function</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        Each sub list in the returned list contains the dates required to make the</span>
+<span class="sd">            composite. When delta is not a multiple of the number of day of a given</span>
+<span class="sd">            year, the last composite of the year is truncated and the next composite</span>
+<span class="sd">            starts on the first of January of the following calendart year.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        begin (datetime.datetime): Begin date of the first composite</span>
+<span class="sd">        end (datetime.datetime): Begin date of the last composite</span>
+<span class="sd">        delta (int or str): composite length in days if int, &#39;month&#39; if str.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        A list of lists.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import satmo</span>
+<span class="sd">        &gt;&gt;&gt; satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), 16)</span>
+<span class="sd">        &gt;&gt;&gt; satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), &#39;month&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">delta</span> <span class="o">==</span> <span class="s1">&#39;month&#39;</span><span class="p">:</span>
+        <span class="n">month_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">begin</span> <span class="o">+</span> <span class="n">relativedelta</span><span class="p">(</span><span class="n">months</span> <span class="o">=</span> <span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_diff_month</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">begin</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="n">dateList_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">_month_dates_from_dt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">month_list</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">begin_list</span> <span class="o">=</span> <span class="n">_range_dt</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+        <span class="n">delta_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">days</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">begin_list</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">begin_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+        <span class="n">delta_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">dateList_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">begin_list</span><span class="p">,</span> <span class="n">delta_list</span><span class="p">):</span>
+            <span class="n">dateList_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">b</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span><span class="p">)])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;delta must be </span><span class="se">\&#39;</span><span class="s1">month</span><span class="se">\&#39;</span><span class="s1"> or an integer&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dateList_list</span></div>
+
+<div class="viewcode-block" id="processing_meta_from_list"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.processing_meta_from_list">[docs]</a><span class="k">def</span> <span class="nf">processing_meta_from_list</span><span class="p">(</span><span class="n">file_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes a list of filenames and returns a list of dictionaries with processing metadata</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        The function is meant to be used within satmo.wrappers.nrt_wrapper to know</span>
+<span class="sd">            which information can be generated from a list of newly downloaded files</span>
+<span class="sd">            and hence kick-off the right processing chains.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        file_list (list): A list of file names parsable by filename_parser</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        A list of unique dictionaries containing processing information.</span>
+<span class="sd">            Example of a dict (list element):</span>
+<span class="sd">            {&#39;date&#39;: datetime.date(2017, 6, 25),</span>
+<span class="sd">             &#39;products&#39;: [&#39;Rrs_412&#39;,</span>
+<span class="sd">                          &#39;Rrs_443&#39;,</span>
+<span class="sd">                          &#39;Rrs_469&#39;,</span>
+<span class="sd">                          &#39;Rrs_488&#39;,</span>
+<span class="sd">                          &#39;Rrs_531&#39;,</span>
+<span class="sd">                          &#39;Rrs_547&#39;,</span>
+<span class="sd">                          &#39;Rrs_555&#39;,</span>
+<span class="sd">                          &#39;Rrs_645&#39;,</span>
+<span class="sd">                          &#39;Rrs_667&#39;,</span>
+<span class="sd">                          &#39;Rrs_678&#39;,</span>
+<span class="sd">                          &#39;Kd_490&#39;,</span>
+<span class="sd">                          &#39;chl_ocx&#39;,</span>
+<span class="sd">                          &#39;aot_869&#39;,</span>
+<span class="sd">                          &#39;ipar&#39;,</span>
+<span class="sd">                          &#39;nflh&#39;,</span>
+<span class="sd">                          &#39;par&#39;,</span>
+<span class="sd">                          &#39;pic&#39;,</span>
+<span class="sd">                          &#39;poc&#39;,</span>
+<span class="sd">                          &#39;chlor_a&#39;],</span>
+<span class="sd">             &#39;sensor&#39;: &#39;aqua&#39;,</span>
+<span class="sd">             &#39;sensor_code&#39;: &#39;A&#39;},</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_processing_meta_from_name</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function to generate with the appropriate keys from a single list item</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">sensor</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span>
+        <span class="n">day_night</span> <span class="o">=</span> <span class="s1">&#39;day&#39;</span> <span class="k">if</span> <span class="n">is_day</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;night&#39;</span>
+        <span class="n">out_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+                    <span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="n">sensor</span><span class="p">,</span>
+                    <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;products&#39;</span><span class="p">:</span> <span class="n">VARS_FROM_L2_SUITE</span><span class="p">[</span><span class="n">sensor</span><span class="p">][</span><span class="n">day_night</span><span class="p">][</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;suite&#39;</span><span class="p">]]}</span>
+        <span class="k">return</span> <span class="n">out_dict</span>
+    <span class="n">dict_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">_processing_meta_from_name</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">]</span>
+    <span class="c1"># Remove duplicate dictionaries</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dict_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="get_date_list"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.get_date_list">[docs]</a><span class="k">def</span> <span class="nf">get_date_list</span><span class="p">(</span><span class="n">file_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the list of dates covered by a list of files</span>
+
+<span class="sd">    Meant to be used within nrt_wrapper to determine generate inputs to run bin_map_wrapper</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (list): A list of valid (parsable with filename_parser) Ocean color filenames</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of datetime.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_get_date</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">dt</span>
+    <span class="n">date_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">_get_date</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">]</span>
+    <span class="n">date_list_unique</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">date_list</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">date_list_unique</span></div>
+
+<div class="viewcode-block" id="find_composite_date_list"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.find_composite_date_list">[docs]</a><span class="k">def</span> <span class="nf">find_composite_date_list</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find, given a date and delta, all the dates that compose the composite to</span>
+<span class="sd">        to which the input date belong</span>
+
+<span class="sd">    Details:</span>
+<span class="sd">        To be used with the near real time wrapper function to find out, when a new</span>
+<span class="sd">            L3m file is produced, which composite should be created or updated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        date (datetime.datetime): Input date (probably corresponding to a newly</span>
+<span class="sd">            created L3m file (e.g.: daily composite))</span>
+<span class="sd">        delta (int or str): composite length in days if int, &#39;month&#39; if str.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of dates (to be passed to make_time_composite)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">begin</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">date_list_list</span> <span class="o">=</span> <span class="n">pre_compose</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+    <span class="n">date_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">date_list_list</span> <span class="k">if</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">date_list</span></div>
+
+<div class="viewcode-block" id="time_limit"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.time_limit">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">time_limit</span><span class="p">(</span><span class="n">seconds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Forces call timeout after a defined duration</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seconds (int): Timeout limit</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; # Use in a context manager, raises a TimeoutException when time spent within</span>
+<span class="sd">        &gt;&gt;&gt; # the context manger exceeds specified duration in seconds</span>
+<span class="sd">        &gt;&gt;&gt; import time</span>
+<span class="sd">        &gt;&gt;&gt; from pprint import pprint</span>
+<span class="sd">        &gt;&gt;&gt; from satmo import TimeoutException, time_limit</span>
+
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        &gt;&gt;&gt;     with time_limit(12):</span>
+<span class="sd">        &gt;&gt;&gt;         time.sleep(13)</span>
+<span class="sd">        &gt;&gt;&gt; except TimeoutException as e:</span>
+<span class="sd">        &gt;&gt;&gt;     pprint(&#39;Function timed out&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">signal_handler</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">TimeoutException</span>
+    <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">signal_handler</span><span class="p">)</span>
+    <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="randomword"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.randomword">[docs]</a><span class="k">def</span> <span class="nf">randomword</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a random string of desired length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">lowercase</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">))</span></div>
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

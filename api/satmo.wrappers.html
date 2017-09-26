@@ -1,0 +1,1000 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>satmo.wrappers module &mdash; satmo 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="satmo 0.2 documentation" href="../index.html"/>
+        <link rel="up" title="satmo package" href="index.html"/>
+        <link rel="next" title="Documentation" href="../autodoc.html"/>
+        <link rel="prev" title="satmo.visualization module" href="satmo.visualization.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Users Guide</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">satmo package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="satmo.utils.html">satmo.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.download.html">satmo.download module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.errors.html">satmo.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.geo.html">satmo.geo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.global_variables.html">satmo.global_variables module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.preprocessors.html">satmo.preprocessors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.processors.html">satmo.processors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.query.html">satmo.query module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="satmo.visualization.html">satmo.visualization module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">satmo.wrappers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-satmo">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">satmo package</a> &raquo;</li>
+        
+      <li>satmo.wrappers module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/satmo.wrappers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-satmo.wrappers">
+<span id="satmo-wrappers-module"></span><h1>satmo.wrappers module<a class="headerlink" href="#module-satmo.wrappers" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="satmo.wrappers.auto_L3m_process">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">auto_L3m_process</code><span class="sig-paren">(</span><em>date</em>, <em>sensor_code</em>, <em>suite</em>, <em>var</em>, <em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>resolution</em>, <em>day=True</em>, <em>bit_mask=107599675</em>, <em>proj4string=None</em>, <em>overwrite=False</em>, <em>fun=None</em>, <em>band_list=None</em>, <em>preview=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#auto_L3m_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.auto_L3m_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to easily run generate L3m files (implicitely from L2)</p>
+<dl class="docutils">
+<dt>Details:</dt>
+<dd><dl class="first last docutils">
+<dt>The function generates a L3m file for a given variable in tif format</dt>
+<dd>from a list of L2 files. The variable can be either an existing
+layer in the input L2 files, or can be calculated given a formula
+(fun=) and a list of reflectance bands (band_list=). File names are
+automatically generated and a png preview is optionally produced as
+well.</dd>
+</dl>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>date</strong> (<em>str</em><em> or </em><em>datetime</em>) – Date to be processed</li>
+<li><strong>sensor_code</strong> (<em>str</em>) – Sensor code of the data to be processed (e.g. ‘A’ for aqua)</li>
+<li><strong>suite</strong> (<em>str</em>) – L3m suite to obtain (e.g. ‘CHL’)</li>
+<li><strong>var</strong> (<em>str</em>) – L3m variable to process (e.g. ‘chlor_a’). if a fun= and
+band_list= arguments are not provided, the variable must already exist
+in the input L2 files</li>
+<li><strong>bit_mask</strong> (<em>int</em>) – The mask to use for selecting active flags from the flag array
+See the help of apply_mask for further details</li>
+<li><strong>north</strong> (<em>float</em>) – north latitude of bounding box in DD</li>
+<li><strong>south</strong> (<em>float</em>) – south latitude of bounding box in DD</li>
+<li><strong>west</strong> (<em>float</em>) – west longitude of bounding box in DD</li>
+<li><strong>east</strong> (<em>float</em>) – east longitude of bounding box in DD</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>day</strong> (<em>bool</em>) – Is this day data or not. Defaults to True</li>
+<li><strong>resolution</strong> (<em>int</em>) – Outout resolution in the unit of the output
+coordinate reference system.</li>
+<li><strong>proj4string</strong> (<em>str</em>) – Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+on the provided extent is used. Note that non metric projections
+are likely to cause problems with the automatic output file naming.</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite existing L3m file. Defaults to False</li>
+<li><strong>preview</strong> (<em>bool</em>) – Generate a png preview. Defaults to True</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="n">satmo</span><span class="o">.</span><span class="n">auto_L3m_process</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="s1">&#39;2016-01-10&#39;</span><span class="p">,</span> <span class="n">sensor_code</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="o">=</span><span class="s1">&#39;CHL&#39;</span><span class="p">,</span>
+<span class="go">                                      var=&#39;chlor_a&#39;, north=33, south=3, west=-122, east=-72,</span>
+<span class="go">                                      overwrite=True, resolution=2000,</span>
+<span class="go">                                      data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The filename of the produced file.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.auto_L3m_process_with_error_catcher">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">auto_L3m_process_with_error_catcher</code><span class="sig-paren">(</span><em>date</em>, <em>sensor_code</em>, <em>suite</em>, <em>var</em>, <em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>resolution</em>, <em>day=True</em>, <em>bit_mask=107599675</em>, <em>proj4string=None</em>, <em>overwrite=False</em>, <em>fun=None</em>, <em>band_list=None</em>, <em>preview=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#auto_L3m_process_with_error_catcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.auto_L3m_process_with_error_catcher" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.bin_map_batcher">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">bin_map_batcher</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>sensor_codes</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>binning_resolution=1</em>, <em>mapping_resolution=1000</em>, <em>day_vars=None</em>, <em>night_vars=None</em>, <em>flags=None</em>, <em>proj=None</em>, <em>overwrite=True</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#bin_map_batcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.bin_map_batcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch processing of L3m data from L2 for several dates, sensors and variables</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.bin_map_wrapper">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">bin_map_wrapper</code><span class="sig-paren">(</span><em>date</em>, <em>sensor_codes</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>binning_resolution=1</em>, <em>mapping_resolution=1000</em>, <em>day_vars=None</em>, <em>night_vars=None</em>, <em>flags=None</em>, <em>proj=None</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#bin_map_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.bin_map_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to run l2bin and l3mapgen for a list of variables and a given date</p>
+<p>The function automatically handles the production of the right intermediary
+L3b files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> (<em>str</em><em> or </em><em>datetime</em>) – Date of the data to process</li>
+<li><strong>sensor_codes</strong> (<em>list</em>) – List to sensor codes to include in the processing</li>
+<li><strong>south</strong> (<em>int</em><em> or </em><em>float</em>) – south latitude of mapped file extent</li>
+<li><strong>north</strong> (<em>int</em><em> or </em><em>float</em>) – north latitude of mapped file extent</li>
+<li><strong>west</strong> (<em>int</em><em> or </em><em>float</em>) – west longitude of mapped file extent</li>
+<li><strong>east</strong> (<em>int</em><em> or </em><em>float</em>) – east longitude of mapped file extent</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive.</li>
+<li><strong>binning_resolution</strong> (<em>int</em><em> or </em><em>str</em>) – See resolve argument in l2bin doc</li>
+<li><strong>mapping_resolution</strong> (<em>int</em>) – Resolution of the output L3m file in meters</li>
+<li><strong>day_vars</strong> (<em>list</em>) – List of day variables to map (will result in one L3m file being
+produced for each var and each sensor)</li>
+<li><strong>night_vars</strong> (<em>list</em>) – List of night variables to map (will result in one L3m file being
+produced for each var and each sensor)</li>
+<li><strong>flags</strong> (<em>list</em>) – A list of flags to mask invalid data (e.g. [‘CLDICE’, ‘LAND’, ‘HIGLINT’])
+If None (default), a default list of flag for the L3 suite is fetched from
+the global variable FLAGS. When processing several variables belonging to
+different suites, it is not recommended to set a fixed list of flags, since they
+normally differ between suites.</li>
+<li><strong>proj</strong> (<em>str</em>) – Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered
+on the provided extent is used.</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite existing final (L3m) and intermediary (L3b) files</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">This function is used for its side effects of binning and then mapping data,
+producing as a result various L3b and L3m files</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l2_append_batcher">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l2_append_batcher</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>sensor_codes</em>, <em>var</em>, <em>suite</em>, <em>data_root</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l2_append_batcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l2_append_batcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a new variable and append it to existing L2 files in batch mode</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l2_append_wrapper">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l2_append_wrapper</code><span class="sig-paren">(</span><em>date</em>, <em>sensor_codes</em>, <em>var</em>, <em>suite</em>, <em>data_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l2_append_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l2_append_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to run l2_append on all matching files of a given date</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> (<em>datetime</em><em> or </em><em>str</em>) – Date of L2 data to process</li>
+<li><strong>sensor_codes</strong> (<em>list</em>) – List of strings corresponding to sensor codes to process</li>
+<li><strong>var</strong> (<em>str</em>) – Short name of the variable to process. Must exist in the
+global variable BAND_MATH_FUNCTIONS.</li>
+<li><strong>suite</strong> (<em>str</em>) – Suite name of the L2 files containing the required input
+bands.</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The list of files to which a variable was appended. However, the
+function is mostly used for its side effect of appending a variable
+to each file of a list of netcdf files.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l2gen_batcher">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l2gen_batcher</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>sensor_codes</em>, <em>var_list</em>, <em>suite</em>, <em>data_root</em>, <em>night=False</em>, <em>get_anc=True</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l2gen_batcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l2gen_batcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch L2 processing with parallel support; to be ran from cli</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l2gen_wrapper">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l2gen_wrapper</code><span class="sig-paren">(</span><em>date</em>, <em>sensor_codes</em>, <em>var_list</em>, <em>suite</em>, <em>data_root</em>, <em>night=False</em>, <em>get_anc=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l2gen_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l2gen_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs l2gen on all the files of a given date.</p>
+<p>All possible errors are caught</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>date</strong> (<em>datetime</em><em> or </em><em>str</em>) – Date of L2 data to process</li>
+<li><strong>sensor_codes</strong> (<em>list</em>) – List of strings corresponding to sensor codes to process</li>
+<li><strong>var_list</strong> (<em>list</em>) – List of strings representing the variables to process</li>
+<li><strong>suite</strong> (<em>str</em>) – Output L2 suite name</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>night</strong> (<em>bool</em>) – Is night data? Default to False</li>
+<li><strong>get_anc</strong> (<em>bool</em>) – Download ancillary data for improved atmospheric correction.
+Defaults to True.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l2gen_wrapper</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="s1">&#39;2004-11-21&#39;</span><span class="p">,</span> <span class="n">sensor_codes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>              <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">],</span> <span class="n">data_root</span><span class="o">=</span><span class="s1">&#39;/export/isilon/datos2/satmo2_data&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>              <span class="n">suite</span><span class="o">=</span><span class="s1">&#39;OC3&#39;</span><span class="p">,</span> <span class="n">night</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">get_anc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of processed L2 files</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l2mapgen_batcher">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l2mapgen_batcher</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>sensor_codes</em>, <em>var</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>night=False</em>, <em>flags=None</em>, <em>width=5000</em>, <em>outmode='tiff'</em>, <em>overwrite=False</em>, <em>threshold=0</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l2mapgen_batcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l2mapgen_batcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch L2m processing with parallel support; to be ran from cli</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l2mapgen_wrapper">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l2mapgen_wrapper</code><span class="sig-paren">(</span><em>date</em>, <em>sensor_codes</em>, <em>var</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>night=False</em>, <em>flags=None</em>, <em>width=5000</em>, <em>outmode='tiff'</em>, <em>overwrite=False</em>, <em>threshold=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l2mapgen_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l2mapgen_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs l2mapgen for a given variable on all the files of a given date.</p>
+<p>All possible errors are caugth</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>date</strong> (<em>datetime</em><em> or </em><em>str</em>) – Date of L2 data to process</li>
+<li><strong>sensor_codes</strong> (<em>list</em>) – List of strings corresponding to sensor codes to process</li>
+<li><strong>var</strong> (<em>str</em>) – Variable to process</li>
+<li><strong>south</strong> (<em>float</em>) – Southern border of output extent (in DD)</li>
+<li><strong>north</strong> (<em>float</em>) – Northern border of output extent (in DD)</li>
+<li><strong>west</strong> (<em>float</em>) – Western border of output extent (in DD)</li>
+<li><strong>east</strong> (<em>float</em>) – Eastern border of output extent (in DD)</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>night</strong> (<em>bool</em>) – Is night data? Default to False</li>
+<li><strong>flags</strong> (<em>list</em>) – List of flags to apply. Defaults to None, in which case
+default flags for the product suite are retrieved from the FLAGS global
+variable and used</li>
+<li><strong>width</strong> (<em>int</em>) – Width in pixels of the output image</li>
+<li><strong>outmode</strong> (<em>str</em>) – See seadas l2mapgen doc</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite existing files? Return ValueError if file exists
+and overwrite is set to False (default)</li>
+<li><strong>threshold</strong> (<em>float</em>) – Minumum percentage of the filled pixels</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l3bin_map_batcher">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l3bin_map_batcher</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>delta</em>, <em>sensor_codes</em>, <em>var_list</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>composite</em>, <em>data_root</em>, <em>mapping_resolution=1000</em>, <em>night=False</em>, <em>proj=None</em>, <em>overwrite=False</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l3bin_map_batcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l3bin_map_batcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a begin date, an end date and a compositing period to batch process temporal composites</p>
+<p>Uses the l3bin and l3mapgen seadas utilities and support parallel processing</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>begin</strong> (<em>datetime.datetime</em><em> or </em><em>str</em>) – Begin date of the first composite</li>
+<li><strong>end</strong> (<em>datetime.datetime</em><em> or </em><em>str</em>) – Begin date of the last composite</li>
+<li><strong>delta</strong> (<em>int</em><em> or </em><em>str</em>) – composite length in days if int, ‘month’ if str.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l3bin_map_wrapper">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l3bin_map_wrapper</code><span class="sig-paren">(</span><em>date_list</em>, <em>sensor_codes</em>, <em>var_list</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>composite</em>, <em>data_root</em>, <em>mapping_resolution=1000</em>, <em>night=False</em>, <em>proj=None</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l3bin_map_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l3bin_map_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run l3bin and l3mapgen for a list of dates, sensor_codes, and variables</p>
+<p>automatically retrieve suites that need to be processed from variables</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sensor_codes</strong> (<em>list</em>) – List of sensor codes to include (e.g.: [‘A’, ‘T’, ‘V’]</li>
+<li><strong>date_list</strong> (<em>list</em>) – List of dates</li>
+<li><strong>var_list</strong> (<em>list</em>) – List of variables to process</li>
+<li><strong>south</strong> (<em>float</em>) – Southern border of output extent (in DD)</li>
+<li><strong>north</strong> (<em>float</em>) – Northern border of output extent (in DD)</li>
+<li><strong>west</strong> (<em>float</em>) – Western border of output extent (in DD)</li>
+<li><strong>east</strong> (<em>float</em>) – Eastern border of output extent (in DD)</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>composite</strong> (<em>str</em>) – Composite type (8DAY, MON)</li>
+<li><strong>resolution</strong> (<em>int</em>) – MApping resolution in meters. Defaults to 1000</li>
+<li><strong>night</strong> (<em>bool</em>) – Is it night processing?</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite existing files?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.l3bin_wrapper">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">l3bin_wrapper</code><span class="sig-paren">(</span><em>sensor_codes</em>, <em>date_list</em>, <em>suite_list</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>composite</em>, <em>data_root</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#l3bin_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.l3bin_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to run l3bin without having to name explicitely input or output files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sensor_codes</strong> (<em>list</em>) – List of sensor codes to include (e.g.: [‘A’, ‘T’, ‘V’]</li>
+<li><strong>date_list</strong> (<em>list</em>) – List of dates</li>
+<li><strong>suite_list</strong> (<em>list</em>) – List of L3 suites to include</li>
+<li><strong>south</strong> (<em>float</em>) – Southern border of output extent (in DD)</li>
+<li><strong>north</strong> (<em>float</em>) – Northern border of output extent (in DD)</li>
+<li><strong>west</strong> (<em>float</em>) – Western border of output extent (in DD)</li>
+<li><strong>east</strong> (<em>float</em>) – Eastern border of output extent (in DD)</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>composite</strong> (<em>str</em>) – Composite type (8DAY, MON)</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite existing files?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of L3b files generated. Mostly used for its side effect of generating
+temporally composited L3b files from daily L3b files.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.make_daily_composite">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">make_daily_composite</code><span class="sig-paren">(</span><em>date</em>, <em>variable</em>, <em>suite</em>, <em>data_root</em>, <em>resolution</em>, <em>sensor_codes='all'</em>, <em>fun='mean'</em>, <em>filename=None</em>, <em>preview=True</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#make_daily_composite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.make_daily_composite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for making daily composites (from multiple sensors)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> (<em>str</em><em> or </em><em>datetime</em>) – Date of the data to be composited</li>
+<li><strong>variable</strong> (<em>str</em>) – L3m variable (e.g. ‘chlor_a’)</li>
+<li><strong>suite</strong> (<em>str</em>) – L3m suite (e.g. ‘CHL’)</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>resolution</strong> (<em>str</em>) – e.g. ‘1km’</li>
+<li><strong>sensor_codes</strong> (<em>list</em>) – Sensors to include in the composite. Defaults to
+‘all’, which is automatically transformed to [‘A’, ‘T’, ‘V’] for
+aqua, terra and viirs.</li>
+<li><strong>fun</strong> (<em>str</em>) – Compositing function. Can be ‘mean’, ‘median’, ‘min’, ‘max’.
+Defaults to ‘mean’</li>
+<li><strong>filename</strong> (<em>str</em>) – Optional output filename. Defaults to None, in which
+case the filename is automatically generated.</li>
+<li><strong>preview</strong> (<em>bool</em>) – Generate a png preview. Defaults to True</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Overwrite existing L3m file. Defaults to False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The filename of the created composite.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">make_daily_composite</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">,</span> <span class="n">suite</span><span class="o">=</span><span class="s1">&#39;CHL&#39;</span><span class="p">,</span>
+<span class="go">                               resolution=&#39;2km&#39;,</span>
+<span class="go">                               data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;,</span>
+<span class="go">                               overwrite=True, fun=&#39;mean&#39;, sensor_codes=[&#39;A&#39;, &#39;V&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.make_daily_composite_error_catcher">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">make_daily_composite_error_catcher</code><span class="sig-paren">(</span><em>date</em>, <em>variable</em>, <em>suite</em>, <em>data_root</em>, <em>resolution</em>, <em>sensor_codes='all'</em>, <em>fun='mean'</em>, <em>filename=None</em>, <em>preview=True</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#make_daily_composite_error_catcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.make_daily_composite_error_catcher" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.nrt_wrapper">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">nrt_wrapper</code><span class="sig-paren">(</span><em>day_or_night</em>, <em>pp_type</em>, <em>var_list</em>, <em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>binning_resolution=1</em>, <em>mapping_resolution=1000</em>, <em>eight_day=False</em>, <em>month=False</em>, <em>flags=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#nrt_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.nrt_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main wrapper to be called from CLI for NRT operation of the system</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>day_or_night</strong> (<em>str</em>) – ‘day’ or ‘night’</li>
+<li><strong>pp_type</strong> (<em>str</em>) – ‘nrt’ (for near real time) or ‘refined’ (for refined processing</li>
+<li><strong>var_list</strong> (<em>list</em>) – list of variables to process after data download (e.g. [‘chlor_a’, ‘sst’])</li>
+<li><strong>north</strong> (<em>float</em>) – north latitude of bounding box in DD</li>
+<li><strong>south</strong> (<em>float</em>) – south latitude of bounding box in DD</li>
+<li><strong>west</strong> (<em>float</em>) – west longitude of bounding box in DD</li>
+<li><strong>east</strong> (<em>float</em>) – east longitude of bounding box in DD</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>binning_resolution</strong> (<em>int</em><em> or </em><em>str</em>) – See resolve argument in l2bin doc</li>
+<li><strong>mapping_resolution</strong> (<em>int</em>) – Resolution of the output L3m file in meters</li>
+<li><strong>flags</strong> (<em>list</em>) – A list of flags to mask invalid data (e.g. [‘CLDICE’, ‘LAND’, ‘HIGLINT’])
+If None (default), a default list of flag for the L3 suite is fetched from
+the global variable FLAGS. When processing several variables belonging to
+different suites, it is not recommended to set a fixed list of flags, since they
+normally differ between suites.</li>
+<li><strong>proj</strong> (<em>str</em>) – Optional proj4 string. If None (default), a longlat is used</li>
+<li><strong>eight_day</strong> (<em>bool</em>) – Generate 8 days temporal composites (defaults to False)</li>
+<li><strong>month</strong> (<em>bool</em>) – Generate monthly temporal composites (defaults to False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt>The function is used for it’s side effects of downloading data, and processing</dt>
+<dd><p class="first last">associated variables</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># The idea is to call this wrapper several time within a scheduler</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">nrt_wrapper</span><span class="p">(</span><span class="n">day_or_night</span><span class="o">=</span><span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="n">pp_type</span><span class="o">=</span><span class="s1">&#39;nrt&#39;</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">,</span> <span class="s1">&#39;sst&#39;</span><span class="p">,</span> <span class="s1">&#39;nflh&#39;</span><span class="p">,</span> <span class="s1">&#39;Kd_490&#39;</span><span class="p">],</span>
+<span class="go">                      north=33, south=3, west=-122, east=-72,</span>
+<span class="go">                      data_root=&#39;/export/isilon/datos2/satmo2_data/&#39;,</span>
+<span class="go">                      eight_day=True)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Details:</dt>
+<dd><dl class="first last docutils">
+<dt>How to adapt this function?</dt>
+<dd><ul class="first last simple">
+<li>To add/remove subscriptions, simply edit the global variable SUBSCRIPTIONS</li>
+<li><dl class="first docutils">
+<dt>To add new variables you probably have to edit the global variables L3_SUITE_FROM_VAR and</dt>
+<dd>BIT_MASK_FROM_L3_SUITE (if the variable belongs to a suite that is not referenced in these variables)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Adding a new temporal composite means adding the corresponding argument, and following</dt>
+<dd>the logic of the eight_day and sixteen_day cases (already implemented)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Every change that involves changing the function argument should be passed to the CLI</dt>
+<dd>(satmo_nrt.py)</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.nrt_wrapper_l1">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">nrt_wrapper_l1</code><span class="sig-paren">(</span><em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>var_list</em>, <em>data_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#nrt_wrapper_l1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.nrt_wrapper_l1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to be called from nrt command line once a day</p>
+<p>Handles subscription based download of L1A files, L2 processing, computation
+of additional indices, and mapping of each individual file, separately to
+longlat.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>north</strong> (<em>float</em>) – north latitude of bounding box in DD</li>
+<li><strong>south</strong> (<em>float</em>) – south latitude of bounding box in DD</li>
+<li><strong>west</strong> (<em>float</em>) – west longitude of bounding box in DD</li>
+<li><strong>east</strong> (<em>float</em>) – east longitude of bounding box in DD</li>
+<li><strong>var_list</strong> (<em>list</em>) – List of additional variables to generate using l2_append</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>The function is used for its side effect of running the L1A-download</dt>
+<dd><p class="first last">to L2m processing chain</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.refined_processing_wrapper_l1">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">refined_processing_wrapper_l1</code><span class="sig-paren">(</span><em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>var_list</em>, <em>data_root</em>, <em>delay=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#refined_processing_wrapper_l1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.refined_processing_wrapper_l1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to be called from nrt command line once a day</p>
+<p>Reprocesses L2 OC2 suite a month after initial processing for improved
+atmospheric correction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>north</strong> (<em>float</em>) – north latitude of bounding box in DD</li>
+<li><strong>south</strong> (<em>float</em>) – south latitude of bounding box in DD</li>
+<li><strong>west</strong> (<em>float</em>) – west longitude of bounding box in DD</li>
+<li><strong>east</strong> (<em>float</em>) – east longitude of bounding box in DD</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>delay</strong> (<em>int</em>) – Delay in number of days between data aquisition and refined
+processing. Defaults to 30.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>The function is used for its side effect of running l2gen on 1 month</dt>
+<dd><p class="first last">old L1A data</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.subscriptions_download">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">subscriptions_download</code><span class="sig-paren">(</span><em>sub_list</em>, <em>data_root</em>, <em>refined=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#subscriptions_download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.subscriptions_download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a local archive using a list of data subscription numbers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sub_list</strong> (<em>list of int</em>) – List of subscription numbers</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>refined</strong> (<em>bool</em>) – Do the subscriptions refer to refined processing data (defaults
+to True), in which case the function will compare file size between the
+local and remote archives before deciding or not to download the file.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of file paths corresponding to the local paths of downloaded files</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">subscriptions_download</span><span class="p">([</span><span class="mi">1821</span><span class="p">,</span> <span class="mi">1823</span><span class="p">],</span> <span class="n">data_root</span><span class="o">=</span><span class="s1">&#39;/export/isilon/datos2/satmo2_data&#39;</span><span class="p">,</span>
+<span class="go">                                 refined=False)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">satmo.global_variables</span> <span class="k">import</span> <span class="n">SUBSCRIPTIONS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">subscriptions_download</span><span class="p">(</span><span class="n">SUBSCRIPTIONS</span><span class="p">[</span><span class="s1">&#39;L1A&#39;</span><span class="p">][</span><span class="s1">&#39;day&#39;</span><span class="p">],</span>
+<span class="go">                                 data_root=&#39;/export/isilon/datos2/satmo2_data&#39;,</span>
+<span class="go">                                 refined=False)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.timerange_auto_L3m_process">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">timerange_auto_L3m_process</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>sensor_codes</em>, <em>suite</em>, <em>var</em>, <em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>data_root</em>, <em>resolution</em>, <em>day=True</em>, <em>bit_mask=107599675</em>, <em>proj4string=None</em>, <em>overwrite=False</em>, <em>fun=None</em>, <em>band_list=None</em>, <em>preview=True</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#timerange_auto_L3m_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.timerange_auto_L3m_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper with parallel support for batch processing of L3m files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>begin</strong> (<em>datetime</em><em> or </em><em>str</em>) – Begining of time range. ‘yyyy-mm-dd’ if str</li>
+<li><strong>end</strong> (<em>datetime</em><em> or </em><em>str</em>) – End of time range. ‘yyyy-mm-dd’ if str</li>
+<li><strong>sensor_codes</strong> (<em>list</em>) – list of strings with sensor codes (e.g.: [‘A’,
+‘T’])</li>
+<li><strong>n_threads</strong> (<em>int</em>) – Number of threads to use for running the
+auto_L3m_process function in parallel.</li>
+<li><strong>others</strong> – See help of auto_L3m_process for the other parameters.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">This function does not return anything</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">timerange_auto_L3m_process</span><span class="p">(</span><span class="n">begin</span><span class="o">=</span><span class="s1">&#39;2001-01-01&#39;</span><span class="p">,</span>
+<span class="go">                                     end=&#39;2017-12-31&#39;,</span>
+<span class="go">                                     sensor_codes=[&#39;V&#39;, &#39;T&#39;, &#39;A&#39;],</span>
+<span class="go">                                     suite=&#39;CHL&#39;, var=&#39;chlor_a&#39;,</span>
+<span class="go">                                     north=33, south=3, west=-122,</span>
+<span class="go">                                     east=-72,</span>
+<span class="go">                                     data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;,</span>
+<span class="go">                                     resolution=2000)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Second example with calculation of new variable from Rrs layers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">add_bands</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">timerange_auto_L3m_process</span><span class="p">(</span><span class="n">begin</span><span class="o">=</span><span class="s1">&#39;2016-01-01&#39;</span><span class="p">,</span>
+<span class="go">                                     end=&#39;2016-01-16&#39;,</span>
+<span class="go">                                     sensor_codes=[&#39;A&#39;, &#39;T&#39;],</span>
+<span class="go">                                     suite=&#39;RRS&#39;, var=&#39;rrs_add&#39;,</span>
+<span class="go">                                     north=33, south=3, west=-122,</span>
+<span class="go">                                     east=-72,</span>
+<span class="go">                                     data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;,</span>
+<span class="go">                                     resolution=2000,</span>
+<span class="go">                                     n_threads=3, overwrite=True, fun=add_bands,</span>
+<span class="go">                                     band_list=[&#39;Rrs_555&#39;, &#39;Rrs_645&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.timerange_daily_composite">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">timerange_daily_composite</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>variable</em>, <em>suite</em>, <em>data_root</em>, <em>resolution</em>, <em>sensor_codes='all'</em>, <em>fun='mean'</em>, <em>preview=True</em>, <em>overwrite=False</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#timerange_daily_composite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.timerange_daily_composite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce daily composite for individual dates in a time-range in batch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>begin</strong> (<em>datetime</em><em> or </em><em>str</em>) – Begining of time range. ‘yyyy-mm-dd’ if str</li>
+<li><strong>end</strong> (<em>datetime</em><em> or </em><em>str</em>) – End of time range. ‘yyyy-mm-dd’ if str</li>
+<li><strong>n_threads</strong> (<em>int</em>) – Number of threads to use for running the
+make_daily_composite function in parallel.</li>
+<li><strong>others</strong> – See help of make_daily_composite for the other parameters.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">timerange_daily_composite</span><span class="p">(</span><span class="n">begin</span><span class="o">=</span><span class="s1">&#39;2015-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2016-06-30&#39;</span><span class="p">,</span>
+<span class="go">                                    variable=&#39;chlor_a&#39;, suite=&#39;CHL&#39;,</span>
+<span class="go">                                    data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;,</span>
+<span class="go">                                    resolution=&#39;2km&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.timerange_download">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">timerange_download</code><span class="sig-paren">(</span><em>sensors</em>, <em>begin</em>, <em>end</em>, <em>write_dir</em>, <em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>day=True</em>, <em>night=True</em>, <em>product='L1A'</em>, <em>overwrite=False</em>, <em>check_integrity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#timerange_download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.timerange_download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries and download data for a given timerange</p>
+<p>Wrapper around downdload and query</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sensors</strong> – (list) list of strings, Valid entries are ‘am’ (aqua), ‘tm’ (terra),</li>
+<li><strong>'sw'</strong> (<em>seawifs</em><em>)</em><em>, </em><em>'v0'</em><em> (</em><em>viirs</em>) – </li>
+<li><strong>begin</strong> (<em>datetime</em><em> or </em><em>str</em>) – Begining of time range. ‘yyyy-mm-dd’ if str</li>
+<li><strong>end</strong> (<em>datetime</em><em> or </em><em>str</em>) – End of time range. ‘yyyy-mm-dd’ if str</li>
+<li><strong>write_dir</strong> (<em>str</em>) – Host directory to which the data will be written</li>
+<li><strong>north</strong> (<em>float</em>) – north latitude of bounding box in DD</li>
+<li><strong>south</strong> (<em>float</em>) – south latitude of bounding box in DD</li>
+<li><strong>west</strong> (<em>float</em>) – west longitude of bounding box in DD</li>
+<li><strong>east</strong> (<em>float</em>) – east longitude of bounding box in DD</li>
+<li><strong>day</strong> (<em>bool</em>) – Order day data ?</li>
+<li><strong>night</strong> (<em>bool</em>) – Order night data ?</li>
+<li><strong>product</strong> (<em>str</em>) – Product to order, defaults to ‘L1A’. Other possible values include</li>
+<li><strong>for L2_OC</strong><strong>, </strong><strong>'SST' for L2_SST</strong><strong>, </strong><strong>and 'SST4' for L2_SST4</strong> (<em>'CHL'</em>) – </li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Should existing files on the host be overwritten</li>
+<li><strong>check_integrity</strong> (<em>bool</em>) – Only makes sense if overwrite is set to False (when updating the archive)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of boolean</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.wrappers.timerange_time_compositer">
+<code class="descclassname">satmo.wrappers.</code><code class="descname">timerange_time_compositer</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>delta</em>, <em>var</em>, <em>suite</em>, <em>resolution</em>, <em>composite</em>, <em>data_root</em>, <em>sensor_code='X'</em>, <em>fun='mean'</em>, <em>overwrite=False</em>, <em>preview=True</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#timerange_time_compositer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.timerange_time_compositer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs make_time_composite in batch and parallel</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>begin</strong> (<em>datetime.datetime</em><em> or </em><em>str</em>) – Begin date of the first composite</li>
+<li><strong>end</strong> (<em>datetime.datetime</em><em> or </em><em>str</em>) – Begin date of the last composite</li>
+<li><strong>delta</strong> (<em>int</em><em> or </em><em>str</em>) – composite length in days if int, ‘month’ if str.</li>
+<li><strong>var</strong> (<em>str</em>) – L3m variable to composite</li>
+<li><strong>suite</strong> (<em>str</em>) – L3m suite to compose</li>
+<li><strong>resolution</strong> (<em>str</em>) – Resolution of data to compose (e.g.: ‘2km’)</li>
+<li><strong>composite</strong> (<em>str</em>) – Type/name of generated composite (e.g.: ‘8DAY’, ‘16DAY’). Used
+for automatic output filename generation.</li>
+<li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>sensor_code</strong> (<em>str</em>) – Sensor to composite (defaults to ‘X’, which
+corresponds to daily (cross sensors) composites.</li>
+<li><strong>fun</strong> (<em>str</em>) – compositing function, defaults to mean</li>
+<li><strong>overwrite</strong> (<em>bool</em>) – Should output file be overwritten if it already
+exists.</li>
+<li><strong>preview</strong> (<em>bool</em>) – Should a png preview be automatically generated</li>
+<li><strong>n_threads</strong> (<em>int</em>) – Number of threads to use for running the
+auto_L3m_process function in parallel.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt>Used for its side effect of running make_time_composite in batch; does not</dt>
+<dd><p class="first last">return anything</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create 16 days mean value composites of chlor_a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">timerange_time_compositer</span><span class="p">(</span><span class="s1">&#39;2000-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2004-12-31&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;chlor_a&#39;</span><span class="p">,</span>
+<span class="go">                                    suite=&#39;CHL&#39;, resolution=&#39;2km&#39;, composite=&#39;16DAY&#39;,</span>
+<span class="go">                                    data_root=&#39;/home/ldutrieux/sandbox/satmo2_data/&#39;,</span>
+<span class="go">                                    overwrite=True, n_threads=2)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../autodoc.html" class="btn btn-neutral float-right" title="Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="satmo.visualization.html" class="btn btn-neutral" title="satmo.visualization module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

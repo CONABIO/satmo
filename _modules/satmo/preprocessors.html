@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>satmo.preprocessors &mdash; satmo 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="satmo 0.2 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Users Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>satmo.preprocessors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for satmo.preprocessors</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">bz2</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">filename_parser</span><span class="p">,</span>
+                    <span class="n">is_day</span><span class="p">,</span> <span class="n">filename_builder</span><span class="p">,</span> <span class="n">to_km</span><span class="p">,</span>
+                    <span class="n">viirs_geo_filename_builder</span><span class="p">,</span> <span class="n">randomword</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="k">import</span> <span class="n">SeadasError</span>
+<span class="kn">from</span> <span class="nn">.global_variables</span> <span class="k">import</span> <span class="n">STANDARD_L3_SUITES</span>
+
+
+
+<div class="viewcode-block" id="bz2_unpack"><a class="viewcode-back" href="../../api/satmo.preprocessors.html#satmo.preprocessors.bz2_unpack">[docs]</a><span class="k">def</span> <span class="nf">bz2_unpack</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Unpacks data compressed with bz2</span>
+
+<span class="sd">    Utility function to unpack bz2 compressed data</span>
+<span class="sd">    The function only works if a single file is compressed</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        source (str): the filename of the archive</span>
+<span class="sd">        destination (str): the destination directory, filename will be</span>
+<span class="sd">            set automatically</span>
+<span class="sd">        overwrite (bool): If false, check whether file already exists and returns its name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The filename of the unpacked file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+    <span class="n">out_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">source</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">out_file</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">out_file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">,</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">),</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+            <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out_file</span></div>
+
+
+<div class="viewcode-block" id="bz2_compress"><a class="viewcode-back" href="../../api/satmo.preprocessors.html#satmo.preprocessors.bz2_compress">[docs]</a><span class="k">def</span> <span class="nf">bz2_compress</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">compresslevel</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Unpacks data compressed with bz2</span>
+
+<span class="sd">    Utility function to bz2 compress data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        source (str): the filename to compress</span>
+<span class="sd">        destination (str): the destination directory, filename will be</span>
+<span class="sd">            set automatically</span>
+<span class="sd">        compresslevel (int): Compression level</span>
+<span class="sd">        overwrite (bool): If false, check whether file already exists and returns its name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The filename of the bz2 compressed file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+    <span class="n">out_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;.bz2&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">out_file</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">out_file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">,</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">,</span> <span class="n">compresslevel</span> <span class="o">=</span> <span class="n">compresslevel</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">),</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+            <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out_file</span></div>
+
+<div class="viewcode-block" id="getanc"><a class="viewcode-back" href="../../api/satmo.preprocessors.html#satmo.preprocessors.getanc">[docs]</a><span class="k">def</span> <span class="nf">getanc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for the getanc.py seadas utility</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (str): filename of a L1 file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The path to the generated (and moved) .anc text file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arg_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;getanc.py&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">FNULL</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">arg_list</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">FNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
+    <span class="c1"># Locate anc file generated</span>
+    <span class="n">wd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">anc_file_src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wd</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.anc&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">anc_file_dst</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.anc&#39;</span> <span class="o">%</span> <span class="n">x</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">anc_file_src</span><span class="p">,</span> <span class="n">anc_file_dst</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">anc_file_dst</span></div>
+
+<div class="viewcode-block" id="l2gen"><a class="viewcode-back" href="../../api/satmo.preprocessors.html#satmo.preprocessors.l2gen">[docs]</a><span class="k">def</span> <span class="nf">l2gen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">var_list</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">get_anc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper to run seadas l2gen on L1A data</span>
+
+<span class="sd">    Run l2gen for modis and viirs data. All intermediary files are automatically</span>
+<span class="sd">    generated in the case of MODIS; if input is a viirs L1A file, there must be a</span>
+<span class="sd">    corresponging GEO file in the same folder.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (str): Path to input L1A file</span>
+<span class="sd">        var_list (list): List of strings representing the variables to process</span>
+<span class="sd">        suite (str): Output L2 suite name</span>
+<span class="sd">        data_root (str): Root of the local data archive</span>
+<span class="sd">        get_anc (bool): Download ancillary data for improved atmospheric correction.</span>
+<span class="sd">            Defaults to True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: file name of the generated L2 file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">input_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">output_filename</span> <span class="o">=</span> <span class="n">filename_builder</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                                          <span class="n">suite</span><span class="o">=</span><span class="n">suite</span><span class="p">,</span> <span class="n">full_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                          <span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">)</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_filename</span><span class="p">)</span>
+    <span class="c1"># The delete switch determines whether or not an uncompressed file must be</span>
+    <span class="c1"># deleted or not. viirs do not come as bz2 compressed files so this does not apply</span>
+    <span class="c1"># for them</span>
+    <span class="n">delete</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">input_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.bz2&#39;</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">bz2_unpack</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">)</span>
+        <span class="n">delete</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># Get ancillary data if option set to True</span>
+    <span class="k">if</span> <span class="n">get_anc</span><span class="p">:</span>
+        <span class="n">anc</span> <span class="o">=</span> <span class="n">getanc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># Create L2 output dir if it doesn&#39;t exist</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="c1"># Split in two different paths (modis --&gt; multilevel_processor, viirs --&gt; l2gen)</span>
+    <span class="k">if</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;viirs&#39;</span><span class="p">:</span>
+        <span class="n">geo_file</span> <span class="o">=</span> <span class="n">viirs_geo_filename_builder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">cli_elements</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;l2gen&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;ifile=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span><span class="p">,</span>
+                        <span class="s1">&#39;geofile=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">geo_file</span><span class="p">,</span>
+                        <span class="s1">&#39;ofile=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">output_filename</span><span class="p">,</span>
+                        <span class="s1">&#39;l2prod=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">var_list</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">get_anc</span><span class="p">:</span>
+            <span class="n">cli_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;par=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">anc</span><span class="p">)</span>
+        <span class="c1"># l2gen is very verbose, therefore redirect output to devnull</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">FNULL</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cli_elements</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">FNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SeadasError</span><span class="p">(</span><span class="s1">&#39;l2gen processor exited with status </span><span class="si">%d</span><span class="s1"> during viirs L2 processing&#39;</span> <span class="o">%</span> <span class="n">status</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">input_meta</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;aqua&#39;</span><span class="p">,</span> <span class="s1">&#39;terra&#39;</span><span class="p">]:</span>
+        <span class="c1"># modis L2 processing is done via modis_GEO.py + modis_L1B.py + l2gen</span>
+        <span class="n">dirname</span><span class="p">,</span> <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">geo_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">basename</span><span class="p">[:</span><span class="mi">15</span><span class="p">],</span> <span class="s1">&#39;GEO&#39;</span><span class="p">))</span>
+        <span class="n">l1b_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">basename</span><span class="p">[:</span><span class="mi">15</span><span class="p">],</span> <span class="s1">&#39;L1B_LAC&#39;</span><span class="p">))</span>
+        <span class="c1"># Run modis_GEO.py</span>
+        <span class="n">geo_cli</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;modis_GEO.py&#39;</span><span class="p">,</span>
+                   <span class="n">x</span><span class="p">,</span>
+                   <span class="s1">&#39;--output=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">geo_file</span><span class="p">]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">FNULL</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">geo_cli</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">FNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SeadasError</span><span class="p">(</span><span class="s1">&#39;modis_GEO.py exited with status </span><span class="si">%d</span><span class="s1"> during modis L2 processing&#39;</span> <span class="o">%</span> <span class="n">status</span><span class="p">)</span>
+        <span class="c1"># Run modis_L1B.py</span>
+        <span class="n">l1b_cli</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;modis_L1B.py&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;--okm=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">l1b_file</span><span class="p">,</span>
+                   <span class="n">x</span><span class="p">,</span>
+                   <span class="n">geo_file</span><span class="p">]</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">l1b_cli</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SeadasError</span><span class="p">(</span><span class="s1">&#39;modis_L1B.py exited with status </span><span class="si">%d</span><span class="s1"> during modis L2 processing&#39;</span> <span class="o">%</span> <span class="n">status</span><span class="p">)</span>
+        <span class="c1"># Run l2gen</span>
+        <span class="n">cli_elements</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;l2gen&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;ifile=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">l1b_file</span><span class="p">,</span>
+                        <span class="s1">&#39;geofile=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">geo_file</span><span class="p">,</span>
+                        <span class="s1">&#39;ofile=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">output_filename</span><span class="p">,</span>
+                        <span class="s1">&#39;l2prod=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">var_list</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">get_anc</span><span class="p">:</span>
+            <span class="n">cli_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;par=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">anc</span><span class="p">)</span>
+        <span class="c1"># l2gen is very verbose, therefore redirect output to devnull</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">FNULL</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cli_elements</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">FNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SeadasError</span><span class="p">(</span><span class="s1">&#39;l2gen processor exited with status </span><span class="si">%d</span><span class="s1"> during modis L2 processing&#39;</span> <span class="o">%</span> <span class="n">status</span><span class="p">)</span>
+        <span class="c1"># Prepare list of intermediary files generated and delete them</span>
+        <span class="n">del_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">basename</span><span class="p">[:</span><span class="mi">15</span><span class="p">],</span> <span class="s1">&#39;L1B_QKM&#39;</span><span class="p">)),</span>
+                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">basename</span><span class="p">[:</span><span class="mi">15</span><span class="p">],</span> <span class="s1">&#39;L1B_HKM&#39;</span><span class="p">)),</span>
+                     <span class="n">l1b_file</span><span class="p">,</span>
+                     <span class="n">geo_file</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">del_files</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">delete</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_filename</span></div>
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
