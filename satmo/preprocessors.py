@@ -159,7 +159,8 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
                    '--okm=%s' % l1b_file,
                    x,
                    geo_file]
-        status = subprocess.call(l1b_cli)
+        with open(os.devnull, 'w') as FNULL:
+            status = subprocess.call(l1b_cli, stdout=FNULL, stderr=subprocess.STDOUT)
         if status != 0:
             raise SeadasError('modis_L1B.py exited with status %d during modis L2 processing' % status)
         # Run l2gen
