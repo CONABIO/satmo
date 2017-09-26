@@ -21,9 +21,9 @@ from pprint import pprint
 # it's hanging, and it should be stopped to not affect the other tasks). This is likely to happen in case of
 # the internet connection momentarily breaks during download. All processes are launched with at least 3 hr interval
 
-def main(day_vars, night_vars, refined, eight_day, month, data_root,
+def main(day_vars, night_vars, l1a_vars, refined, eight_day, month, data_root,
          binning_resolution, mapping_resolution, north, south, west, east,
-         flags, proj):
+         flags, proj, delay):
 
     def day_nrt():
         try:
@@ -69,7 +69,7 @@ def main(day_vars, night_vars, refined, eight_day, month, data_root,
         try:
             with time_limit(18000 - 60): # 5 hrs - 60 seconds
                 nrt_wrapper_l1(north=north, south=south, west=west, east=east,
-                               data_root=data_root)
+                               var_list=l1a_vars, data_root=data_root)
         except TimeoutException:
             pprint('A processed timed out for not completing after 5hr!')
 
@@ -77,7 +77,8 @@ def main(day_vars, night_vars, refined, eight_day, month, data_root,
         try:
             with time_limit(21600 - 60): # Almost 6 hrs
                 refined_processing_wrapper_l1(north=north, south=south, west=west,
-                                              east=east, data_root=data_root)
+                                              east=east, var_list=l1a_vars,
+                                              data_root=data_root, delay=delay)
         except TimeoutException:
             pprint('A processed timed out for not completing after 6hr!')
 
@@ -127,6 +128,13 @@ if __name__ == '__main__':
                         nargs = '*',
                         required = True,
                         help = 'night time variables to process')
+
+    parser.add_argument('-l1a_vars', '--l1a_vars',
+                        type = str,
+                        nargs = '*',
+                        required = False,
+                        help = 'Additional L2 variables to process from OC2 collection (generated from L1A files)')
+    parser.set_defaults(l1a_vars=['fai', 'afai'])
 
     parser.add_argument('--no-refined', dest='refined', action='store_false',
                         help='Disable download of refined processed L2 data, reprocessing of L2 data from L1A, and L3m processing from them')
@@ -188,6 +196,12 @@ if __name__ == '__main__':
                         help = ('List of flags to use in the binning step. If not provided defaults are retrieved'
                                 ' for each L3 suite independently from the satmo global variable FLAGS'))
     parser.set_defaults(flags=None)
+
+    parser.add_argument('-delay', '--delay',
+                        required=False,
+                        type = int,
+                        help = 'NUmber of days to wait before triggering refined reprocessing of the L2 OC2 suite from L1A')
+    parser.set_defaults(delay=30)
 
     parsed_args = parser.parse_args()
 

@@ -1091,7 +1091,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                               proj=proj, overwrite=True)
 
 
-def nrt_wrapper_l1(north, south, west, east, data_root):
+def nrt_wrapper_l1(north, south, west, east, var_list, data_root):
     """Wrapper to be called from nrt command line once a day
 
     Handles subscription based download of L1A files, L2 processing, computation
@@ -1103,6 +1103,7 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
         south (float): south latitude of bounding box in DD
         west (float): west longitude of bounding box in DD
         east (float): east longitude of bounding box in DD
+        var_list (list): List of additional variables to generate using l2_append
         data_root (str): Root of the data archive
 
     Returns:
@@ -1139,22 +1140,18 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
     # For each L2 file, append AFAI to netCDF file
     for L2_file in L2_list:
         sensor = filename_parser(L2_file)['sensor']
-        try:
-            afai_param = BAND_MATH_FUNCTIONS['afai'][sensor]
-            l2_append(L2_file, **afai_param)
-            l2mapgen(L2_file, south=south, north=north, west=west, east=east,
-                     prod='afai', flags=FLAGS['FAI'], data_root=data_root)
-        except Exception as e:
-            pprint('Problem while generating L2m file from %s. %s' % (L2_file, e))
-        try:
-            fai_param = BAND_MATH_FUNCTIONS['fai'][sensor]
-            l2_append(L2_file, **fai_param)
-            l2mapgen(L2_file, south=south, north=north, west=west, east=east,
-                     prod='fai', flags=FLAGS['FAI'], data_root=data_root)
-        except Exception as e:
-            pprint('Problem while generating L2m file from %s. %s' % (L2_file, e))
+        for var in var_list:
+            try:
+                param = BAND_MATH_FUNCTIONS[var][sensor]
+                suite = L3_SUITE_FROM_VAR['day'][var]
+                l2_append(L2_file, **afai_param)
+                l2mapgen(L2_file, south=south, north=north, west=west, east=east,
+                         prod=var, flags=FLAGS[suite], data_root=data_root)
+            except Exception as e:
+                pprint('Problem while generating L2m file from %s. %s' % (L2_file, e))
 
-def refined_processing_wrapper_l1(north, south, west, east, data_root, delay = 30):
+def refined_processing_wrapper_l1(north, south, west, east, var_list, data_root,
+                                  delay = 30):
     """Wrapper to be called from nrt command line once a day
 
     Reprocesses L2 OC2 suite a month after initial processing for improved
@@ -1180,19 +1177,13 @@ def refined_processing_wrapper_l1(north, south, west, east, data_root, delay = 3
                             suite='OC2', data_root=data_root)
 
     for L2_file in L2_list:
-        meta = filename_parser(L2_file)
-        try:
-            afai_param = BAND_MATH_FUNCTIONS['afai'][meta['sensor']]
-            l2_append(L2_file, **afai_param)
-            l2mapgen(L2_file, south=south, north=north, west=west, east=east,
-                     prod='afai', flags=FLAGS['FAI'], data_root=data_root)
-        except Exception as e:
-            pprint('Refined processing: Problem while generating L2m file from %s. %s' % (L2_file, e))
-        try:
-            fai_param = BAND_MATH_FUNCTIONS['fai'][meta['sensor']]
-            l2_append(L2_file, **fai_param)
-            l2mapgen(L2_file, south=south, north=north, west=west, east=east,
-                     prod='fai', flags=FLAGS['FAI'], data_root=data_root)
-        except Exception as e:
-            pprint('Refined processing: Problem while generating L2m file from %s. %s' % (L2_file, e))
-
+        sensor = filename_parser(L2_file)['sensor']
+        for var in var_list:
+            try:
+                param = BAND_MATH_FUNCTIONS[var][sensor]
+                suite = L3_SUITE_FROM_VAR['day'][var]
+                l2_append(L2_file, **afai_param)
+                l2mapgen(L2_file, south=south, north=north, west=west, east=east,
+                         prod=var, flags=FLAGS[suite], data_root=data_root)
+            except Exception as e:
+                pprint('Problem while generating L2m file from %s. %s' % (L2_file, e))
