@@ -125,7 +125,7 @@ VIZ_PARAMS = {'chlor_a' : {'stretch': {'vmax': 15},
 COMPOSITES = {'DAY': 'Daily',
               '8DAY': '8 day composite',
               '16DAY': '16 day composite',
-              'MON': 'Monthly composite'}
+              'MO': 'Monthly composite'}
 
 SUBSCRIPTIONS = {'L2':{'nrt': {'day': [1823, 1821, 1825],
                                'night': [1824, 1822, 1826]},
