@@ -1044,6 +1044,7 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
     # Query subscriptions and download corresponding data (update local data archive) 
     try:
         dl_list = subscriptions_download(sub_list, data_root, refined)
+        date_list = get_date_list(dl_list)
     except Exception as e:
         # Exit function if the download did not work because there would be nothing
         # to do anyway
@@ -1070,6 +1071,24 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                         binning_resolution=binning_resolution,
                         mapping_resolution=mapping_resolution, day_vars=day_vars,
                         night_vars=night_vars, flags=flags, proj=proj, overwrite=True)
+    if eight_day:
+        # Might re-run several times the same composite, but this is not so computationally
+        # expensive
+        for dt in date_list:
+            input_dates = find_composite_date_list(dt, 8)
+            l3bin_map_wrapper(date_list=input_dates, sensor_codes=['A', 'T', 'V'],
+                              var_list=var_list, south=south, north=north, west=west,
+                              east=east, composite='8DAY', data_root=data_root,
+                              mapping_resolution=mapping_resolution, night=not(day),
+                              proj=proj, overwrite=True)
+
+    if month:
+            input_dates = find_composite_date_list(dt, 'month')
+            l3bin_map_wrapper(date_list=input_dates, sensor_codes=['A', 'T', 'V'],
+                              var_list=var_list, south=south, north=north, west=west,
+                              east=east, composite='MO', data_root=data_root,
+                              mapping_resolution=mapping_resolution, night=not(day),
+                              proj=proj, overwrite=True)
 
 
 def nrt_wrapper_l1(north, south, west, east, data_root):
@@ -1089,7 +1108,6 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
     Returns:
         None: The function is used for its side effect of running the L1A-download
             to L2m processing chain
-
 
     """
     # 1 - Download data
@@ -1111,6 +1129,7 @@ def nrt_wrapper_l1(north, south, west, east, data_root):
     file_list = [x for x in file_list if filename_parser(x)['level'] != 'GEO']
     for L1_file in file_list:
         try:
+            # TODO: Make a safe l2gen version that can be called in parallel on file_list
             sensor = filename_parser(L1_file)['sensor']
             L2_file = l2gen(x=L1_file, var_list=VARS_FROM_L2_SUITE[sensor]['day']['OC2'], suite='OC2',
                             data_root=data_root)
