@@ -1149,6 +1149,8 @@ def nrt_wrapper_l1(north, south, west, east, var_list, data_root, n_threads=1):
     pool = mp.Pool(n_threads)
     L2_list = pool.map_async(functools.partial(_l2gen_safe, **kwargs),
                              file_list).get(9999999)
+    # Clean list (may contain Nones where l2gen failed)
+    L2_list = [x for x in L2_list if x is not None]
     # For each L2 file, append AFAI to netCDF file
     for L2_file in L2_list:
         sensor = filename_parser(L2_file)['sensor']
