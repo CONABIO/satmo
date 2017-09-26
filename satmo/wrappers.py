@@ -1090,8 +1090,20 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
                               mapping_resolution=mapping_resolution, night=not(day),
                               proj=proj, overwrite=True)
 
+def _l2gen_safe(x, suite, data_root, night, get_anc):
+    """Custom function for l2gen that allows calling it in parallel on a list of L1A files
+    """
+    dn = 'night' if night else 'day'
+    sensor = filename_parser(x)['sensor']
+    var_list = VARS_FROM_L2_SUITE[sensor][dn][suite]
+    try:
+        out = l2gen(x=x, var_list=var_list, suite=suite, data_root=data_root,
+                    get_anc=get_anc)
+        return out
+    except Exception as e:
+        pprint('error running l2gen on %s. %s' % (x, e))
 
-def nrt_wrapper_l1(north, south, west, east, var_list, data_root):
+def nrt_wrapper_l1(north, south, west, east, var_list, data_root, n_threads=1):
     """Wrapper to be called from nrt command line once a day
 
     Handles subscription based download of L1A files, L2 processing, computation
@@ -1105,6 +1117,7 @@ def nrt_wrapper_l1(north, south, west, east, var_list, data_root):
         east (float): east longitude of bounding box in DD
         var_list (list): List of additional variables to generate using l2_append
         data_root (str): Root of the data archive
+        n_threads (int): Number of threads to use for running l2gen in parallel
 
     Returns:
         None: The function is used for its side effect of running the L1A-download
@@ -1128,15 +1141,14 @@ def nrt_wrapper_l1(north, south, west, east, var_list, data_root):
     L2_list = []
     # Remove Geo files from file_list
     file_list = [x for x in file_list if filename_parser(x)['level'] != 'GEO']
-    for L1_file in file_list:
-        try:
-            # TODO: Make a safe l2gen version that can be called in parallel on file_list
-            sensor = filename_parser(L1_file)['sensor']
-            L2_file = l2gen(x=L1_file, var_list=VARS_FROM_L2_SUITE[sensor]['day']['OC2'], suite='OC2',
-                            data_root=data_root)
-            L2_list.append(L2_file)
-        except Exception as e:
-            pprint('Problem while generating L2 file from %s. %s' % (L1_file, e))
+    kwargs = {'suite': 'OC2',
+              'data_root': data_root,
+              'night': False,
+              'get_anc': True}
+    # Run wrapper for every L1a file with // support
+    pool = mp.Pool(n_threads)
+    L2_list = pool.map_async(functools.partial(_l2gen_safe, **kwargs),
+                             file_list).get(9999999)
     # For each L2 file, append AFAI to netCDF file
     for L2_file in L2_list:
         sensor = filename_parser(L2_file)['sensor']

@@ -23,7 +23,7 @@ from pprint import pprint
 
 def main(day_vars, night_vars, l1a_vars, refined, eight_day, month, data_root,
          binning_resolution, mapping_resolution, north, south, west, east,
-         flags, proj, delay):
+         flags, proj, delay, n_threads):
 
     def day_nrt():
         try:
@@ -69,7 +69,7 @@ def main(day_vars, night_vars, l1a_vars, refined, eight_day, month, data_root,
         try:
             with time_limit(18000 - 60): # 5 hrs - 60 seconds
                 nrt_wrapper_l1(north=north, south=south, west=west, east=east,
-                               var_list=l1a_vars, data_root=data_root)
+                               var_list=l1a_vars, data_root=data_root, n_threads=n_threads)
         except TimeoutException:
             pprint('A processed timed out for not completing after 5hr!')
 
@@ -202,6 +202,12 @@ if __name__ == '__main__':
                         type = int,
                         help = 'NUmber of days to wait before triggering refined reprocessing of the L2 OC2 suite from L1A')
     parser.set_defaults(delay=30)
+
+    parser.add_argument('-multi', '--n_threads',
+                        type = int,
+                        required = False,
+                        help = 'Number of threads to use for parallel implementation')
+    parser.set_defaults(n_threads=1)
 
     parsed_args = parser.parse_args()
 
