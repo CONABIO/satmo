@@ -16,6 +16,7 @@ from satmo import (nrt_wrapper, time_limit, TimeoutException,
 import schedule
 import time
 from pprint import pprint
+import os
 
 # Handle function running time (no step should take more than 2 hr, otherwise it probably means that
 # it's hanging, and it should be stopped to not affect the other tasks). This is likely to happen in case of
@@ -24,6 +25,8 @@ from pprint import pprint
 def main(day_vars, night_vars, l1a_vars, refined, eight_day, month, data_root,
          binning_resolution, mapping_resolution, north, south, west, east,
          flags, proj, delay, n_threads):
+
+    pprint(os.environ['OCSSWROOT'])
 
     def day_nrt():
         try:
