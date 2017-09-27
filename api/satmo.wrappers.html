@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.wrappers module &mdash; satmo 0.2 documentation</title>
+  <title>satmo.wrappers module &mdash; satmo 0.2.1 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="satmo 0.2 documentation" href="../index.html"/>
+    <link rel="top" title="satmo 0.2.1 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
-        <link rel="next" title="Documentation" href="../autodoc.html"/>
+        <link rel="next" title="Installation" href="../install.html"/>
         <link rel="prev" title="satmo.visualization module" href="satmo.visualization.html"/> 
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2
+                0.2.1
               </div>
             
           
@@ -114,6 +114,7 @@
 </li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../autodoc.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../autodoc.html#building-the-doc">Building the doc</a></li>
 </ul>
@@ -640,7 +641,7 @@ normally differ between suites.</li>
 
 <dl class="function">
 <dt id="satmo.wrappers.nrt_wrapper_l1">
-<code class="descclassname">satmo.wrappers.</code><code class="descname">nrt_wrapper_l1</code><span class="sig-paren">(</span><em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>var_list</em>, <em>data_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#nrt_wrapper_l1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.nrt_wrapper_l1" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">satmo.wrappers.</code><code class="descname">nrt_wrapper_l1</code><span class="sig-paren">(</span><em>north</em>, <em>south</em>, <em>west</em>, <em>east</em>, <em>var_list</em>, <em>data_root</em>, <em>n_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/wrappers.html#nrt_wrapper_l1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.wrappers.nrt_wrapper_l1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper to be called from nrt command line once a day</p>
 <p>Handles subscription based download of L1A files, L2 processing, computation
 of additional indices, and mapping of each individual file, separately to
@@ -656,6 +657,7 @@ longlat.</p>
 <li><strong>east</strong> (<em>float</em>) – east longitude of bounding box in DD</li>
 <li><strong>var_list</strong> (<em>list</em>) – List of additional variables to generate using l2_append</li>
 <li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
+<li><strong>n_threads</strong> (<em>int</em>) – Number of threads to use for running l2gen in parallel</li>
 </ul>
 </td>
 </tr>
@@ -935,7 +937,7 @@ auto_L3m_process function in parallel.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../autodoc.html" class="btn btn-neutral float-right" title="Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="satmo.visualization.html" class="btn btn-neutral" title="satmo.visualization module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -969,7 +971,7 @@ auto_L3m_process function in parallel.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2',
+            VERSION:'0.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -32,7 +32,8 @@ Installation and documentation
 .. toctree::
    :maxdepth: 2
 
-   autodoc 
+   install
+   autodoc
 
 
 Indices and tables

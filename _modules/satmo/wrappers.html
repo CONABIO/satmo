@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.wrappers &mdash; satmo 0.2 documentation</title>
+  <title>satmo.wrappers &mdash; satmo 0.2.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="satmo 0.2 documentation" href="../../index.html"/>
+    <link rel="top" title="satmo 0.2.1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2
+                0.2.1
               </div>
             
           
@@ -96,6 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo package</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../autodoc.html#building-the-doc">Building the doc</a></li>
 </ul>
@@ -1254,8 +1255,20 @@
                               <span class="n">mapping_resolution</span><span class="o">=</span><span class="n">mapping_resolution</span><span class="p">,</span> <span class="n">night</span><span class="o">=</span><span class="ow">not</span><span class="p">(</span><span class="n">day</span><span class="p">),</span>
                               <span class="n">proj</span><span class="o">=</span><span class="n">proj</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
+<span class="k">def</span> <span class="nf">_l2gen_safe</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">night</span><span class="p">,</span> <span class="n">get_anc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Custom function for l2gen that allows calling it in parallel on a list of L1A files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dn</span> <span class="o">=</span> <span class="s1">&#39;night&#39;</span> <span class="k">if</span> <span class="n">night</span> <span class="k">else</span> <span class="s1">&#39;day&#39;</span>
+    <span class="n">sensor</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span>
+    <span class="n">var_list</span> <span class="o">=</span> <span class="n">VARS_FROM_L2_SUITE</span><span class="p">[</span><span class="n">sensor</span><span class="p">][</span><span class="n">dn</span><span class="p">][</span><span class="n">suite</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">l2gen</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">var_list</span><span class="p">,</span> <span class="n">suite</span><span class="o">=</span><span class="n">suite</span><span class="p">,</span> <span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span>
+                    <span class="n">get_anc</span><span class="o">=</span><span class="n">get_anc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="s1">&#39;error running l2gen on </span><span class="si">%s</span><span class="s1">. </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
 
-<div class="viewcode-block" id="nrt_wrapper_l1"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.nrt_wrapper_l1">[docs]</a><span class="k">def</span> <span class="nf">nrt_wrapper_l1</span><span class="p">(</span><span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">var_list</span><span class="p">,</span> <span class="n">data_root</span><span class="p">):</span>
+<div class="viewcode-block" id="nrt_wrapper_l1"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.nrt_wrapper_l1">[docs]</a><span class="k">def</span> <span class="nf">nrt_wrapper_l1</span><span class="p">(</span><span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">var_list</span><span class="p">,</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Wrapper to be called from nrt command line once a day</span>
 
 <span class="sd">    Handles subscription based download of L1A files, L2 processing, computation</span>
@@ -1269,6 +1282,7 @@
 <span class="sd">        east (float): east longitude of bounding box in DD</span>
 <span class="sd">        var_list (list): List of additional variables to generate using l2_append</span>
 <span class="sd">        data_root (str): Root of the data archive</span>
+<span class="sd">        n_threads (int): Number of threads to use for running l2gen in parallel</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        None: The function is used for its side effect of running the L1A-download</span>
@@ -1292,15 +1306,16 @@
     <span class="n">L2_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># Remove Geo files from file_list</span>
     <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">file_list</span> <span class="k">if</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="s1">&#39;level&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;GEO&#39;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">L1_file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># TODO: Make a safe l2gen version that can be called in parallel on file_list</span>
-            <span class="n">sensor</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">L1_file</span><span class="p">)[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span>
-            <span class="n">L2_file</span> <span class="o">=</span> <span class="n">l2gen</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">L1_file</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">VARS_FROM_L2_SUITE</span><span class="p">[</span><span class="n">sensor</span><span class="p">][</span><span class="s1">&#39;day&#39;</span><span class="p">][</span><span class="s1">&#39;OC2&#39;</span><span class="p">],</span> <span class="n">suite</span><span class="o">=</span><span class="s1">&#39;OC2&#39;</span><span class="p">,</span>
-                            <span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">)</span>
-            <span class="n">L2_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L2_file</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">pprint</span><span class="p">(</span><span class="s1">&#39;Problem while generating L2 file from </span><span class="si">%s</span><span class="s1">. </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">L1_file</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="s1">&#39;OC2&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;data_root&#39;</span><span class="p">:</span> <span class="n">data_root</span><span class="p">,</span>
+              <span class="s1">&#39;night&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+              <span class="s1">&#39;get_anc&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="c1"># Run wrapper for every L1a file with // support</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">n_threads</span><span class="p">)</span>
+    <span class="n">L2_list</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_l2gen_safe</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+                             <span class="n">file_list</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">9999999</span><span class="p">)</span>
+    <span class="c1"># Clean list (may contain Nones where l2gen failed)</span>
+    <span class="n">L2_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">L2_list</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
     <span class="c1"># For each L2 file, append AFAI to netCDF file</span>
     <span class="k">for</span> <span class="n">L2_file</span> <span class="ow">in</span> <span class="n">L2_list</span><span class="p">:</span>
         <span class="n">sensor</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">L2_file</span><span class="p">)[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span>
@@ -1387,7 +1402,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2',
+            VERSION:'0.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
