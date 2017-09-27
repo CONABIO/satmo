@@ -8,5 +8,5 @@ API doc is extracted from docstrings formatted according to the `Google Style Py
 Building the doc
 -----------------
 
-To compile the documentation you must have ``sphinx``, ``sphinx_rtd_theme``, and ``satmo`` with its dependencies installed in your python environment. Once these requirements are met, checkout the ``gh-pages`` branch (``git checkout gh-pages`` if you already have a local copy of the branch, ``git checkout -b gh-pages origin/gh-pages`` otherwise), and run the ``compile-gh-doc.sh`` script.
+To compile the documentation you must have ``sphinx``, ``sphinx_rtd_theme``, and ``satmo`` with its dependencies installed in your python environment (run ``pip install -e .[all]``). Once these requirements are met, checkout the ``gh-pages`` branch (``git checkout gh-pages`` if you already have a local copy of the branch, ``git checkout -b gh-pages origin/gh-pages`` otherwise), and run the ``compile-gh-doc.sh`` script.
 Make sure all changes were commited before running that script; uncommited changes will be lost.
