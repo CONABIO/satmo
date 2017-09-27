@@ -26,7 +26,7 @@ def main(day_vars, night_vars, l1a_vars, refined, eight_day, month, data_root,
          binning_resolution, mapping_resolution, north, south, west, east,
          flags, proj, delay, n_threads):
 
-    pprint(os.environ['OCSSWROOT'])
+    pprint(os.environ['OCSSWROOT'] + '\n')
 
     def day_nrt():
         try:
