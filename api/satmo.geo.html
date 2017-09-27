@@ -182,8 +182,83 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="satmo-geo-module">
-<h1>satmo.geo module<a class="headerlink" href="#satmo-geo-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-satmo.geo">
+<span id="satmo-geo-module"></span><h1>satmo.geo module<a class="headerlink" href="#module-satmo.geo" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="satmo.geo.geo_dict_from_nc">
+<code class="descclassname">satmo.geo.</code><code class="descname">geo_dict_from_nc</code><span class="sig-paren">(</span><em>nc_file</em>, <em>proj4string=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/geo.html#geo_dict_from_nc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.geo.geo_dict_from_nc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the georeferencing parameters from a netcdf file produced with l3mapgen</p>
+<p>See <a class="reference external" href="https://oceancolor.gsfc.nasa.gov/forum/oceancolor/topic_show.pl?tid=6429">https://oceancolor.gsfc.nasa.gov/forum/oceancolor/topic_show.pl?tid=6429</a>
+for justification of the approach used in this function to retrieve the projected
+extent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nc_file</strong> (<em>str</em>) – Path to netcdf file</li>
+<li><strong>proj4string</strong> (<em>str</em>) – Optional. proj4string previously passed to l3mapgen (projection=)
+retrieved from the file metadata if not provided</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Dictionary with georeferencing parameters</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p># Given a netcdf file produced with:
+# $l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.nc resolution=1km south=26 north=40 west=-155 east=-140 projection=”+proj=laea +lat_0=33 +lon_0=-147”</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rasterio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo_dict</span> <span class="o">=</span> <span class="n">geo_dict_from_nc</span><span class="p">(</span><span class="s1">&#39;T2016292.L3B_DAY_RRS_laea.nc&#39;</span><span class="p">,</span> <span class="s2">&quot;+proj=laea +lat_0=33 +lon_0=-147&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">geo_dict</span><span class="p">)</span>
+<span class="go">{&#39;affine&#39;: Affine(1160.0, 0.0, -800596.8665952191,</span>
+<span class="go">       0.0, -1160.0, -746017.3077247943),</span>
+<span class="go"> &#39;crs&#39;: CRS({&#39;lon_0&#39;: -147, &#39;proj&#39;: &#39;laea&#39;, &#39;lat_0&#39;: 33}),</span>
+<span class="go"> &#39;height&#39;: 1361,</span>
+<span class="go"> &#39;width&#39;: 1295}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">driver</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;GTiff&#39;</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32767</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nc_con</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rrs_555</span> <span class="o">=</span> <span class="n">nc_con</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;Rrs_555&#39;</span><span class="p">][:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nc_con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;rrs_555.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">geo_dict</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">dst</span><span class="o">.</span><span class="n">write_band</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rrs_555</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">rasterio</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="satmo.geo.get_raster_meta">
+<code class="descclassname">satmo.geo.</code><code class="descname">get_raster_meta</code><span class="sig-paren">(</span><em>x</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/geo.html#get_raster_meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.geo.get_raster_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a full meta dict as required by rasterio from a nc or tiff file</p>
+<p>driver is always assigned geoTiff, and lzw tiff compression is enabled</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>str</em>) – Level L3m filename (tif or netcdf). Must comply with OC standards defined in CONVENTIONS.md</li>
+<li><strong>**kwargs</strong> – ONly one implemented: proj4string (str): OPtional, passed to geo_dict_from_nc()</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dictionary as used by rasterio</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 

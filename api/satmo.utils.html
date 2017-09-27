@@ -299,11 +299,13 @@ doc for more details</li>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>&gt; import satmo
-&gt; from datetime import datetime, time
-&gt;
-&gt; satmo.filename_builder(‘L2’, filename = ‘T2001117063500.L1A_LAC.bz2’, suite = ‘OC’, full_path = True, data_root = ‘/export/isilon/datos2/satmo2_data’)
-&gt; satmo.filename_builder(‘L2’, sensor_code = ‘T’, date = ‘1987-11-21’, time = time(6, 35, 0), suite = ‘OC’)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">filename_builder</span><span class="p">(</span><span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;T2001117063500.L1A_LAC.bz2&#39;</span><span class="p">,</span> <span class="n">suite</span> <span class="o">=</span> <span class="s1">&#39;OC&#39;</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="s1">&#39;/export/isilon/datos2/satmo2_data&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">filename_builder</span><span class="p">(</span><span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="n">sensor_code</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;1987-11-21&#39;</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">suite</span> <span class="o">=</span> <span class="s1">&#39;OC&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

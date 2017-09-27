@@ -484,11 +484,11 @@
 <span class="sd">                tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt; import satmo</span>
-<span class="sd">        &gt; from datetime import datetime, time</span>
-<span class="sd">        &gt;</span>
-<span class="sd">        &gt; satmo.filename_builder(&#39;L2&#39;, filename = &#39;T2001117063500.L1A_LAC.bz2&#39;, suite = &#39;OC&#39;, full_path = True, data_root = &#39;/export/isilon/datos2/satmo2_data&#39;)</span>
-<span class="sd">        &gt; satmo.filename_builder(&#39;L2&#39;, sensor_code = &#39;T&#39;, date = &#39;1987-11-21&#39;, time = time(6, 35, 0), suite = &#39;OC&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; import satmo</span>
+<span class="sd">        &gt;&gt;&gt; from datetime import datetime, time</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; satmo.filename_builder(&#39;L2&#39;, filename = &#39;T2001117063500.L1A_LAC.bz2&#39;, suite = &#39;OC&#39;, full_path = True, data_root = &#39;/export/isilon/datos2/satmo2_data&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; satmo.filename_builder(&#39;L2&#39;, sensor_code = &#39;T&#39;, date = &#39;1987-11-21&#39;, time = time(6, 35, 0), suite = &#39;OC&#39;)</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: a syntactically correct ocean color filename</span>

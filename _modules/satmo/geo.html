@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>satmo.geo &mdash; satmo 0.2.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Users Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>satmo.geo</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for satmo.geo</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pyproj</span>
+<span class="kn">from</span> <span class="nn">affine</span> <span class="k">import</span> <span class="n">Affine</span>
+<span class="kn">from</span> <span class="nn">rasterio.crs</span> <span class="k">import</span> <span class="n">CRS</span>
+<span class="kn">import</span> <span class="nn">rasterio</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span> <span class="k">as</span> <span class="nn">nc</span>
+<span class="kn">from</span> <span class="nn">pint</span> <span class="k">import</span> <span class="n">UnitRegistry</span>
+<span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">filename_parser</span>
+
+
+<div class="viewcode-block" id="geo_dict_from_nc"><a class="viewcode-back" href="../../api/satmo.geo.html#satmo.geo.geo_dict_from_nc">[docs]</a><span class="k">def</span> <span class="nf">geo_dict_from_nc</span><span class="p">(</span><span class="n">nc_file</span><span class="p">,</span> <span class="n">proj4string</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retrieves the georeferencing parameters from a netcdf file produced with l3mapgen</span>
+
+<span class="sd">    See https://oceancolor.gsfc.nasa.gov/forum/oceancolor/topic_show.pl?tid=6429</span>
+<span class="sd">    for justification of the approach used in this function to retrieve the projected</span>
+<span class="sd">    extent.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nc_file (str): Path to netcdf file</span>
+<span class="sd">        proj4string (str): Optional. proj4string previously passed to l3mapgen (projection=)</span>
+<span class="sd">            retrieved from the file metadata if not provided</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        Dictionary with georeferencing parameters</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        # Given a netcdf file produced with:</span>
+<span class="sd">        # $l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.nc resolution=1km south=26 north=40 west=-155 east=-140 projection=&quot;+proj=laea +lat_0=33 +lon_0=-147&quot; </span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; import rasterio</span>
+<span class="sd">        &gt;&gt;&gt; from pprint import pprint</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; geo_dict = geo_dict_from_nc(&#39;T2016292.L3B_DAY_RRS_laea.nc&#39;, &quot;+proj=laea +lat_0=33 +lon_0=-147&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; pprint(geo_dict)</span>
+<span class="sd">        {&#39;affine&#39;: Affine(1160.0, 0.0, -800596.8665952191,</span>
+<span class="sd">               0.0, -1160.0, -746017.3077247943),</span>
+<span class="sd">         &#39;crs&#39;: CRS({&#39;lon_0&#39;: -147, &#39;proj&#39;: &#39;laea&#39;, &#39;lat_0&#39;: 33}),</span>
+<span class="sd">         &#39;height&#39;: 1361,</span>
+<span class="sd">         &#39;width&#39;: 1295}</span>
+<span class="sd">        &gt;&gt;&gt; geo_dict.update(driver = u&#39;GTiff&#39;, dtype = rasterio.float32, count = 1, nodata = -32767)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; nc_con = nc.Dataset(file_path)</span>
+<span class="sd">        &gt;&gt;&gt; rrs_555 = nc_con.variables[&#39;Rrs_555&#39;][:]</span>
+<span class="sd">        &gt;&gt;&gt; nc_con.close()</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; with rasterio.open(&#39;rrs_555.tif&#39;, &#39;w&#39;, **geo_dict) as dst:</span>
+<span class="sd">        &gt;&gt;&gt;     dst.write_band(1, rrs_555.astype(rasterio.float32))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">nc</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="n">res_str</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;processing_control&#39;</span><span class="p">][</span><span class="s1">&#39;input_parameters&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resolution</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="n">res_str</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">number_of_lines</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">number_of_columns</span>
+        <span class="k">if</span> <span class="n">proj4string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">proj4string</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">map_projection</span>
+        <span class="c1"># Dictionary representation of proj4string</span>
+        <span class="n">crs</span> <span class="o">=</span> <span class="n">CRS</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">proj4string</span><span class="p">)</span>
+        <span class="c1"># sw longlat extent will be used to retrieve xmin</span>
+        <span class="n">sw_ll</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">westernmost_longitude</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">southernmost_latitude</span><span class="p">)</span>
+        <span class="c1"># Southest point of the projected extent should be at lon_0 (crs definition)/southernmost_latitude</span>
+        <span class="c1"># It is used to retrieve ymin</span>
+        <span class="n">south_center_ll</span> <span class="o">=</span> <span class="p">(</span><span class="n">crs</span><span class="p">[</span><span class="s1">&#39;lon_0&#39;</span><span class="p">],</span> <span class="n">src</span><span class="o">.</span><span class="n">southernmost_latitude</span><span class="p">)</span>
+    <span class="c1"># Define pyproj transformation object</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">proj4string</span><span class="p">)</span>
+    <span class="c1"># Convert coordinate pairs to projected CRS</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">y_dummy</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="o">*</span><span class="n">sw_ll</span><span class="p">)</span>
+    <span class="n">x_dummy</span><span class="p">,</span> <span class="n">y_min</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="o">*</span><span class="n">south_center_ll</span><span class="p">)</span>
+    <span class="n">y_max</span> <span class="o">=</span> <span class="n">y_min</span> <span class="o">+</span> <span class="n">height</span> <span class="o">*</span> <span class="n">res</span>
+    <span class="c1"># Build geo dict</span>
+    <span class="n">geo_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;affine&#39;</span><span class="p">:</span> <span class="n">Affine</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span>
+                                 <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">res</span><span class="p">,</span> <span class="n">y_max</span><span class="p">),</span>
+                <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="n">height</span><span class="p">,</span>
+                <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="n">width</span><span class="p">,</span>
+                <span class="s1">&#39;crs&#39;</span><span class="p">:</span> <span class="n">crs</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">geo_dict</span></div>
+
+<div class="viewcode-block" id="get_raster_meta"><a class="viewcode-back" href="../../api/satmo.geo.html#satmo.geo.get_raster_meta">[docs]</a><span class="k">def</span> <span class="nf">get_raster_meta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve a full meta dict as required by rasterio from a nc or tiff file</span>
+
+<span class="sd">    driver is always assigned geoTiff, and lzw tiff compression is enabled</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        x (str): Level L3m filename (tif or netcdf). Must comply with OC standards defined in CONVENTIONS.md</span>
+<span class="sd">        **kwargs: ONly one implemented: proj4string (str): OPtional, passed to geo_dict_from_nc()</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A dictionary as used by rasterio</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.nc&#39;</span><span class="p">:</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span>
+        <span class="c1"># Get spatial elements from ncdf file</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">geo_dict_from_nc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Get geophysical variable specific elements</span>
+        <span class="k">with</span> <span class="n">nc</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">nodata</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">_FillValue</span>
+        <span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">driver</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;GTiff&#39;</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nodata</span> <span class="o">=</span> <span class="n">nodata</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">meta</span>
+    <span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">compress</span><span class="o">=</span><span class="s1">&#39;lzw&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">meta</span></div>
+
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.2.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
