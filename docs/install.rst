@@ -4,9 +4,10 @@ Installation
 System setup
 ^^^^^^^^^^^^
 
-You can also 
-
 The commands with sudo have to be ran from a user account with ``sudo`` priviledges, or directly from ``root``, without sudo. Commands that **do not** start with sudo have to be ran from a normal user account. Example ``xtuser`` on CONABIO servers.
+
+Run from an account with sudo priviledges or from root without sudo
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -17,6 +18,13 @@ The commands with sudo have to be ran from a user account with ``sudo`` priviled
     sudo apt-get install python-pip git
     sudo pip install virtualenv
     sudo pip install virtualenvwrapper
+
+
+Run from the user account from which processing will be done
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+.. code-block:: bash
+
     # As the user from which satmo will be operated (e.g. xtuser)
     echo 'source /usr/local/bin/virtualenvwrapper.sh' >> ~/.bashrc
     source ~/.bashrc
@@ -43,14 +51,15 @@ Further details on installing the satmo python library can be found in the proje
 Autostart
 ^^^^^^^^^
 
-It's important to have the near real time command of the system start automatically (e.g.: after server maintenance and restart). For that, a @reboot cron task can be created. See the explanations below. 
+It may be required to have the near real time mode of the system starting automatically on system startup, hence avoiding having to restart it manually after every system reboot, maintenance, etc.S For that, a @reboot cron task can be created. See the explanations below.
 
 .. code-block:: bash
     
     # As xtuser, enter crontab edit mode by running:
     crontab -e
     # And add the following line to the file
-    @reboot . ~/.profile; /home/xtuser/.virtualenvs/satmo/bin/satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi 3 > /home/xtuser/nrt_log.log &
+    @reboot . ~/.profile; . /data/ocssw/OCSSW_bash.env; /home/xtuser/.virtualenvs/satmo/bin/satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi 3 > /home/xtuser/nrt_log.log &
 
+This crontab entry will run the ``satmo_nrt.py`` command on system startup, with the defined parameters.
 
 .. _travis file: https://github.com/CONABIO/satmo/blob/master/.travis.yml
