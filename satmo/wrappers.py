@@ -742,7 +742,7 @@ def bin_map_wrapper(date, sensor_codes, south, north, west, east, data_root,
             # Get final list of variables
             var_dict = {}
             for l3_suite in l3_suites:
-                var_dict[l3_suite] = list(set(day_vars).intersection(STANDARD_L3_SUITES[l3_suite][sensor]))
+                var_dict[l3_suite] = list(set(night_vars).intersection(STANDARD_L3_SUITES[l3_suite][sensor]))
             # For each suite
             for suite in l3_suites:
                 if var_dict[suite]: # Check that list is not empty
