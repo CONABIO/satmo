@@ -298,8 +298,8 @@ def filename_builder(level, climatology = False, anomaly = False, full_path = Fa
             
             sensor_code (str): e.g.: 'A', 'V', 'X'
             
-            date (datetime.datetime or str). IN the case of climatologies the year is ignored so that '1970-05-01' can
-                be specified for example
+            date (datetime.datetime or str): IN the case of climatologies the year is ignored so that '1970-05-01' can
+            be specified for example
             
             time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))
             
@@ -316,7 +316,7 @@ def filename_builder(level, climatology = False, anomaly = False, full_path = Fa
             end_year (int or str): for climatologies, see CONVENTIONS.md
             
             nc (bool): Should extension be '.nc' (instead of '.tif') (Only useful for L3m level, to distinguish between
-                tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
+            tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
 
     Examples:
         >>> import satmo
