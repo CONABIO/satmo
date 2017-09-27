@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.processors &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.processors &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -189,11 +189,11 @@
     <span class="sd">&quot;&quot;&quot;Generate geotiff from L3m netcdf array</span>
 
 <span class="sd">    Reads an existing array from a netcdf file and writes it</span>
-<span class="sd">    with georeference as tif</span>
+<span class="sd">    with georeference as tiff</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file (str): Path to the netcdf file containing the desired array</span>
-<span class="sd">        proj4string (str): Coordinate reference system (opional, see geo_dict_from_nc)</span>
+<span class="sd">        proj4string (str): Coordinate reference system (optional, see geo_dict_from_nc)</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The function is used for its side effect of writing a geotiff on</span>
@@ -254,9 +254,9 @@
     <span class="sd">&quot;&quot;&quot;Class to compose multiple raster files into one (with methods inherited</span>
 <span class="sd">    from the Composer class), and write the output to a file</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        Typically designed to produce composites from L3m files.</span>
-<span class="sd">        Can be used with single band geoTiff or single band netcdf files</span>
+
+<span class="sd">    Typically designed to produce composites from L3m files.</span>
+<span class="sd">    Can be used with single band geoTiff or single band netcdf files</span>
 
 <span class="sd">    Example usage:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
@@ -271,10 +271,9 @@
     <span class="k">def</span> <span class="nf">_read_masked_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Util function to read a single layer raster file as masked np array</span>
 
-<span class="sd">        Note:</span>
-<span class="sd">            The &#39;masked&#39; part has been removed when input is a geotiff (most</span>
-<span class="sd">            likely produced by the binning function), rasterio reads cells flagged as</span>
-<span class="sd">            nodata as np.nan in a geotiff by default.</span>
+<span class="sd">        The &#39;masked&#39; part has been removed when input is a geotiff (most</span>
+<span class="sd">        likely produced by the binning function), rasterio reads cells flagged as</span>
+<span class="sd">        nodata as np.nan in a geotiff by default.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file (str): Input file name</span>
@@ -295,7 +294,7 @@
         <span class="sd">&quot;&quot;&quot;Read the COMPOSITING_META tag of the input files</span>
 
 <span class="sd">        Because input of the compositing method may be composites too, the idea</span>
-<span class="sd">            enable propagation of these compositing metadata.</span>
+<span class="sd">        enable propagation of these compositing metadata.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file (str): Input file name</span>
@@ -347,30 +346,30 @@
     <span class="sd">&quot;&quot;&quot; Class to produce daily gridded data for a given date/variable from L2 files</span>
 
 <span class="sd">    The class is instantiated with a list of L2 files. The methods give the option to</span>
-<span class="sd">        processed new variables from reflectance layers present in the L2 file, extract an existing</span>
-<span class="sd">        one, mask the invalid observations and bin the resulting cleaned variable to a regular grid.</span>
-<span class="sd">        All the methods of this class are exposed in the L3mProcess class so</span>
-<span class="sd">        that there shouldn&#39;t be any need to use this class directly.</span>
+<span class="sd">    processed new variables from reflectance layers present in the L2 file, extract an existing</span>
+<span class="sd">    one, mask the invalid observations and bin the resulting cleaned variable to a regular grid.</span>
+<span class="sd">    All the methods of this class are exposed in the L3mProcess class so</span>
+<span class="sd">    that there shouldn&#39;t be any need to use this class directly.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_list (list): List of L2 files (they should all belong to the same collection/day/etc)</span>
 <span class="sd">        qual_array (str): Name of the quality array (named qual_prod in l2bin documentation)</span>
 <span class="sd">            Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.</span>
 <span class="sd">            Defaults to None.</span>
-<span class="sd">        var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive</span>
+<span class="sd">        var (str): Optional name of variable to bin. Use when binning a variable that is already present in the archive</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        file_list: list of strings (the pathnames of individual L2 files)</span>
-<span class="sd">        lon_dd: 1D Np array containing longitude coordinates</span>
-<span class="sd">        lat_dd: 1D Np array containing latitude coordinates</span>
-<span class="sd">        flag_array: 1D np array containing flag values</span>
-<span class="sd">        qual_array: 1D np array containing pixel quality information (higher values</span>
+<span class="sd">        file_list (list): list of strings (the pathnames of individual L2 files)</span>
+<span class="sd">        lon_dd (np.array): 1D Np array containing longitude coordinates</span>
+<span class="sd">        lat_dd (np.array): 1D Np array containing latitude coordinates</span>
+<span class="sd">        flag_array (np.array): 1D np array containing flag values</span>
+<span class="sd">        qual_array (np.array): 1D np array containing pixel quality information (higher values</span>
 <span class="sd">            mean lower quality)</span>
-<span class="sd">        var_array: 1D np array containing variable to bin</span>
-<span class="sd">        output_array: a 2D np array containing binned variable</span>
-<span class="sd">        geo_dict: A dictionary used to write the output_array using rasterio</span>
+<span class="sd">        var_array (np.array): 1D np array containing variable to bin</span>
+<span class="sd">        output_array (np.array): a 2D np array containing binned variable</span>
+<span class="sd">        geo_dict (dict): A dictionary used to write the output_array using rasterio</span>
 
-<span class="sd">    Exemples:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
 
 <span class="sd">        &gt;&gt;&gt; # Instantiate class using factory classmethod</span>
@@ -424,7 +423,7 @@
 <span class="sd">            qual_array (str): Name of the quality array (named qual_prod in l2bin documentation)</span>
 <span class="sd">                Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive</span>
+<span class="sd">            var (str): Optional name of variable to bin. Use when binning a variable that is already present in the archive</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">file_list</span> <span class="o">=</span> <span class="n">file_finder</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="n">suite</span> <span class="o">=</span> <span class="n">suite</span><span class="p">,</span> <span class="n">sensor_code</span> <span class="o">=</span> <span class="n">sensor_code</span><span class="p">)</span>
         <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">file_list</span> <span class="k">if</span> <span class="n">is_day</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">day</span><span class="p">]</span>
@@ -447,8 +446,7 @@
             <span class="n">out</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;geophysical_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">][:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">out</span>
     <span class="k">def</span> <span class="nf">_read_band_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Utility to read a variable as a flattened numpy array from all files</span>
-<span class="sd">            contained in self.file_list</span>
+        <span class="sd">&quot;&quot;&quot;Utility to read a variable as a flattened numpy array from all files contained in self.file_list</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            var (str): Name of a variable present in all the netcdf files of</span>
@@ -500,8 +498,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">var_array</span> <span class="o">=</span> <span class="n">x</span></div>
 
 <div class="viewcode-block" id="BasicBinMap.apply_mask"><a class="viewcode-back" href="../../api/satmo.processors.html#satmo.processors.BasicBinMap.apply_mask">[docs]</a>    <span class="k">def</span> <span class="nf">apply_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bit_mask</span> <span class="o">=</span> <span class="mh">0x0669D73B</span><span class="p">,</span> <span class="n">max_qual</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Method to mask data using information from the flag array. And optionally</span>
-<span class="sd">            the mask array (named qual_prod in l2bin documentation)</span>
+        <span class="sd">&quot;&quot;&quot;Method to mask data using information from the flag array. And optionally the mask array (named qual_prod in l2bin documentation)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            bit_mask (int): The mask to use for selecting active flags from the flag array</span>
@@ -514,50 +511,91 @@
 <span class="sd">                0, 1, 2 correspond to best, good, acceptable. Any value higher than that is bad</span>
 <span class="sd">                Only applies if qual_array is not None during the class instantiation.</span>
 
-<span class="sd">        Details:</span>
-<span class="sd">            Below the table of flag signification for modis, viirs and seawifs</span>
+<span class="sd">        Below the table of flag signification for modis, viirs and seawifs</span>
 
-<span class="sd">            | Flag Name Modis/viirs | Flag Name Seawifs | Bit number |</span>
-<span class="sd">            |=======================|===================|============|</span>
-<span class="sd">            | ATMFAIL               | ATMFAIL           |          0 |</span>
-<span class="sd">            | LAND                  | LAND              |          1 |</span>
-<span class="sd">            | PRODWARN              | PRODWARN          |          2 |</span>
-<span class="sd">            | HIGLINT               | HIGLINT           |          3 |</span>
-<span class="sd">            | HILT                  | HILT              |          4 |</span>
-<span class="sd">            | HISATZEN              | HISATZEN          |          5 |</span>
-<span class="sd">            | COASTZ                | COASTZ            |          6 |</span>
-<span class="sd">            | SPARE                 | SPARE             |          7 |</span>
-<span class="sd">            | STRAYLIGHT            | STRAYLIGHT        |          8 |</span>
-<span class="sd">            | CLDICE                | CLDICE            |          9 |</span>
-<span class="sd">            | COCCOLITH             | COCCOLITH         |         10 |</span>
-<span class="sd">            | TURBIDW               | TURBIDW           |         11 |</span>
-<span class="sd">            | HISOLZEN              | HISOLZEN          |         12 |</span>
-<span class="sd">            | SPARE                 | SPARE             |         13 |</span>
-<span class="sd">            | LOWLW                 | LOWLW             |         14 |</span>
-<span class="sd">            | CHLFAIL               | CHLFAIL           |         15 |</span>
-<span class="sd">            | NAVWARN               | NAVWARN           |         16 |</span>
-<span class="sd">            | ABSAER                | ABSAER            |         17 |</span>
-<span class="sd">            | SPARE                 | SPARE             |         18 |</span>
-<span class="sd">            | MAXAERITER            | MAXAERITER        |         19 |</span>
-<span class="sd">            | MODGLINT              | MODGLINT          |         20 |</span>
-<span class="sd">            | CHLWARN               | CHLWARN           |         21 |</span>
-<span class="sd">            | ATMWARN               | ATMWARN           |         22 |</span>
-<span class="sd">            | SPARE                 | SPARE             |         23 |</span>
-<span class="sd">            | SEAICE                | SEAICE            |         24 |</span>
-<span class="sd">            | NAVFAIL               | NAVFAIL           |         25 |</span>
-<span class="sd">            | FILTER                | FILTER            |         26 |</span>
-<span class="sd">            | SPARE                 | SPARE             |         27 |</span>
-<span class="sd">            | BOWTIEDEL             | SPARE             |         28 |</span>
-<span class="sd">            | HIPOL                 | HIPOL             |         29 |</span>
-<span class="sd">            | PRODFAIL              | PRODFAIL          |         30 |</span>
-<span class="sd">            | SPARE                 | SPARE             |         31 |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | Flag Name Modis/viirs   | Flag Name Seawifs   | Bit number   |</span>
+<span class="sd">        +=========================+=====================+==============+</span>
+<span class="sd">        | ATMFAIL                 | ATMFAIL             | 0            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | LAND                    | LAND                | 1            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | PRODWARN                | PRODWARN            | 2            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | HIGLINT                 | HIGLINT             | 3            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | HILT                    | HILT                | 4            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | HISATZEN                | HISATZEN            | 5            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | COASTZ                  | COASTZ              | 6            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | SPARE                   | SPARE               | 7            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | STRAYLIGHT              | STRAYLIGHT          | 8            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | CLDICE                  | CLDICE              | 9            |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | COCCOLITH               | COCCOLITH           | 10           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | TURBIDW                 | TURBIDW             | 11           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | HISOLZEN                | HISOLZEN            | 12           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | SPARE                   | SPARE               | 13           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | LOWLW                   | LOWLW               | 14           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | CHLFAIL                 | CHLFAIL             | 15           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | NAVWARN                 | NAVWARN             | 16           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | ABSAER                  | ABSAER              | 17           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | SPARE                   | SPARE               | 18           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | MAXAERITER              | MAXAERITER          | 19           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | MODGLINT                | MODGLINT            | 20           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | CHLWARN                 | CHLWARN             | 21           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | ATMWARN                 | ATMWARN             | 22           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | SPARE                   | SPARE               | 23           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | SEAICE                  | SEAICE              | 24           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | NAVFAIL                 | NAVFAIL             | 25           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | FILTER                  | FILTER              | 26           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | SPARE                   | SPARE               | 27           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | BOWTIEDEL               | SPARE               | 28           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | HIPOL                   | HIPOL               | 29           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | PRODFAIL                | PRODFAIL            | 30           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
+<span class="sd">        | SPARE                   | SPARE               | 31           |</span>
+<span class="sd">        +-------------------------+---------------------+--------------+</span>
 
-<span class="sd">            Default l2bin mask values for:</span>
-<span class="sd">                General: 0x669d73b (includes Chlorophyl algorithms, Rrs, etc)</span>
-<span class="sd">                FLH: 0x679d73f</span>
-<span class="sd">                PAR: 0x600000a</span>
-<span class="sd">                SST: 0x1002</span>
-<span class="sd">                NSST/SST4: 0x2</span>
+<span class="sd">        Default l2bin mask values for:</span>
+
+<span class="sd">            +----------------------------------------------------+------------+</span>
+<span class="sd">            | suite                                              | mask value |</span>
+<span class="sd">            +====================================================+============+</span>
+<span class="sd">            | General (includes Chlorophyl algorithms, Rrs, etc) | 0x669d73b  |</span>
+<span class="sd">            +----------------------------------------------------+------------+</span>
+<span class="sd">            | FLH                                                | 0x679d73f  |</span>
+<span class="sd">            +----------------------------------------------------+------------+</span>
+<span class="sd">            | PAR                                                | 0x600000a  |</span>
+<span class="sd">            +----------------------------------------------------+------------+</span>
+<span class="sd">            | SST                                                | 0x1002     |</span>
+<span class="sd">            +----------------------------------------------------+------------+</span>
+<span class="sd">            | NSST/SST4                                          | 0x2        |</span>
+<span class="sd">            +----------------------------------------------------+------------+</span>
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -578,7 +616,7 @@
         <span class="sd">&quot;&quot;&quot;Method for binning data to a defined grid</span>
 
 <span class="sd">        A grid is defined by its extent (north, south, east, west), resolution, and</span>
-<span class="sd">            projection (proj4string).</span>
+<span class="sd">        projection (proj4string).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            south (float): Southern border of output extent (in DD)</span>
@@ -654,9 +692,10 @@
 
 
 <div class="viewcode-block" id="L3mProcess"><a class="viewcode-back" href="../../api/satmo.processors.html#satmo.processors.L3mProcess">[docs]</a><span class="k">class</span> <span class="nc">L3mProcess</span><span class="p">(</span><span class="n">BasicBinMap</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class to put the functions to compute, inherits from BasicBinMap so that</span>
-<span class="sd">        computing a new variable from reflectance bands is an optional step before</span>
-<span class="sd">        binning</span>
+    <span class="sd">&quot;&quot;&quot;Class to put the functions to compute</span>
+
+<span class="sd">    inherits from BasicBinMap so that computing a new variable from reflectance bands is an optional step before</span>
+<span class="sd">    binning</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
@@ -679,7 +718,7 @@
 <span class="sd">        &gt;&gt;&gt; bin_class.bin_to_grid(south = 3, north = 33, west = -122, east = -72,</span>
 <span class="sd">                                  resolution = 2000, proj4string = &quot;+proj=laea +lat_0=20 +lon_0=-100&quot;)</span>
 
-<span class="sd">        &gt;&gt;&gt; # Write grid with binned data to a georeferenced file</span>
+<span class="sd">        &gt;&gt;&gt; # Write grid with binned data to a geo-referenced file</span>
 <span class="sd">        &gt;&gt;&gt; bin_class.to_file(&#39;/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_list</span><span class="p">,</span> <span class="n">qual_array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -688,16 +727,16 @@
 <div class="viewcode-block" id="L3mProcess.calc"><a class="viewcode-back" href="../../api/satmo.processors.html#satmo.processors.L3mProcess.calc">[docs]</a>    <span class="k">def</span> <span class="nf">calc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band_list</span><span class="p">,</span> <span class="n">fun</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generic band math method</span>
 
-<span class="sd">        Applies an abitrary function to a set of arrays present in the netcdf</span>
+<span class="sd">        Applies an arbitrary function to a set of arrays present in the netcdf</span>
 <span class="sd">        file.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            band_list (list): A list of bands/variables present in the file</span>
 <span class="sd">                (e.g.: [&#39;Rrs_555&#39;, &#39;Rrs_645&#39;])</span>
 <span class="sd">            fun (function): A function that takes len(band_list) arguments (all</span>
-<span class="sd">            them must be numpy array of the same dimension) performs some</span>
-<span class="sd">            element wise calculation on them and returns a single numpy array</span>
-<span class="sd">            with the same dimension than each input array.</span>
+<span class="sd">                them must be numpy array of the same dimension) performs some</span>
+<span class="sd">                element wise calculation on them and returns a single numpy array</span>
+<span class="sd">                with the same dimension than each input array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Read the bands from band_list with a list comprehension</span>
         <span class="n">array_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_band_all</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">band_list</span><span class="p">]</span>
@@ -709,16 +748,15 @@
           <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run l2bin for a list of L2 files</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        This is a simple no filter python wrapper around the seadas l2bin utility.</span>
+<span class="sd">    This is a simple no filter python wrapper around the seadas l2bin utility.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_list (list): list of L2 files (full paths)</span>
 <span class="sd">        L3b_suite (str): Product suite to bin (see global variable STANDARD_L3_SUITES</span>
 <span class="sd">            for corresponding variables)</span>
 <span class="sd">        var_list (list): Optional list of variables to include in the produced L3b file.</span>
-<span class="sd">            If None (default but not recommanded), a list of standard variables is</span>
-<span class="sd">            retrieved fom the global variable (STANDARD_L3_SUITES)</span>
+<span class="sd">            If None (default but not recommended), a list of standard variables is</span>
+<span class="sd">            retrieved from the global variable (STANDARD_L3_SUITES)</span>
 <span class="sd">        resolution (int or str): See resolve argument in l2bin doc</span>
 <span class="sd">        night (bool): Is that night products</span>
 <span class="sd">        filename (str): Optional full path of output filename (L3b). If not provided, a</span>
@@ -734,7 +772,7 @@
 <span class="sd">        str: The output filename</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        satmo.SeadasError if the seadas command exists with status 1</span>
+<span class="sd">        satmo.SeadasError: if the seadas command exists with status 1</span>
 
 <span class="sd">    Example usage:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo, glob</span>
@@ -813,7 +851,7 @@
 <span class="sd">        str: The output filename</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        satmo.SeadasError if the seadas command exists with status 1</span>
+<span class="sd">        satmo.SeadasError: if the seadas command exists with status 1</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection=&quot;+proj=laea +lat_0=33 +lon_0=-147&quot;</span>
     <span class="n">input_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -873,16 +911,15 @@
 <span class="sd">        sensor_code (str): Sensor to composite (defaults to &#39;X&#39;, which</span>
 <span class="sd">            corresponds to daily (cross sensors) composites.</span>
 <span class="sd">        fun (str): compositing function, defaults to mean</span>
-<span class="sd">        filename (str): Optional output filename. Autogenerated if not provided</span>
+<span class="sd">        filename (str): Optional output filename. Auto generated if not provided</span>
 <span class="sd">        overwrite (bool): Should output file be overwritten if it already</span>
 <span class="sd">            exists.</span>
 <span class="sd">        preview (bool): Should a png preview be automatically generated</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        The filename of the produced file or if no file is produced (because no</span>
-<span class="sd">            input files were found, the function exits without return value.</span>
-<span class="sd">            When automatically generated the date of the composite corresponds to</span>
-<span class="sd">            the first day of the composite.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The filename of the produced file.</span>
+<span class="sd">        In case no file is produced (because no input files were found, the function exits without return value.</span>
+<span class="sd">        When automatically generated the date of the composite corresponds to the first day of the composite.</span>
 
 <span class="sd">    Example usage:</span>
 <span class="sd">        &gt;&gt;&gt; import datetime</span>
@@ -953,9 +990,8 @@
 <span class="sd">        valid_min (float): Valid minimum value</span>
 <span class="sd">        valid_max (float): Valid maximum value</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        None: The function is used for its side effect of appending a new variable</span>
-<span class="sd">            to an existing netCDF file.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The function is used for its side effect of appending a new variable to an existing netCDF file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">nc</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
         <span class="n">geo</span> <span class="o">=</span> <span class="n">src</span><span class="p">[</span><span class="s1">&#39;geophysical_data&#39;</span><span class="p">]</span>
@@ -983,7 +1019,7 @@
 <span class="sd">        data_root (str): Root of the data archive</span>
 <span class="sd">        width (int): Width in pixels of the output image</span>
 <span class="sd">        outmode (str): See seadas l2mapgen doc</span>
-<span class="sd">        threshold (float): Minumum percentage of the filled pixels</span>
+<span class="sd">        threshold (float): Minimum percentage of the filled pixels</span>
 <span class="sd">        overwrite (bool): Overwrite existing files? Return ValueError if file exists</span>
 <span class="sd">            and overwrite is set to False (default)</span>
 
@@ -1066,18 +1102,6 @@
 <span class="sd">        str: The output filename. Mostly used for its side effects of generating</span>
 <span class="sd">            a L3b temporal composite file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Need to find a smart way to build output filename from inputs</span>
-    <span class="c1">#   - Maybe asking for begin date of the composite in args</span>
-    <span class="c1">#   - Modify filename_builder ?</span>
-    <span class="c1">#   - Deal with it only in l3bin_wrapper... and ask for filename here</span>
-    <span class="c1"># Write file list to text file</span>
-    <span class="c1"># l3bin suite logique should be:</span>
-        <span class="c1"># l3bin: list of input files and filename need to be provided</span>
-        <span class="c1"># l3bin_wrapper: Take a list of dates, and a list of suites</span>
-        <span class="c1"># l3bin_map_wrapper: take a list of dates and a list of variables</span>
-        <span class="c1"># l3bin_map_batcher: begin, end, delta and list of variables</span>
-    <span class="c1"># TODO: Verify this overwrite logic, I have a doubt (taken fron l2bin, and probably used in many</span>
-        <span class="c1"># more utils</span>
     <span class="n">output_meta</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">):</span>
         <span class="n">L3b_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -1109,7 +1133,7 @@
 
 <div class="viewcode-block" id="l3bin_wrapper"><a class="viewcode-back" href="../../api/satmo.processors.html#satmo.processors.l3bin_wrapper">[docs]</a><span class="k">def</span> <span class="nf">l3bin_wrapper</span><span class="p">(</span><span class="n">sensor_codes</span><span class="p">,</span> <span class="n">date_list</span><span class="p">,</span> <span class="n">suite_list</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">north</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">composite</span><span class="p">,</span>
                   <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapper to run l3bin without having to name explicitely input or output files</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper to run l3bin without having to name explicitly input or output files</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        sensor_codes (list): List of sensor codes to include (e.g.: [&#39;A&#39;, &#39;T&#39;, &#39;V&#39;]</span>
@@ -1185,7 +1209,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

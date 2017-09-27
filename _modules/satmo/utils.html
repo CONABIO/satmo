@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.utils &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.utils &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -186,39 +186,41 @@
     <span class="sd">&quot;&quot;&quot;File parser for ocean color products</span>
 
 <span class="sd">    Extract metadata information from a typical ocean color file name</span>
+<span class="sd">    </span>
+<span class="sd">    The parser will probably fail for the following products:</span>
+<span class="sd">        * L0</span>
+<span class="sd">        * Sentinel 3</span>
+<span class="sd">        * Meris for levels lower than L2</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filename (str): String containing an ocean color file filename</span>
 <span class="sd">        raiseError (bool): Behavior when no valid pattern is found.</span>
-<span class="sd">        True (default) returns a ValueError, false returns a dictionnaries of</span>
+<span class="sd">        True (default) returns a ValueError, false returns a dictionaries of</span>
 <span class="sd">            Nones</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        The parser will probably fail for the following products:</span>
-<span class="sd">        - L0</span>
-<span class="sd">        - Sentinel 3</span>
-<span class="sd">        - Meris for levels lower than L2</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A dictionnary with the following keys:</span>
-<span class="sd">        sensor (str)</span>
-<span class="sd">        sensor_code (str)</span>
-<span class="sd">        date (datetime.date)</span>
-<span class="sd">        time (datetime.time)</span>
-<span class="sd">        year (int)</span>
-<span class="sd">        month (int)</span>
-<span class="sd">        doy (int)</span>
-<span class="sd">        dom (int)</span>
-<span class="sd">        level (str)</span>
-<span class="sd">        filename (str)</span>
-<span class="sd">        climatology (bool)</span>
-<span class="sd">        anomaly (bool)</span>
-<span class="sd">        resolution (str)</span>
-<span class="sd">        variable (str)</span>
-<span class="sd">        suite (str)</span>
-<span class="sd">        composite (str) e.g.: DAY, 8DAY, ...</span>
-<span class="sd">        begin_year (int) (for climatologies only)</span>
-<span class="sd">        end_year (int) (for climatologies only)</span>
+<span class="sd">        dict: A dictionary with the following keys::</span>
+
+<span class="sd">            sensor (str)</span>
+<span class="sd">            sensor_code (str)</span>
+<span class="sd">            date (datetime.date)</span>
+<span class="sd">            time (datetime.time)</span>
+<span class="sd">            year (int)</span>
+<span class="sd">            month (int)</span>
+<span class="sd">            doy (int)</span>
+<span class="sd">            dom (int)</span>
+<span class="sd">            level (str)</span>
+<span class="sd">            filename (str)</span>
+<span class="sd">            climatology (bool)</span>
+<span class="sd">            anomaly (bool)</span>
+<span class="sd">            resolution (str)</span>
+<span class="sd">            variable (str)</span>
+<span class="sd">            suite (str)</span>
+<span class="sd">            composite (str) e.g.: DAY, 8DAY, ...</span>
+<span class="sd">            begin_year (int) (for climatologies only)</span>
+<span class="sd">            end_year (int) (for climatologies only)</span>
+<span class="sd">        </span>
 <span class="sd">        Key values are set to None when not applicable</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pattern_0</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;sensor_code&gt;CLIM\.|ANOM\.|[A-Z]</span><span class="si">{1}</span><span class="s1">)(?P&lt;time_info&gt;\d</span><span class="si">{3}</span><span class="s1">\.|\d</span><span class="si">{7}</span><span class="s1">\.|\d</span><span class="si">{13}</span><span class="s1">\.)(?P&lt;level&gt;L0|L1A|L1B|GEO|GEO-M|L2|L2m|L3b|L3m)_.*&#39;</span><span class="p">)</span>
@@ -432,51 +434,56 @@
 
 <div class="viewcode-block" id="filename_builder"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.filename_builder">[docs]</a><span class="k">def</span> <span class="nf">filename_builder</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">climatology</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">anomaly</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">data_root</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Utility to build valid ocean color filenames for every level</span>
+<span class="sd">    </span>
+<span class="sd">    Each level= chosen requires different kwargs.</span>
+
+<span class="sd">    &#39;L2&#39;: filename and suite OR sensor_code, suite, date, and time</span>
+
+<span class="sd">    &#39;L3b&#39;: filename, composite and suite OR sensor_code, date, composite, suite</span>
+
+<span class="sd">    &#39;L3m&#39; climatology: (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;L3m&#39; anomaly: filename OR date, composite, suite, variable, resolution</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;L3m&#39;: filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        Positional arguments:</span>
-<span class="sd">            level (str): the data level of the desired filename</span>
-<span class="sd">        keywork arguments:</span>
-<span class="sd">            climatology (bool): Does the filename correspond to climatology data</span>
-<span class="sd">            anomaly (bool): Does the filename correspond to anomaly data</span>
-<span class="sd">            full_path (bool): Should file path be computed (using path_builder)</span>
-<span class="sd">            data_root (str): To be used in combination with full_path = True, see path_builder()</span>
-<span class="sd">                doc for more details</span>
-<span class="sd">        kwargs:</span>
-<span class="sd">            General kwargs:</span>
-<span class="sd">                None</span>
+<span class="sd">        level (str): the data level of the desired filename</span>
+<span class="sd">        climatology (bool): Does the filename correspond to climatology data</span>
+<span class="sd">        anomaly (bool): Does the filename correspond to anomaly data</span>
+<span class="sd">        full_path (bool): Should file path be computed (using path_builder)</span>
+<span class="sd">        data_root (str): To be used in combination with full_path = True, see path_builder()</span>
+<span class="sd">            doc for more details</span>
+<span class="sd">        **kwargs:</span>
 <span class="sd">            level specific kwargs (See details section to know which kwargs are required for each chosen level):</span>
-<span class="sd">                filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)</span>
-<span class="sd">                suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)</span>
-<span class="sd">                sensor_code (str): e.g.: &#39;A&#39;, &#39;V&#39;, &#39;X&#39;</span>
-<span class="sd">                date (datetime.datetime or str). IN the case of climatologies the year is ignored so that &#39;1970-05-01&#39; can</span>
+
+<span class="sd">            filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)</span>
+<span class="sd">            </span>
+<span class="sd">            suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)</span>
+<span class="sd">            </span>
+<span class="sd">            sensor_code (str): e.g.: &#39;A&#39;, &#39;V&#39;, &#39;X&#39;</span>
+<span class="sd">            </span>
+<span class="sd">            date (datetime.datetime or str). IN the case of climatologies the year is ignored so that &#39;1970-05-01&#39; can</span>
 <span class="sd">                be specified for example</span>
-<span class="sd">                time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))</span>
-<span class="sd">                doy (str or int): Day of the year</span>
-<span class="sd">                composite (str): e.g. DAY, 8DAY, 16DAY, etc</span>
-<span class="sd">                variable (str)</span>
-<span class="sd">                resolution (str): e.g. &#39;1km&#39;</span>
-<span class="sd">                begin_year (int or str): for climatologies, see CONVENTIONS.md</span>
-<span class="sd">                end_year (int or str): for climatologies, see CONVENTIONS.md</span>
-<span class="sd">                nc (bool): Should extension be &#39;.nc&#39; (instead of &#39;.tif&#39;) (Only useful for L3m level, to distinguish between</span>
-<span class="sd">                    tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</span>
+<span class="sd">            </span>
+<span class="sd">            time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))</span>
+<span class="sd">            </span>
+<span class="sd">            doy (str or int): Day of the year</span>
+<span class="sd">            </span>
+<span class="sd">            composite (str): e.g. DAY, 8DAY, 16DAY, etc</span>
+<span class="sd">            </span>
+<span class="sd">            variable (str)</span>
+<span class="sd">            </span>
+<span class="sd">            resolution (str): e.g. &#39;1km&#39;</span>
+<span class="sd">            </span>
+<span class="sd">            begin_year (int or str): for climatologies, see CONVENTIONS.md</span>
+<span class="sd">            </span>
+<span class="sd">            end_year (int or str): for climatologies, see CONVENTIONS.md</span>
+<span class="sd">            </span>
+<span class="sd">            nc (bool): Should extension be &#39;.nc&#39; (instead of &#39;.tif&#39;) (Only useful for L3m level, to distinguish between</span>
+<span class="sd">                tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</span>
 
-
-<span class="sd">    Details:</span>
-<span class="sd">        Each level= chosen requires different kwargs.</span>
-<span class="sd">        &#39;L2&#39;:</span>
-<span class="sd">            filename and suite OR sensor_code, suite, date, and time</span>
-<span class="sd">        &#39;L3b&#39;:</span>
-<span class="sd">            filename, composite and suite OR sensor_code, date, composite, suite</span>
-<span class="sd">        &#39;L3m&#39; climatology:</span>
-<span class="sd">            (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter</span>
-<span class="sd">            # TODO: There could be a problem with the leap year when using date</span>
-<span class="sd">        &#39;L3m&#39; anomaly:</span>
-<span class="sd">            filename OR date, composite, suite, variable, resolution</span>
-<span class="sd">        &#39;L3m&#39;:</span>
-<span class="sd">            filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)</span>
-
-<span class="sd">    Example usage:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt; import satmo</span>
 <span class="sd">        &gt; from datetime import datetime, time</span>
 <span class="sd">        &gt;</span>
@@ -484,7 +491,7 @@
 <span class="sd">        &gt; satmo.filename_builder(&#39;L2&#39;, sensor_code = &#39;T&#39;, date = &#39;1987-11-21&#39;, time = time(6, 35, 0), suite = &#39;OC&#39;)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: a syntactically ocean color filename</span>
+<span class="sd">        str: a syntactically correct ocean color filename</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DATA_LEVELS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid level set&quot;</span><span class="p">)</span>
@@ -662,7 +669,9 @@
 <div class="viewcode-block" id="path_finder"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.path_finder">[docs]</a><span class="k">def</span> <span class="nf">path_finder</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">sensor_code</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">composite</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">anomaly</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">climatology</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">search</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Builds and find existing paths from meta information</span>
 
-<span class="sd">    Builds a pseudo path name using provided metadata and runs glob.glob on it</span>
+<span class="sd">    Builds a pseudo path name using provided metadata and runs glob.glob on it.</span>
+
+<span class="sd">    If composite or anomaly is True, you only need to provide composite and date</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data_root (str): Root of the data archive</span>
@@ -675,11 +684,8 @@
 <span class="sd">        search (bool): Should the function return the output of glob.glob() on the generated. Otherwise the glob pattern</span>
 <span class="sd">            itself is returned. Defaults to True</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        if composite or anomaly is True, you only need to provide composite and date</span>
-
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of existing paths matching the &#39;query&#39;</span>
+<span class="sd">        list: A list of existing paths matching the &#39;query&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -708,10 +714,16 @@
     <span class="sd">&quot;&quot;&quot;Finds existing files on the system from meta information (date, level, variable, sensor_code, ...)</span>
 
 <span class="sd">    Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly</span>
-<span class="sd">    targetted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:</span>
-<span class="sd">        - list all L2 files required to produce a L3b binned product (don&#39;t forget filtering using isDay() as well)</span>
-<span class="sd">        - list all L3m files from a same date but from different sensors in order to produce cross sensor composites</span>
+<span class="sd">    targeted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:</span>
+<span class="sd">        * list all L2 files required to produce a L3b binned product (don&#39;t forget filtering using isDay() as well)</span>
+<span class="sd">        * list all L3m files from a same date but from different sensors in order to produce cross sensor composites</span>
 
+<span class="sd">    Required arguments differ depending on the level set. See list below:</span>
+<span class="sd">        * &#39;L1A&#39;: data_root, date, level, (sensor_code)</span>
+<span class="sd">        * &#39;L2&#39;: data_root, date, level, suite, (sensor_code)</span>
+<span class="sd">        * &#39;L3m&#39;: data_root, date, level, suite, variable, (sensor_code), resolution, composite</span>
+<span class="sd">        * &#39;L3b&#39;: data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite</span>
+<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        data_root (str): Root of the data archive</span>
 <span class="sd">        date (str or datetime): Date of the directory to find</span>
@@ -722,20 +734,8 @@
 <span class="sd">        resolution (str): e.g. &#39;1km&#39;</span>
 <span class="sd">        composite (str): Composite period of the files to query</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        Required arguments differ depending on the level set. See list below:</span>
-<span class="sd">        - &#39;L1A&#39;:</span>
-<span class="sd">            data_root, date, level, (sensor_code)</span>
-<span class="sd">        - &#39;L2&#39;:</span>
-<span class="sd">            data_root, date, level, suite, (sensor_code)</span>
-<span class="sd">        - &#39;L3m&#39;:</span>
-<span class="sd">            data_root, date, level, suite, variable, (sensor_code), resolution, composite</span>
-<span class="sd">        - &#39;L3b&#39;:</span>
-<span class="sd">            data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite</span>
-
-
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of filenames (empty if no matches)</span>
+<span class="sd">        list: A list of filenames (empty if no matches)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -777,16 +777,15 @@
 <div class="viewcode-block" id="is_day"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.is_day">[docs]</a><span class="k">def</span> <span class="nf">is_day</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Logical function to check whether a file is a night or a day file</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        Because time reported in file names are GMT times and not local</span>
-<span class="sd">        times, this function has been customized for the satmo project area</span>
-<span class="sd">        and is only valid for that area</span>
+<span class="sd">    Because time reported in file names are GMT times and not local</span>
+<span class="sd">    times, this function has been customized for the satmo project area</span>
+<span class="sd">    and is only valid for that area</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filename (str): file name of a dataset</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Boolean, True if day file, False otherwise</span>
+<span class="sd">        bool: True if day file, False otherwise</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dt_time</span> <span class="o">=</span> <span class="n">filename_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
     <span class="c1"># 12pm threshold validated against a full year for aqua, terra, viirs</span>
@@ -798,16 +797,15 @@
 <div class="viewcode-block" id="is_night"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.is_night">[docs]</a><span class="k">def</span> <span class="nf">is_night</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Logical function to check whether a file is a night or a day file</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        Because time reported in file names are GMT times and not local</span>
-<span class="sd">        times, this function has been customized for the satmo project area</span>
-<span class="sd">        and is only valid for that area</span>
+<span class="sd">    Because time reported in file names are GMT times and not local</span>
+<span class="sd">    times, this function has been customized for the satmo project area</span>
+<span class="sd">    and is only valid for that area</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filename (str): file name of a dataset</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Boolean, True if night file, False otherwise</span>
+<span class="sd">        bool: True if night file, False otherwise</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="ow">not</span> <span class="n">is_day</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
@@ -817,7 +815,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        x (str): A distance (resolution) string with unit (e.g.: &#39;1000m&#39;)</span>
 
-<span class="sd">    Return:</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        str: A string of the form &#39;xxkm&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">resolution_km</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
@@ -829,7 +827,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        x (str): Typically a resolution in meters</span>
 
-<span class="sd">    Return:</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        str: A string of the form &#39;xxkm&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">resolution_m</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
@@ -843,8 +841,8 @@
 <span class="sd">    Args:</span>
 <span class="sd">        x (list): A list of bit position (e.g.: [0,3] for 1001, aka 9)</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        The integer corresponding to the list of bit position provided in the</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The integer corresponding to the list of bit position provided in the</span>
 <span class="sd">        list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bit_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -856,17 +854,16 @@
     <span class="k">return</span> <span class="n">out</span></div>
 
 <span class="k">def</span> <span class="nf">_range_dt</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Internal function to make a list of dates with a given delta and</span>
-<span class="sd">        resetted to first of January on every year jump</span>
+    <span class="sd">&quot;&quot;&quot;Internal function to make a list of dates with a given delta and retested to first of January on every year jump</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        begin (datetime.datetime): Begin date of the first composite</span>
 <span class="sd">        end (datetime.datetime): Begin date of the last composite</span>
 <span class="sd">        delta (int): composite length in days</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        A list of datetime.datetime corresponding to first day of each</span>
-<span class="sd">            composite</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of datetime.datetime corresponding to first day of each</span>
+<span class="sd">        composite</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">time_keeper</span> <span class="o">=</span> <span class="n">begin</span>
     <span class="n">date_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -887,20 +884,19 @@
 <span class="sd">        d1 (datatime.datetime): posterior date</span>
 <span class="sd">        d2 (datatime.datetime): anterior date</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        The integer corresponding to the number of months between the two dates.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The integer corresponding to the number of months between the two dates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">d2</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">*</span> <span class="mi">12</span> <span class="o">+</span> <span class="n">d1</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="n">d2</span><span class="o">.</span><span class="n">month</span>
 
 <span class="k">def</span> <span class="nf">_month_dates_from_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;INternal function to return all the dates of the month to which belong the input</span>
-<span class="sd">        date provided</span>
+    <span class="sd">&quot;&quot;&quot;INternal function to return all the dates of the month to which belong the input date provided</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        dt (datetime.datetime): Date</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        A list of dates.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of dates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nday</span> <span class="o">=</span> <span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">days</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span> <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nday</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
@@ -909,11 +905,10 @@
 <div class="viewcode-block" id="pre_compose"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.pre_compose">[docs]</a><span class="k">def</span> <span class="nf">pre_compose</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prepare a list of list of datetime to run with a compositing function</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        Each sub list in the returned list contains the dates required to make the</span>
-<span class="sd">            composite. When delta is not a multiple of the number of day of a given</span>
-<span class="sd">            year, the last composite of the year is truncated and the next composite</span>
-<span class="sd">            starts on the first of January of the following calendart year.</span>
+<span class="sd">    Each sub list in the returned list contains the dates required to make the</span>
+<span class="sd">    composite. When delta is not a multiple of the number of day of a given</span>
+<span class="sd">    year, the last composite of the year is truncated and the next composite</span>
+<span class="sd">    starts on the first of January of the following calendar year.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        begin (datetime.datetime): Begin date of the first composite</span>
@@ -921,9 +916,9 @@
 <span class="sd">        delta (int or str): composite length in days if int, &#39;month&#39; if str.</span>
 
 <span class="sd">    Return:</span>
-<span class="sd">        A list of lists.</span>
+<span class="sd">        list: A list of lists.</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
 <span class="sd">        &gt;&gt;&gt; satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), 16)</span>
 <span class="sd">        &gt;&gt;&gt; satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), &#39;month&#39;)</span>
@@ -946,17 +941,18 @@
 <div class="viewcode-block" id="processing_meta_from_list"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.processing_meta_from_list">[docs]</a><span class="k">def</span> <span class="nf">processing_meta_from_list</span><span class="p">(</span><span class="n">file_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Takes a list of filenames and returns a list of dictionaries with processing metadata</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        The function is meant to be used within satmo.wrappers.nrt_wrapper to know</span>
-<span class="sd">            which information can be generated from a list of newly downloaded files</span>
-<span class="sd">            and hence kick-off the right processing chains.</span>
+<span class="sd">    The function is meant to be used within satmo.wrappers.nrt_wrapper to know</span>
+<span class="sd">    which information can be generated from a list of newly downloaded files</span>
+<span class="sd">    and hence kick-off the right processing chains.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        file_list (list): A list of file names parsable by filename_parser</span>
 
-<span class="sd">    Return:</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        A list of unique dictionaries containing processing information.</span>
-<span class="sd">            Example of a dict (list element):</span>
+<span class="sd">            </span>
+<span class="sd">        Example of a dict (list element)::</span>
+
 <span class="sd">            {&#39;date&#39;: datetime.date(2017, 6, 25),</span>
 <span class="sd">             &#39;products&#39;: [&#39;Rrs_412&#39;,</span>
 <span class="sd">                          &#39;Rrs_443&#39;,</span>
@@ -978,7 +974,8 @@
 <span class="sd">                          &#39;poc&#39;,</span>
 <span class="sd">                          &#39;chlor_a&#39;],</span>
 <span class="sd">             &#39;sensor&#39;: &#39;aqua&#39;,</span>
-<span class="sd">             &#39;sensor_code&#39;: &#39;A&#39;},</span>
+<span class="sd">             &#39;sensor_code&#39;: &#39;A&#39;}</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_processing_meta_from_name</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Function to generate with the appropriate keys from a single list item</span>
@@ -1019,12 +1016,10 @@
     <span class="k">return</span> <span class="n">date_list_unique</span></div>
 
 <div class="viewcode-block" id="find_composite_date_list"><a class="viewcode-back" href="../../api/satmo.utils.html#satmo.utils.find_composite_date_list">[docs]</a><span class="k">def</span> <span class="nf">find_composite_date_list</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Find, given a date and delta, all the dates that compose the composite to</span>
-<span class="sd">        to which the input date belong</span>
+    <span class="sd">&quot;&quot;&quot;Find, given a date and delta, all the dates that compose the composite to which the input date belong</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        To be used with the near real time wrapper function to find out, when a new</span>
-<span class="sd">            L3m file is produced, which composite should be created or updated.</span>
+<span class="sd">    To be used with the near real time wrapper function to find out, when a new</span>
+<span class="sd">    L3m file is produced, which composite should be created or updated.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        date (datetime.datetime): Input date (probably corresponding to a newly</span>
@@ -1032,7 +1027,7 @@
 <span class="sd">        delta (int or str): composite length in days if int, &#39;month&#39; if str.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of dates (to be passed to make_time_composite)</span>
+<span class="sd">        list: A list of dates (to be passed to make_time_composite)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">begin</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -1047,7 +1042,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        seconds (int): Timeout limit</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; # Use in a context manager, raises a TimeoutException when time spent within</span>
 <span class="sd">        &gt;&gt;&gt; # the context manger exceeds specified duration in seconds</span>
 <span class="sd">        &gt;&gt;&gt; import time</span>
@@ -1110,7 +1105,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

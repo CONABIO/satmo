@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.download module &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.download module &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
         <link rel="next" title="satmo.errors module" href="satmo.errors.html"/>
         <link rel="prev" title="satmo.utils module" href="satmo.utils.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -188,12 +188,15 @@
 <dt id="satmo.download.download_file">
 <code class="descclassname">satmo.download.</code><code class="descname">download_file</code><span class="sig-paren">(</span><em>url</em>, <em>write_dir</em>, <em>overwrite=False</em>, <em>check_integrity=False</em>, <em>timeout=15</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/download.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.download.download_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic file download function</p>
-<p>Downloads a file from a URL, and write it to a user defined location</p>
+<p>Downloads a file from a URL, and write it to a user defined location.
+The function will raise a ConnectionError (via requests) if a connection cannot be established
+with the server (e.g.: network is down) and an HttpResourceNotAvailable if the file appear not to
+exist on the server</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>url</strong> (<em>str</em>) – download url</li>
 <li><strong>write_dir</strong> (<em>str</em>) – Host directory to which the data will be written</li>
 <li><strong>overwrite</strong> (<em>bool</em>) – Should the file be overwritten if already existing on local host</li>
@@ -203,21 +206,11 @@ raising a requests.ConnectionError</li>
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>The function will raise a ConnectionError (via requests) if a connection cannot be established
-with the server (e.g.: network is down) and an HttpResourceNotAvailable if the file appear not to
-exist on the server</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The filename of the downloaded data</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The filename of the downloaded data</p>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -228,7 +221,7 @@ exist on the server</dd>
 <code class="descclassname">satmo.download.</code><code class="descname">download_robust</code><span class="sig-paren">(</span><em>url</em>, <em>base_dir</em>, <em>n_retries=5</em>, <em>pause_retries=10</em>, <em>overwrite=False</em>, <em>check_integrity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/download.html#download_robust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.download.download_robust" title="Permalink to this definition">¶</a></dt>
 <dd><p>Robust download of a list of urls</p>
 <p>Handles connection errors, optionally check for existing files and integrity
-Suitable for real time use and for updating an archive without overwritting existing data</p>
+Suitable for real time use and for updating an archive without overwriting existing data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -254,13 +247,18 @@ Suitable for real time use and for updating an archive without overwritting exis
 <dt id="satmo.download.download_to_tree">
 <code class="descclassname">satmo.download.</code><code class="descname">download_to_tree</code><span class="sig-paren">(</span><em>url</em>, <em>base_dir</em>, <em>overwrite=False</em>, <em>check_integrity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/download.html#download_to_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.download.download_to_tree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download an ocean product file and automatically write it to the right location</p>
-<p>The idea is that the function immediatly knows where to write the file
-by parsing the filename (present in url)</p>
+<p>The idea is that the function immediately knows where to write the file
+by parsing the filename (present in url)
+Directories where data are downloaded do not need to exist before running the function
+Similarly to download_file, the function will raise a ConnectionError (via requests) if a connection
+cannot be established with the server (e.g.: network is down) and an HttpResourceNotAvailable
+if the file appear not to exist on the server. It might be worth re-trying when catching requests.ConnectionError,
+going to the next file is probably the best way if catching a HttpResourceNotAvailable</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>url</strong> (<em>str</em>) – download url</li>
 <li><strong>base_dir</strong> (<em>str</em>) – root of the archive tree on the host</li>
 <li><strong>overwrite</strong> (<em>bool</em>) – Should the file be overwritten if already existing on local host</li>
@@ -268,23 +266,11 @@ by parsing the filename (present in url)</p>
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>Directories where data are downloaded do not need to exist before running the function
-Similarly to download_file, the function will raise a ConnectionError (via requests) if a connection
-cannot be established with the server (e.g.: network is down) and an HttpResourceNotAvailable
-if the file appear not to exist on the server. It might be worth re-trying when catching requests.ConnectionError,
-going to the next file is probably the best way if catching a HttpResourceNotAvailable</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The filename of the downloaded file</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The filename of the downloaded file</p>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -336,7 +322,7 @@ going to the next file is probably the best way if catching a HttpResourceNotAva
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

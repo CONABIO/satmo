@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; satmo 0.2.1 documentation</title>
+  <title>Installation &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="index.html"/>
         <link rel="next" title="Documentation" href="autodoc.html"/>
         <link rel="prev" title="satmo.wrappers module" href="api/satmo.wrappers.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -98,7 +98,11 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#system-setup">System setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#system-setup">System setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-from-an-account-with-sudo-priviledges-or-from-root-without-sudo">Run from an account with sudo priviledges or from root without sudo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-from-the-user-account-from-which-processing-will-be-done">Run from the user account from which processing will be done</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#autostart">Autostart</a></li>
 </ul>
 </li>
@@ -171,8 +175,9 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="system-setup">
 <h2>System setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h2>
-<p>You can also</p>
 <p>The commands with sudo have to be ran from a user account with <code class="docutils literal"><span class="pre">sudo</span></code> priviledges, or directly from <code class="docutils literal"><span class="pre">root</span></code>, without sudo. Commands that <strong>do not</strong> start with sudo have to be ran from a normal user account. Example <code class="docutils literal"><span class="pre">xtuser</span></code> on CONABIO servers.</p>
+<div class="section" id="run-from-an-account-with-sudo-priviledges-or-from-root-without-sudo">
+<h3>Run from an account with sudo priviledges or from root without sudo<a class="headerlink" href="#run-from-an-account-with-sudo-priviledges-or-from-root-without-sudo" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Install generic and spatial libraries</span>
 sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 sudo apt-get update
@@ -180,7 +185,12 @@ sudo apt-get install libproj-dev libgeos-dev gdal-bin libgdal-dev
 sudo apt-get install python-pip git
 sudo pip install virtualenv
 sudo pip install virtualenvwrapper
-<span class="c1"># As the user from which satmo will be operated (e.g. xtuser)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-from-the-user-account-from-which-processing-will-be-done">
+<h3>Run from the user account from which processing will be done<a class="headerlink" href="#run-from-the-user-account-from-which-processing-will-be-done" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># As the user from which satmo will be operated (e.g. xtuser)</span>
 <span class="nb">echo</span> <span class="s1">&#39;source /usr/local/bin/virtualenvwrapper.sh&#39;</span> &gt;&gt; ~/.bashrc
 <span class="nb">source</span> ~/.bashrc
 
@@ -203,15 +213,17 @@ pip install git+https://github.com/CONABIO/satmo.git
 </div>
 <p>Further details on installing the satmo python library can be found in the project <a class="reference external" href="https://github.com/CONABIO/satmo/blob/master/.travis.yml">travis file</a></p>
 </div>
+</div>
 <div class="section" id="autostart">
 <h2>Autostart<a class="headerlink" href="#autostart" title="Permalink to this headline">¶</a></h2>
-<p>It’s important to have the near real time command of the system start automatically (e.g.: after server maintenance and restart). For that, a &#64;reboot cron task can be created. See the explanations below.</p>
+<p>It may be required to have the near real time mode of the system starting automatically on system startup, hence avoiding having to restart it manually after every system reboot, maintenance, etc.S For that, a &#64;reboot cron task can be created. See the explanations below.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># As xtuser, enter crontab edit mode by running:</span>
 crontab -e
 <span class="c1"># And add the following line to the file</span>
-@reboot . ~/.profile<span class="p">;</span> /home/xtuser/.virtualenvs/satmo/bin/satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north <span class="m">33</span> --south <span class="m">3</span> --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi <span class="m">3</span> &gt; /home/xtuser/nrt_log.log <span class="p">&amp;</span>
+@reboot . ~/.profile<span class="p">;</span> . /data/ocssw/OCSSW_bash.env<span class="p">;</span> /home/xtuser/.virtualenvs/satmo/bin/satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north <span class="m">33</span> --south <span class="m">3</span> --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi <span class="m">3</span> &gt; /home/xtuser/nrt_log.log <span class="p">&amp;</span>
 </pre></div>
 </div>
+<p>This crontab entry will run the <code class="docutils literal"><span class="pre">satmo_nrt.py</span></code> command on system startup, with the defined parameters.</p>
 </div>
 </div>
 
@@ -259,7 +271,7 @@ crontab -e
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

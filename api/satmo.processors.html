@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.processors module &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.processors module &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
         <link rel="next" title="satmo.query module" href="satmo.query.html"/>
         <link rel="prev" title="satmo.preprocessors module" href="satmo.preprocessors.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -189,13 +189,11 @@
 <em class="property">class </em><code class="descclassname">satmo.processors.</code><code class="descname">BasicBinMap</code><span class="sig-paren">(</span><em>file_list</em>, <em>qual_array=None</em>, <em>var=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#BasicBinMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.BasicBinMap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Class to produce daily gridded data for a given date/variable from L2 files</p>
-<dl class="docutils">
-<dt>The class is instantiated with a list of L2 files. The methods give the option to</dt>
-<dd>processed new variables from reflectance layers present in the L2 file, extract an existing
+<p>The class is instantiated with a list of L2 files. The methods give the option to
+processed new variables from reflectance layers present in the L2 file, extract an existing
 one, mask the invalid observations and bin the resulting cleaned variable to a regular grid.
 All the methods of this class are exposed in the L3mProcess class so
-that there shouldn’t be any need to use this class directly.</dd>
-</dl>
+that there shouldn’t be any need to use this class directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -205,7 +203,7 @@ that there shouldn’t be any need to use this class directly.</dd>
 <li><strong>qual_array</strong> (<em>str</em>) – Name of the quality array (named qual_prod in l2bin documentation)
 Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.
 Defaults to None.</li>
-<li><strong>var</strong> (<em>str</em>) – Optional name of variable to bin. Use when bining a variable that is already present in the archive</li>
+<li><strong>var</strong> (<em>str</em>) – Optional name of variable to bin. Use when binning a variable that is already present in the archive</li>
 </ul>
 </td>
 </tr>
@@ -214,55 +212,54 @@ Defaults to None.</li>
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.file_list">
 <code class="descname">file_list</code><a class="headerlink" href="#satmo.processors.BasicBinMap.file_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of strings (the pathnames of individual L2 files)</p>
+<dd><p><em>list</em> – list of strings (the pathnames of individual L2 files)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.lon_dd">
 <code class="descname">lon_dd</code><a class="headerlink" href="#satmo.processors.BasicBinMap.lon_dd" title="Permalink to this definition">¶</a></dt>
-<dd><p>1D Np array containing longitude coordinates</p>
+<dd><p><em>np.array</em> – 1D Np array containing longitude coordinates</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.lat_dd">
 <code class="descname">lat_dd</code><a class="headerlink" href="#satmo.processors.BasicBinMap.lat_dd" title="Permalink to this definition">¶</a></dt>
-<dd><p>1D Np array containing latitude coordinates</p>
+<dd><p><em>np.array</em> – 1D Np array containing latitude coordinates</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.flag_array">
 <code class="descname">flag_array</code><a class="headerlink" href="#satmo.processors.BasicBinMap.flag_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>1D np array containing flag values</p>
+<dd><p><em>np.array</em> – 1D np array containing flag values</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.qual_array">
 <code class="descname">qual_array</code><a class="headerlink" href="#satmo.processors.BasicBinMap.qual_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>1D np array containing pixel quality information (higher values
+<dd><p><em>np.array</em> – 1D np array containing pixel quality information (higher values
 mean lower quality)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.var_array">
 <code class="descname">var_array</code><a class="headerlink" href="#satmo.processors.BasicBinMap.var_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>1D np array containing variable to bin</p>
+<dd><p><em>np.array</em> – 1D np array containing variable to bin</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.output_array">
 <code class="descname">output_array</code><a class="headerlink" href="#satmo.processors.BasicBinMap.output_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>a 2D np array containing binned variable</p>
+<dd><p><em>np.array</em> – a 2D np array containing binned variable</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="satmo.processors.BasicBinMap.geo_dict">
 <code class="descname">geo_dict</code><a class="headerlink" href="#satmo.processors.BasicBinMap.geo_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dictionary used to write the output_array using rasterio</p>
+<dd><p><em>dict</em> – A dictionary used to write the output_array using rasterio</p>
 </dd></dl>
 
-<dl class="docutils">
-<dt>Exemples:</dt>
-<dd><div class="first highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Instantiate class using factory classmethod</span>
@@ -278,19 +275,14 @@ mean lower quality)</p>
 <span class="go">                          resolution = 2000, proj4string = &quot;+proj=laea +lat_0=20 +lon_0=-100&quot;)</span>
 </pre></div>
 </div>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Write grid with binned data to a georeferenced file</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Write grid with binned data to a georeferenced file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bin_class</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s1">&#39;/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <dl class="method">
 <dt id="satmo.processors.BasicBinMap.apply_mask">
 <code class="descname">apply_mask</code><span class="sig-paren">(</span><em>bit_mask=107599675</em>, <em>max_qual=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#BasicBinMap.apply_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.BasicBinMap.apply_mask" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Method to mask data using information from the flag array. And optionally</dt>
-<dd>the mask array (named qual_prod in l2bin documentation)</dd>
-</dl>
+<dd><p>Method to mask data using information from the flag array. And optionally the mask array (named qual_prod in l2bin documentation)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -310,65 +302,189 @@ Only applies if qual_array is not None during the class instantiation.</li>
 </tr>
 </tbody>
 </table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd><p class="first">Below the table of flag signification for modis, viirs and seawifs</p>
-<div class="line-block">
-<div class="line">Flag Name Modis/viirs | Flag Name Seawifs | Bit number |</div>
-</div>
-<p><a href="#id3"><span class="problematic" id="id4">|=======================|===================|============|</span></a>
-| ATMFAIL               | ATMFAIL           |          0 |
-| LAND                  | LAND              |          1 |
-| PRODWARN              | PRODWARN          |          2 |
-| HIGLINT               | HIGLINT           |          3 |
-| HILT                  | HILT              |          4 |
-| HISATZEN              | HISATZEN          |          5 |
-| COASTZ                | COASTZ            |          6 |
-| SPARE                 | SPARE             |          7 |
-| STRAYLIGHT            | STRAYLIGHT        |          8 |
-| CLDICE                | CLDICE            |          9 |
-| COCCOLITH             | COCCOLITH         |         10 |
-| TURBIDW               | TURBIDW           |         11 |
-| HISOLZEN              | HISOLZEN          |         12 |
-| SPARE                 | SPARE             |         13 |
-| LOWLW                 | LOWLW             |         14 |
-| CHLFAIL               | CHLFAIL           |         15 |
-| NAVWARN               | NAVWARN           |         16 |
-| ABSAER                | ABSAER            |         17 |
-| SPARE                 | SPARE             |         18 |
-| MAXAERITER            | MAXAERITER        |         19 |
-| MODGLINT              | MODGLINT          |         20 |
-| CHLWARN               | CHLWARN           |         21 |
-| ATMWARN               | ATMWARN           |         22 |
-| SPARE                 | SPARE             |         23 |
-| SEAICE                | SEAICE            |         24 |
-| NAVFAIL               | NAVFAIL           |         25 |
-| FILTER                | FILTER            |         26 |
-| SPARE                 | SPARE             |         27 |
-| BOWTIEDEL             | SPARE             |         28 |
-| HIPOL                 | HIPOL             |         29 |
-| PRODFAIL              | PRODFAIL          |         30 |
-| SPARE                 | SPARE             |         31 |</p>
-<dl class="last docutils">
-<dt>Default l2bin mask values for:</dt>
-<dd>General: 0x669d73b (includes Chlorophyl algorithms, Rrs, etc)
-FLH: 0x679d73f
-PAR: 0x600000a
-SST: 0x1002
-NSST/SST4: 0x2</dd>
-</dl>
-</dd>
-</dl>
+<p>Below the table of flag signification for modis, viirs and seawifs</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="35%" />
+<col width="23%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Flag Name Modis/viirs</th>
+<th class="head">Flag Name Seawifs</th>
+<th class="head">Bit number</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ATMFAIL</td>
+<td>ATMFAIL</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>LAND</td>
+<td>LAND</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><td>PRODWARN</td>
+<td>PRODWARN</td>
+<td>2</td>
+</tr>
+<tr class="row-odd"><td>HIGLINT</td>
+<td>HIGLINT</td>
+<td>3</td>
+</tr>
+<tr class="row-even"><td>HILT</td>
+<td>HILT</td>
+<td>4</td>
+</tr>
+<tr class="row-odd"><td>HISATZEN</td>
+<td>HISATZEN</td>
+<td>5</td>
+</tr>
+<tr class="row-even"><td>COASTZ</td>
+<td>COASTZ</td>
+<td>6</td>
+</tr>
+<tr class="row-odd"><td>SPARE</td>
+<td>SPARE</td>
+<td>7</td>
+</tr>
+<tr class="row-even"><td>STRAYLIGHT</td>
+<td>STRAYLIGHT</td>
+<td>8</td>
+</tr>
+<tr class="row-odd"><td>CLDICE</td>
+<td>CLDICE</td>
+<td>9</td>
+</tr>
+<tr class="row-even"><td>COCCOLITH</td>
+<td>COCCOLITH</td>
+<td>10</td>
+</tr>
+<tr class="row-odd"><td>TURBIDW</td>
+<td>TURBIDW</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>HISOLZEN</td>
+<td>HISOLZEN</td>
+<td>12</td>
+</tr>
+<tr class="row-odd"><td>SPARE</td>
+<td>SPARE</td>
+<td>13</td>
+</tr>
+<tr class="row-even"><td>LOWLW</td>
+<td>LOWLW</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>CHLFAIL</td>
+<td>CHLFAIL</td>
+<td>15</td>
+</tr>
+<tr class="row-even"><td>NAVWARN</td>
+<td>NAVWARN</td>
+<td>16</td>
+</tr>
+<tr class="row-odd"><td>ABSAER</td>
+<td>ABSAER</td>
+<td>17</td>
+</tr>
+<tr class="row-even"><td>SPARE</td>
+<td>SPARE</td>
+<td>18</td>
+</tr>
+<tr class="row-odd"><td>MAXAERITER</td>
+<td>MAXAERITER</td>
+<td>19</td>
+</tr>
+<tr class="row-even"><td>MODGLINT</td>
+<td>MODGLINT</td>
+<td>20</td>
+</tr>
+<tr class="row-odd"><td>CHLWARN</td>
+<td>CHLWARN</td>
+<td>21</td>
+</tr>
+<tr class="row-even"><td>ATMWARN</td>
+<td>ATMWARN</td>
+<td>22</td>
+</tr>
+<tr class="row-odd"><td>SPARE</td>
+<td>SPARE</td>
+<td>23</td>
+</tr>
+<tr class="row-even"><td>SEAICE</td>
+<td>SEAICE</td>
+<td>24</td>
+</tr>
+<tr class="row-odd"><td>NAVFAIL</td>
+<td>NAVFAIL</td>
+<td>25</td>
+</tr>
+<tr class="row-even"><td>FILTER</td>
+<td>FILTER</td>
+<td>26</td>
+</tr>
+<tr class="row-odd"><td>SPARE</td>
+<td>SPARE</td>
+<td>27</td>
+</tr>
+<tr class="row-even"><td>BOWTIEDEL</td>
+<td>SPARE</td>
+<td>28</td>
+</tr>
+<tr class="row-odd"><td>HIPOL</td>
+<td>HIPOL</td>
+<td>29</td>
+</tr>
+<tr class="row-even"><td>PRODFAIL</td>
+<td>PRODFAIL</td>
+<td>30</td>
+</tr>
+<tr class="row-odd"><td>SPARE</td>
+<td>SPARE</td>
+<td>31</td>
+</tr>
+</tbody>
+</table>
+<p>Default l2bin mask values for:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="81%" />
+<col width="19%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">suite</th>
+<th class="head">mask value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>General (includes Chlorophyl algorithms, Rrs, etc)</td>
+<td>0x669d73b</td>
+</tr>
+<tr class="row-odd"><td>FLH</td>
+<td>0x679d73f</td>
+</tr>
+<tr class="row-even"><td>PAR</td>
+<td>0x600000a</td>
+</tr>
+<tr class="row-odd"><td>SST</td>
+<td>0x1002</td>
+</tr>
+<tr class="row-even"><td>NSST/SST4</td>
+<td>0x2</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="satmo.processors.BasicBinMap.bin_to_grid">
 <code class="descname">bin_to_grid</code><span class="sig-paren">(</span><em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>resolution</em>, <em>proj4string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#BasicBinMap.bin_to_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.BasicBinMap.bin_to_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method for binning data to a defined grid</p>
-<dl class="docutils">
-<dt>A grid is defined by its extent (north, south, east, west), resolution, and</dt>
-<dd>projection (proj4string).</dd>
-</dl>
+<p>A grid is defined by its extent (north, south, east, west), resolution, and
+projection (proj4string).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -404,7 +520,7 @@ NSST/SST4: 0x2</dd>
 <li><strong>qual_array</strong> (<em>str</em>) – Name of the quality array (named qual_prod in l2bin documentation)
 Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.
 Defaults to None.</li>
-<li><strong>var</strong> (<em>str</em>) – Optional name of variable to bin. Use when bining a variable that is already present in the archive</li>
+<li><strong>var</strong> (<em>str</em>) – Optional name of variable to bin. Use when binning a variable that is already present in the archive</li>
 </ul>
 </td>
 </tr>
@@ -482,10 +598,9 @@ For inheritance only, not exported to package __init__</p>
 <dd><p>Bases: <a class="reference internal" href="#satmo.processors.Composer" title="satmo.processors.Composer"><code class="xref py py-class docutils literal"><span class="pre">satmo.processors.Composer</span></code></a></p>
 <p>Class to compose multiple raster files into one (with methods inherited
 from the Composer class), and write the output to a file</p>
+<p>Typically designed to produce composites from L3m files.
+Can be used with single band geoTiff or single band netcdf files</p>
 <dl class="docutils">
-<dt>Details:</dt>
-<dd>Typically designed to produce composites from L3m files.
-Can be used with single band geoTiff or single band netcdf files</dd>
 <dt>Example usage:</dt>
 <dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">file1</span> <span class="o">=</span> <span class="s1">&#39;aqua/L2/2015/001/A2015001.L3m_DAY_CHL_chlor_a_1km.tif&#39;</span>
@@ -523,11 +638,9 @@ Can be used with single band geoTiff or single band netcdf files</dd>
 <dt id="satmo.processors.L3mProcess">
 <em class="property">class </em><code class="descclassname">satmo.processors.</code><code class="descname">L3mProcess</code><span class="sig-paren">(</span><em>file_list</em>, <em>qual_array=None</em>, <em>var=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#L3mProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.L3mProcess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#satmo.processors.BasicBinMap" title="satmo.processors.BasicBinMap"><code class="xref py py-class docutils literal"><span class="pre">satmo.processors.BasicBinMap</span></code></a></p>
-<dl class="docutils">
-<dt>Class to put the functions to compute, inherits from BasicBinMap so that</dt>
-<dd>computing a new variable from reflectance bands is an optional step before
-binning</dd>
-</dl>
+<p>Class to put the functions to compute</p>
+<p>inherits from BasicBinMap so that computing a new variable from reflectance bands is an optional step before
+binning</p>
 <p class="rubric">Example</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -555,7 +668,7 @@ binning</dd>
 <span class="go">                          resolution = 2000, proj4string = &quot;+proj=laea +lat_0=20 +lon_0=-100&quot;)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Write grid with binned data to a georeferenced file</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Write grid with binned data to a geo-referenced file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bin_class</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s1">&#39;/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -563,7 +676,7 @@ binning</dd>
 <dt id="satmo.processors.L3mProcess.calc">
 <code class="descname">calc</code><span class="sig-paren">(</span><em>band_list</em>, <em>fun</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#L3mProcess.calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.L3mProcess.calc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic band math method</p>
-<p>Applies an abitrary function to a set of arrays present in the netcdf
+<p>Applies an arbitrary function to a set of arrays present in the netcdf
 file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -572,10 +685,10 @@ file.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>band_list</strong> (<em>list</em>) – A list of bands/variables present in the file
 (e.g.: [‘Rrs_555’, ‘Rrs_645’])</li>
-<li><strong>fun</strong> (<em>function</em>) – A function that takes len(band_list) arguments (all</li>
-<li><strong>must be numpy array of the same dimension</strong><strong>) </strong><strong>performs some</strong> (<em>them</em>) – </li>
-<li><strong>wise calculation on them and returns a single numpy array</strong> (<em>element</em>) – </li>
-<li><strong>the same dimension than each input array.</strong> (<em>with</em>) – </li>
+<li><strong>fun</strong> (<em>function</em>) – A function that takes len(band_list) arguments (all
+them must be numpy array of the same dimension) performs some
+element wise calculation on them and returns a single numpy array
+with the same dimension than each input array.</li>
 </ul>
 </td>
 </tr>
@@ -611,15 +724,7 @@ variable name)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
-<dt>The function is used for its side effect of appending a new variable</dt>
-<dd><p class="first last">to an existing netCDF file.</p>
-</dd>
-</dl>
-</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The function is used for its side effect of appending a new variable to an existing netCDF file.</p>
 </td>
 </tr>
 </tbody>
@@ -630,10 +735,7 @@ variable name)</li>
 <dt id="satmo.processors.l2bin">
 <code class="descclassname">satmo.processors.</code><code class="descname">l2bin</code><span class="sig-paren">(</span><em>file_list</em>, <em>L3b_suite</em>, <em>var_list=None</em>, <em>resolution=1</em>, <em>night=False</em>, <em>filename=None</em>, <em>data_root=None</em>, <em>overwrite=False</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#l2bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.l2bin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run l2bin for a list of L2 files</p>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>This is a simple no filter python wrapper around the seadas l2bin utility.</dd>
-</dl>
+<p>This is a simple no filter python wrapper around the seadas l2bin utility.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -643,8 +745,8 @@ variable name)</li>
 <li><strong>L3b_suite</strong> (<em>str</em>) – Product suite to bin (see global variable STANDARD_L3_SUITES
 for corresponding variables)</li>
 <li><strong>var_list</strong> (<em>list</em>) – Optional list of variables to include in the produced L3b file.
-If None (default but not recommanded), a list of standard variables is
-retrieved fom the global variable (STANDARD_L3_SUITES)</li>
+If None (default but not recommended), a list of standard variables is
+retrieved from the global variable (STANDARD_L3_SUITES)</li>
 <li><strong>resolution</strong> (<em>int</em><em> or </em><em>str</em>) – See resolve argument in l2bin doc</li>
 <li><strong>night</strong> (<em>bool</em>) – Is that night products</li>
 <li><strong>filename</strong> (<em>str</em>) – Optional full path of output filename (L3b). If not provided, a
@@ -664,7 +766,7 @@ the global variable FLAGS</li>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">satmo.SeadasError if the seadas command exists with status 1</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">satmo.SeadasError</span></code> – if the seadas command exists with status 1</p>
 </td>
 </tr>
 </tbody>
@@ -701,7 +803,7 @@ the global variable FLAGS</li>
 <li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
 <li><strong>width</strong> (<em>int</em>) – Width in pixels of the output image</li>
 <li><strong>outmode</strong> (<em>str</em>) – See seadas l2mapgen doc</li>
-<li><strong>threshold</strong> (<em>float</em>) – Minumum percentage of the filled pixels</li>
+<li><strong>threshold</strong> (<em>float</em>) – Minimum percentage of the filled pixels</li>
 <li><strong>overwrite</strong> (<em>bool</em>) – Overwrite existing files? Return ValueError if file exists
 and overwrite is set to False (default)</li>
 </ul>
@@ -772,7 +874,7 @@ and overwrite is set to False (default)</li>
 <dl class="function">
 <dt id="satmo.processors.l3bin_wrapper">
 <code class="descclassname">satmo.processors.</code><code class="descname">l3bin_wrapper</code><span class="sig-paren">(</span><em>sensor_codes</em>, <em>date_list</em>, <em>suite_list</em>, <em>south</em>, <em>north</em>, <em>west</em>, <em>east</em>, <em>composite</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#l3bin_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.l3bin_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper to run l3bin without having to name explicitely input or output files</p>
+<dd><p>Wrapper to run l3bin without having to name explicitly input or output files</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -835,7 +937,7 @@ Defaults to DAY</li>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">satmo.SeadasError if the seadas command exists with status 1</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">satmo.SeadasError</span></code> – if the seadas command exists with status 1</p>
 </td>
 </tr>
 </tbody>
@@ -861,21 +963,19 @@ for automatic output filename generation.</li>
 <li><strong>sensor_code</strong> (<em>str</em>) – Sensor to composite (defaults to ‘X’, which
 corresponds to daily (cross sensors) composites.</li>
 <li><strong>fun</strong> (<em>str</em>) – compositing function, defaults to mean</li>
-<li><strong>filename</strong> (<em>str</em>) – Optional output filename. Autogenerated if not provided</li>
+<li><strong>filename</strong> (<em>str</em>) – Optional output filename. Auto generated if not provided</li>
 <li><strong>overwrite</strong> (<em>bool</em>) – Should output file be overwritten if it already
 exists.</li>
 <li><strong>preview</strong> (<em>bool</em>) – Should a png preview be automatically generated</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
-<dt>The filename of the produced file or if no file is produced (because no</dt>
-<dd><p class="first last">input files were found, the function exits without return value.
-When automatically generated the date of the composite corresponds to
-the first day of the composite.</p>
-</dd>
-</dl>
-</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The filename of the produced file.
+In case no file is produced (because no input files were found, the function exits without return value.
+When automatically generated the date of the composite corresponds to the first day of the composite.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
 </td>
 </tr>
 </tbody>
@@ -903,14 +1003,14 @@ the first day of the composite.</p>
 <code class="descclassname">satmo.processors.</code><code class="descname">nc2tif</code><span class="sig-paren">(</span><em>file</em>, <em>proj4string=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#nc2tif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.nc2tif" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate geotiff from L3m netcdf array</p>
 <p>Reads an existing array from a netcdf file and writes it
-with georeference as tif</p>
+with georeference as tiff</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>file</strong> (<em>str</em>) – Path to the netcdf file containing the desired array</li>
-<li><strong>proj4string</strong> (<em>str</em>) – Coordinate reference system (opional, see geo_dict_from_nc)</li>
+<li><strong>proj4string</strong> (<em>str</em>) – Coordinate reference system (optional, see geo_dict_from_nc)</li>
 </ul>
 </td>
 </tr>
@@ -969,7 +1069,7 @@ The function also returns the file name of the produced file</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

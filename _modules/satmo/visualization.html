@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.visualization &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.visualization &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -196,19 +196,18 @@
 <span class="sd">    Meant to be used by the make_preview() function. Parses a file name</span>
 <span class="sd">    and produces a string to be used as title for the preview figure</span>
 
-<span class="sd">    Details:</span>
-<span class="sd">        Example map titles include:</span>
-<span class="sd">        Daily Chlor_a aqua 2014-01-27</span>
-<span class="sd">        Daily SST combined 2014-01-27</span>
-<span class="sd">        8 day composite SST combined 2014-01-27 (date corresponds to first day of the compositing period)</span>
-<span class="sd">        8 day composite SST Climatology January 1</span>
-<span class="sd">        Example file names are:</span>
-<span class="sd">        T2014027.L3m_DAY_CHL_chlor_a_1km.tif</span>
-<span class="sd">        X2014027.L3m_DAY_SST_sst_1km.tif</span>
-<span class="sd">        X2014027.L3m_8DAY_SST_sst_1km.tif</span>
-<span class="sd">        XCLIM027.L3m_8DAY_SST_sst_1km.tif (climatology)</span>
-<span class="sd">        T2004005.L3m_DAY_CHL_chlor_a_250m.tif</span>
-<span class="sd">        A2007009.L3m_DAY_SST4_sst4_4km.nc</span>
+<span class="sd">    Example map titles include:</span>
+<span class="sd">        * Daily Chlor_a aqua 2014-01-27</span>
+<span class="sd">        * Daily SST combined 2014-01-27</span>
+<span class="sd">        * 8 day composite SST combined 2014-01-27 (date corresponds to first day of the compositing period)</span>
+<span class="sd">        * 8 day composite SST Climatology January 1</span>
+<span class="sd">        * Example file names are:</span>
+<span class="sd">        * T2014027.L3m_DAY_CHL_chlor_a_1km.tif</span>
+<span class="sd">        * X2014027.L3m_DAY_SST_sst_1km.tif</span>
+<span class="sd">        * X2014027.L3m_8DAY_SST_sst_1km.tif</span>
+<span class="sd">        * XCLIM027.L3m_8DAY_SST_sst_1km.tif (climatology)</span>
+<span class="sd">        * T2004005.L3m_DAY_CHL_chlor_a_250m.tif</span>
+<span class="sd">        * A2007009.L3m_DAY_SST4_sst4_4km.nc</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file (str): File name (usually a geoTiff)</span>
@@ -242,7 +241,7 @@
 <span class="sd">        file (str): Path to a raster file containing a single layer (usually a geoTiff)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Filename of the png file created</span>
+<span class="sd">        str: Filename of the png file created</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Retrieve color stretch information of available</span>
@@ -340,7 +339,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

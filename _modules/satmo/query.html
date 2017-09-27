@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.query &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.query &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -264,14 +264,13 @@
 <span class="sd">    for example), prepends the &#39;getFile url&#39; of the oceancolor DAAC and appends </span>
 <span class="sd">    &#39;.gz&#39; when files are not netcdf.</span>
 
+<span class="sd">    In line with query_from_extent, this function is designed to work</span>
+<span class="sd">    with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and</span>
+<span class="sd">    other data levels.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        file_name (str): name of a L1A file present on oceancolor servers</span>
 <span class="sd">        host (str): Address of the root of the archive. DON&#39;T FORGET TRAILING SLASH</span>
-
-<span class="sd">    Details:</span>
-<span class="sd">        In line with query_from_extent, this function is designed to work</span>
-<span class="sd">        with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and</span>
-<span class="sd">        other data levels.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A string of the URL at which the file can be downloaded (ready to be passed to</span>
@@ -334,7 +333,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

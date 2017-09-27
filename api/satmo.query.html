@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.query module &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.query module &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
         <link rel="next" title="satmo.visualization module" href="satmo.visualization.html"/>
         <link rel="prev" title="satmo.processors module" href="satmo.processors.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -207,30 +207,22 @@
 <p>Simple helper that given a filename (obtained with query_from_extent
 for example), prepends the ‘getFile url’ of the oceancolor DAAC and appends
 ‘.gz’ when files are not netcdf.</p>
+<p>In line with query_from_extent, this function is designed to work
+with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and
+other data levels.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>file_name</strong> (<em>str</em>) – name of a L1A file present on oceancolor servers</li>
 <li><strong>host</strong> (<em>str</em>) – Address of the root of the archive. DON’T FORGET TRAILING SLASH</li>
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>In line with query_from_extent, this function is designed to work
-with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and
-other data levels.</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A string of the URL at which the file can be downloaded (ready to be passed to
-download_robust)</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A string of the URL at which the file can be downloaded (ready to be passed to
+download_robust)</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -322,7 +314,7 @@ use ‘yyyy-mm-dd’ format if passing it as a string</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

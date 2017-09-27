@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.utils module &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.utils module &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../index.html"/>
         <link rel="up" title="satmo package" href="index.html"/>
         <link rel="next" title="satmo.download module" href="satmo.download.html"/>
         <link rel="prev" title="satmo package" href="index.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -198,6 +198,8 @@ integer</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The integer corresponding to the list of bit position provided in the
 list</td>
 </tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -207,18 +209,28 @@ list</td>
 <code class="descclassname">satmo.utils.</code><code class="descname">file_finder</code><span class="sig-paren">(</span><em>data_root</em>, <em>date</em>, <em>level</em>, <em>suite=None</em>, <em>variable=None</em>, <em>sensor_code=None</em>, <em>resolution=None</em>, <em>composite=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#file_finder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.file_finder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds existing files on the system from meta information (date, level, variable, sensor_code, …)</p>
 <p>Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly
-targetted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:</p>
+targeted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:</p>
 <blockquote>
 <div><ul class="simple">
 <li>list all L2 files required to produce a L3b binned product (don’t forget filtering using isDay() as well)</li>
 <li>list all L3m files from a same date but from different sensors in order to produce cross sensor composites</li>
 </ul>
 </div></blockquote>
+<dl class="docutils">
+<dt>Required arguments differ depending on the level set. See list below:</dt>
+<dd><ul class="first last simple">
+<li>‘L1A’: data_root, date, level, (sensor_code)</li>
+<li>‘L2’: data_root, date, level, suite, (sensor_code)</li>
+<li>‘L3m’: data_root, date, level, suite, variable, (sensor_code), resolution, composite</li>
+<li>‘L3b’: data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite</li>
+</ul>
+</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
 <li><strong>date</strong> (<em>str</em><em> or </em><em>datetime</em>) – Date of the directory to find</li>
 <li><strong>level</strong> (<em>str</em>) – Data level</li>
@@ -230,38 +242,11 @@ targetted at L1A, L2, and L3m file (no climatologies or anomalies). Example appl
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd><p class="first">Required arguments differ depending on the level set. See list below:
-- ‘L1A’:</p>
-<blockquote>
-<div>data_root, date, level, (sensor_code)</div></blockquote>
-<ul class="last simple">
-<li><dl class="first docutils">
-<dt>‘L2’:</dt>
-<dd>data_root, date, level, suite, (sensor_code)</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>‘L3m’:</dt>
-<dd>data_root, date, level, suite, variable, (sensor_code), resolution, composite</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>‘L3b’:</dt>
-<dd>data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of filenames (empty if no matches)</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of filenames (empty if no matches)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -271,38 +256,41 @@ targetted at L1A, L2, and L3m file (no climatologies or anomalies). Example appl
 <dt id="satmo.utils.filename_builder">
 <code class="descclassname">satmo.utils.</code><code class="descname">filename_builder</code><span class="sig-paren">(</span><em>level</em>, <em>climatology=False</em>, <em>anomaly=False</em>, <em>full_path=False</em>, <em>data_root=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#filename_builder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.filename_builder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Utility to build valid ocean color filenames for every level</p>
+<p>Each level= chosen requires different kwargs.</p>
+<p>‘L2’: filename and suite OR sensor_code, suite, date, and time</p>
+<p>‘L3b’: filename, composite and suite OR sensor_code, date, composite, suite</p>
+<p>‘L3m’ climatology: (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter</p>
+<p>‘L3m’ anomaly: filename OR date, composite, suite, variable, resolution</p>
+<p>‘L3m’: filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>arguments</strong> (<em>keywork</em>) – level (str): the data level of the desired filename</li>
-<li><strong>arguments</strong> – <p>climatology (bool): Does the filename correspond to climatology data
-anomaly (bool): Does the filename correspond to anomaly data
-full_path (bool): Should file path be computed (using path_builder)
-data_root (str): To be used in combination with full_path = True, see path_builder()</p>
-<blockquote>
-<div>doc for more details</div></blockquote>
-</li>
-<li><strong>kwargs</strong> – <dl class="docutils">
-<dt>General kwargs:</dt>
-<dd>None</dd>
-<dt>level specific kwargs (See details section to know which kwargs are required for each chosen level):</dt>
-<dd>filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)
-suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)
-sensor_code (str): e.g.: ‘A’, ‘V’, ‘X’
-date (datetime.datetime or str). IN the case of climatologies the year is ignored so that ‘1970-05-01’ can
-be specified for example
-time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))
-doy (str or int): Day of the year
-composite (str): e.g. DAY, 8DAY, 16DAY, etc
-variable (str)
-resolution (str): e.g. ‘1km’
-begin_year (int or str): for climatologies, see CONVENTIONS.md
-end_year (int or str): for climatologies, see CONVENTIONS.md
-nc (bool): Should extension be ‘.nc’ (instead of ‘.tif’) (Only useful for L3m level, to distinguish between<blockquote class="last">
-<div>tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</div></blockquote>
-</dd>
+<li><strong>level</strong> (<em>str</em>) – the data level of the desired filename</li>
+<li><strong>climatology</strong> (<em>bool</em>) – Does the filename correspond to climatology data</li>
+<li><strong>anomaly</strong> (<em>bool</em>) – Does the filename correspond to anomaly data</li>
+<li><strong>full_path</strong> (<em>bool</em>) – Should file path be computed (using path_builder)</li>
+<li><strong>data_root</strong> (<em>str</em>) – To be used in combination with full_path = True, see path_builder()
+doc for more details</li>
+<li><strong>**kwargs</strong> – <p>level specific kwargs (See details section to know which kwargs are required for each chosen level):</p>
+<p>filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)</p>
+<p>suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)</p>
+<p>sensor_code (str): e.g.: ‘A’, ‘V’, ‘X’</p>
+<dl class="docutils">
+<dt>date (datetime.datetime or str). IN the case of climatologies the year is ignored so that ‘1970-05-01’ can</dt>
+<dd>be specified for example</dd>
+</dl>
+<p>time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))</p>
+<p>doy (str or int): Day of the year</p>
+<p>composite (str): e.g. DAY, 8DAY, 16DAY, etc</p>
+<p>variable (str)</p>
+<p>resolution (str): e.g. ‘1km’</p>
+<p>begin_year (int or str): for climatologies, see CONVENTIONS.md</p>
+<p>end_year (int or str): for climatologies, see CONVENTIONS.md</p>
+<dl class="docutils">
+<dt>nc (bool): Should extension be ‘.nc’ (instead of ‘.tif’) (Only useful for L3m level, to distinguish between</dt>
+<dd>tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</dd>
 </dl>
 </li>
 </ul>
@@ -310,36 +298,17 @@ nc (bool): Should extension be ‘.nc’ (instead of ‘.tif’) (Only useful fo
 </tr>
 </tbody>
 </table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd><p class="first">Each level= chosen requires different kwargs.
-‘L2’:</p>
-<blockquote>
-<div>filename and suite OR sensor_code, suite, date, and time</div></blockquote>
-<dl class="last docutils">
-<dt>‘L3b’:</dt>
-<dd>filename, composite and suite OR sensor_code, date, composite, suite</dd>
-<dt>‘L3m’ climatology:</dt>
-<dd>(date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter
-# TODO: There could be a problem with the leap year when using date</dd>
-<dt>‘L3m’ anomaly:</dt>
-<dd>filename OR date, composite, suite, variable, resolution</dd>
-<dt>‘L3m’:</dt>
-<dd>filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)</dd>
-</dl>
-</dd>
-<dt>Example usage:</dt>
-<dd>&gt; import satmo
+<p class="rubric">Examples</p>
+<p>&gt; import satmo
 &gt; from datetime import datetime, time
 &gt;
 &gt; satmo.filename_builder(‘L2’, filename = ‘T2001117063500.L1A_LAC.bz2’, suite = ‘OC’, full_path = True, data_root = ‘/export/isilon/datos2/satmo2_data’)
-&gt; satmo.filename_builder(‘L2’, sensor_code = ‘T’, date = ‘1987-11-21’, time = time(6, 35, 0), suite = ‘OC’)</dd>
-</dl>
+&gt; satmo.filename_builder(‘L2’, sensor_code = ‘T’, date = ‘1987-11-21’, time = time(6, 35, 0), suite = ‘OC’)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a syntactically ocean color filename</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a syntactically correct ocean color filename</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
@@ -352,51 +321,53 @@ nc (bool): Should extension be ‘.nc’ (instead of ‘.tif’) (Only useful fo
 <code class="descclassname">satmo.utils.</code><code class="descname">filename_parser</code><span class="sig-paren">(</span><em>filename</em>, <em>raiseError=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#filename_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.filename_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>File parser for ocean color products</p>
 <p>Extract metadata information from a typical ocean color file name</p>
+<dl class="docutils">
+<dt>The parser will probably fail for the following products:</dt>
+<dd><ul class="first last simple">
+<li>L0</li>
+<li>Sentinel 3</li>
+<li>Meris for levels lower than L2</li>
+</ul>
+</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>str</em>) – String containing an ocean color file filename</li>
 <li><strong>raiseError</strong> (<em>bool</em>) – Behavior when no valid pattern is found.</li>
 <li><strong>True</strong> (<em>default</em>) – Nones</li>
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>The parser will probably fail for the following products:
-- L0
-- Sentinel 3
-- Meris for levels lower than L2</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">sensor (str)
-sensor_code (str)
-date (datetime.date)
-time (datetime.time)
-year (int)
-month (int)
-doy (int)
-dom (int)
-level (str)
-filename (str)
-climatology (bool)
-anomaly (bool)
-resolution (str)
-variable (str)
-suite (str)
-composite (str) e.g.: DAY, 8DAY, …
-begin_year (int) (for climatologies only)
-end_year (int) (for climatologies only)
-Key values are set to None when not applicable</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A dictionary with the following keys:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sensor</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">sensor_code</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">date</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
+<span class="n">time</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+<span class="n">year</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">month</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">doy</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">dom</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">level</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">filename</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">climatology</span> <span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">anomaly</span> <span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">resolution</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">variable</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">suite</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">composite</span> <span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="p">:</span> <span class="n">DAY</span><span class="p">,</span> <span class="mi">8</span><span class="n">DAY</span><span class="p">,</span> <span class="o">...</span>
+<span class="n">begin_year</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="p">(</span><span class="k">for</span> <span class="n">climatologies</span> <span class="n">only</span><span class="p">)</span>
+<span class="n">end_year</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="p">(</span><span class="k">for</span> <span class="n">climatologies</span> <span class="n">only</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Key values are set to None when not applicable</p>
+</p>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">A dictionnary with the following keys</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -405,16 +376,9 @@ Key values are set to None when not applicable</td>
 <dl class="function">
 <dt id="satmo.utils.find_composite_date_list">
 <code class="descclassname">satmo.utils.</code><code class="descname">find_composite_date_list</code><span class="sig-paren">(</span><em>date</em>, <em>delta</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#find_composite_date_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.find_composite_date_list" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Find, given a date and delta, all the dates that compose the composite to</dt>
-<dd>to which the input date belong</dd>
-<dt>Details:</dt>
-<dd><dl class="first last docutils">
-<dt>To be used with the near real time wrapper function to find out, when a new</dt>
-<dd>L3m file is produced, which composite should be created or updated.</dd>
-</dl>
-</dd>
-</dl>
+<dd><p>Find, given a date and delta, all the dates that compose the composite to which the input date belong</p>
+<p>To be used with the near real time wrapper function to find out, when a new
+L3m file is produced, which composite should be created or updated.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -426,7 +390,10 @@ created L3m file (e.g.: daily composite))</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of dates (to be passed to make_time_composite)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of dates (to be passed to make_time_composite)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
 </td>
 </tr>
 </tbody>
@@ -456,19 +423,18 @@ created L3m file (e.g.: daily composite))</li>
 <dt id="satmo.utils.is_day">
 <code class="descclassname">satmo.utils.</code><code class="descname">is_day</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#is_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.is_day" title="Permalink to this definition">¶</a></dt>
 <dd><p>Logical function to check whether a file is a night or a day file</p>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>Because time reported in file names are GMT times and not local
+<p>Because time reported in file names are GMT times and not local
 times, this function has been customized for the satmo project area
-and is only valid for that area</dd>
-</dl>
+and is only valid for that area</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – file name of a dataset</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Boolean, True if day file, False otherwise</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if day file, False otherwise</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
 </tr>
 </tbody>
 </table>
@@ -478,19 +444,18 @@ and is only valid for that area</dd>
 <dt id="satmo.utils.is_night">
 <code class="descclassname">satmo.utils.</code><code class="descname">is_night</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#is_night"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.is_night" title="Permalink to this definition">¶</a></dt>
 <dd><p>Logical function to check whether a file is a night or a day file</p>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>Because time reported in file names are GMT times and not local
+<p>Because time reported in file names are GMT times and not local
 times, this function has been customized for the satmo project area
-and is only valid for that area</dd>
-</dl>
+and is only valid for that area</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – file name of a dataset</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Boolean, True if night file, False otherwise</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if night file, False otherwise</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
 </tr>
 </tbody>
 </table>
@@ -527,12 +492,13 @@ defaults to None</li>
 <dt id="satmo.utils.path_finder">
 <code class="descclassname">satmo.utils.</code><code class="descname">path_finder</code><span class="sig-paren">(</span><em>data_root</em>, <em>date</em>, <em>level</em>, <em>sensor_code=None</em>, <em>composite=None</em>, <em>anomaly=False</em>, <em>climatology=False</em>, <em>search=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#path_finder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.path_finder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds and find existing paths from meta information</p>
-<p>Builds a pseudo path name using provided metadata and runs glob.glob on it</p>
+<p>Builds a pseudo path name using provided metadata and runs glob.glob on it.</p>
+<p>If composite or anomaly is True, you only need to provide composite and date</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>data_root</strong> (<em>str</em>) – Root of the data archive</li>
 <li><strong>date</strong> (<em>str</em><em> or </em><em>datetime</em>) – Date of the directory to find</li>
 <li><strong>level</strong> (<em>str</em>) – Data level</li>
@@ -545,17 +511,11 @@ itself is returned. Defaults to True</li>
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd>if composite or anomaly is True, you only need to provide composite and date</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of existing paths matching the ‘query’</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of existing paths matching the ‘query’</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -565,16 +525,10 @@ itself is returned. Defaults to True</li>
 <dt id="satmo.utils.pre_compose">
 <code class="descclassname">satmo.utils.</code><code class="descname">pre_compose</code><span class="sig-paren">(</span><em>begin</em>, <em>end</em>, <em>delta</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#pre_compose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.pre_compose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare a list of list of datetime to run with a compositing function</p>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd><dl class="first last docutils">
-<dt>Each sub list in the returned list contains the dates required to make the</dt>
-<dd>composite. When delta is not a multiple of the number of day of a given
+<p>Each sub list in the returned list contains the dates required to make the
+composite. When delta is not a multiple of the number of day of a given
 year, the last composite of the year is truncated and the next composite
-starts on the first of January of the following calendart year.</dd>
-</dl>
-</dd>
-</dl>
+starts on the first of January of the following calendar year.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -586,12 +540,15 @@ starts on the first of January of the following calendart year.</dd>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of lists.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of lists.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">satmo</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">pre_compose</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2002</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">31</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">satmo</span><span class="o">.</span><span class="n">pre_compose</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2002</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">31</span><span class="p">),</span> <span class="s1">&#39;month&#39;</span><span class="p">)</span>
@@ -603,51 +560,40 @@ starts on the first of January of the following calendart year.</dd>
 <dt id="satmo.utils.processing_meta_from_list">
 <code class="descclassname">satmo.utils.</code><code class="descname">processing_meta_from_list</code><span class="sig-paren">(</span><em>file_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/utils.html#processing_meta_from_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.utils.processing_meta_from_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a list of filenames and returns a list of dictionaries with processing metadata</p>
-<dl class="docutils">
-<dt>Details:</dt>
-<dd><dl class="first last docutils">
-<dt>The function is meant to be used within satmo.wrappers.nrt_wrapper to know</dt>
-<dd>which information can be generated from a list of newly downloaded files
-and hence kick-off the right processing chains.</dd>
-</dl>
-</dd>
-</dl>
+<p>The function is meant to be used within satmo.wrappers.nrt_wrapper to know
+which information can be generated from a list of newly downloaded files
+and hence kick-off the right processing chains.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_list</strong> (<em>list</em>) – A list of file names parsable by filename_parser</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
-<dt>A list of unique dictionaries containing processing information.</dt>
-<dd>Example of a dict (list element):
-{‘date’: datetime.date(2017, 6, 25),<blockquote class="last">
-<div><dl class="docutils">
-<dt>’products’: [‘Rrs_412’,</dt>
-<dd>’Rrs_443’,
-‘Rrs_469’,
-‘Rrs_488’,
-‘Rrs_531’,
-‘Rrs_547’,
-‘Rrs_555’,
-‘Rrs_645’,
-‘Rrs_667’,
-‘Rrs_678’,
-‘Kd_490’,
-‘chl_ocx’,
-‘aot_869’,
-‘ipar’,
-‘nflh’,
-‘par’,
-‘pic’,
-‘poc’,
-‘chlor_a’],</dd>
-</dl>
-<p>’sensor’: ‘aqua’,
-‘sensor_code’: ‘A’},</p>
-</div></blockquote>
-</dd>
-</dl>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of unique dictionaries containing processing information.<p>Example of a dict (list element):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+ <span class="s1">&#39;products&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Rrs_412&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_443&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_469&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_488&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_531&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_547&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_555&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_645&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_667&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rrs_678&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Kd_490&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;chl_ocx&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;aot_869&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;ipar&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;nflh&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;par&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;pic&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;poc&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;chlor_a&#39;</span><span class="p">],</span>
+ <span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="s1">&#39;aqua&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
 </td>
 </tr>
 </tbody>
@@ -690,7 +636,7 @@ and hence kick-off the right processing chains.</dd>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Use in a context manager, raises a TimeoutException when time spent within</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># the context manger exceeds specified duration in seconds</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">time</span>
@@ -789,7 +735,7 @@ and hence kick-off the right processing chains.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

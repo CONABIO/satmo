@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.wrappers &mdash; satmo 0.2.1 documentation</title>
+  <title>satmo.wrappers &mdash; satmo 0.2.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="satmo 0.2.1 documentation" href="../../index.html"/>
+    <link rel="top" title="satmo 0.2.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2.1
+                0.2.2
               </div>
             
           
@@ -198,8 +198,8 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        sensors: (list) list of strings, Valid entries are &#39;am&#39; (aqua), &#39;tm&#39; (terra),</span>
-<span class="sd">        &#39;sw&#39; (seawifs), &#39;v0&#39; (viirs)</span>
-<span class="sd">        begin (datetime or str): Begining of time range. &#39;yyyy-mm-dd&#39; if str</span>
+<span class="sd">            &#39;sw&#39; (seawifs), &#39;v0&#39; (viirs)</span>
+<span class="sd">        begin (datetime or str): Beginning of time range. &#39;yyyy-mm-dd&#39; if str</span>
 <span class="sd">        end (datetime or str): End of time range. &#39;yyyy-mm-dd&#39; if str</span>
 <span class="sd">        write_dir (str): Host directory to which the data will be written</span>
 <span class="sd">        north (float): north latitude of bounding box in DD</span>
@@ -209,12 +209,12 @@
 <span class="sd">        day (bool): Order day data ?</span>
 <span class="sd">        night (bool): Order night data ?</span>
 <span class="sd">        product (str): Product to order, defaults to &#39;L1A&#39;. Other possible values include</span>
-<span class="sd">        &#39;CHL&#39; for L2_OC, &#39;SST&#39; for L2_SST, and &#39;SST4&#39; for L2_SST4</span>
+<span class="sd">            &#39;CHL&#39; for L2_OC, &#39;SST&#39; for L2_SST, and &#39;SST4&#39; for L2_SST4</span>
 <span class="sd">        overwrite (bool): Should existing files on the host be overwritten</span>
 <span class="sd">        check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        list of boolean</span>
+<span class="sd">        list: list of boolean</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">begin</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -263,10 +263,10 @@
 <span class="sd">        preview (bool): Generate a png preview. Defaults to True</span>
 <span class="sd">        overwrite (bool): Overwrite existing L3m file. Defaults to False</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        The filename of the created composite.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The filename of the created composite.</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
 
 <span class="sd">        &gt;&gt;&gt; satmo.make_daily_composite(date=&#39;2016-01-01&#39;, variable=&#39;chlor_a&#39;, suite=&#39;CHL&#39;,</span>
@@ -330,13 +330,13 @@
     <span class="sd">&quot;&quot;&quot;Produce daily composite for individual dates in a time-range in batch</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        begin (datetime or str): Begining of time range. &#39;yyyy-mm-dd&#39; if str</span>
+<span class="sd">        begin (datetime or str): Beginning of time range. &#39;yyyy-mm-dd&#39; if str</span>
 <span class="sd">        end (datetime or str): End of time range. &#39;yyyy-mm-dd&#39; if str</span>
 <span class="sd">        n_threads (int): Number of threads to use for running the</span>
 <span class="sd">            make_daily_composite function in parallel.</span>
 <span class="sd">        others (*): See help of make_daily_composite for the other parameters.</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
 
 <span class="sd">        &gt;&gt;&gt; satmo.timerange_daily_composite(begin=&#39;2015-01-01&#39;, end=&#39;2016-06-30&#39;,</span>
@@ -364,261 +364,6 @@
     <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">make_daily_composite_error_catcher</span><span class="p">,</span>
                                          <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">date_range</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">9999999</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="auto_L3m_process"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.auto_L3m_process">[docs]</a><span class="k">def</span> <span class="nf">auto_L3m_process</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">sensor_code</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span>
-                     <span class="n">data_root</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bit_mask</span> <span class="o">=</span> <span class="mh">0x0669D73B</span><span class="p">,</span> <span class="n">proj4string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                     <span class="n">fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">band_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapper to easily run generate L3m files (implicitely from L2)</span>
-
-<span class="sd">    Details:</span>
-<span class="sd">        The function generates a L3m file for a given variable in tif format</span>
-<span class="sd">            from a list of L2 files. The variable can be either an existing</span>
-<span class="sd">            layer in the input L2 files, or can be calculated given a formula</span>
-<span class="sd">            (fun=) and a list of reflectance bands (band_list=). File names are</span>
-<span class="sd">            automatically generated and a png preview is optionally produced as</span>
-<span class="sd">            well.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        date (str or datetime): Date to be processed</span>
-<span class="sd">        sensor_code (str): Sensor code of the data to be processed (e.g. &#39;A&#39; for aqua)</span>
-<span class="sd">        suite (str): L3m suite to obtain (e.g. &#39;CHL&#39;)</span>
-<span class="sd">        var (str): L3m variable to process (e.g. &#39;chlor_a&#39;). if a fun= and</span>
-<span class="sd">            band_list= arguments are not provided, the variable must already exist</span>
-<span class="sd">            in the input L2 files</span>
-<span class="sd">        bit_mask (int): The mask to use for selecting active flags from the flag array</span>
-<span class="sd">            See the help of apply_mask for further details</span>
-<span class="sd">        north (float): north latitude of bounding box in DD</span>
-<span class="sd">        south (float): south latitude of bounding box in DD</span>
-<span class="sd">        west (float): west longitude of bounding box in DD</span>
-<span class="sd">        east (float): east longitude of bounding box in DD</span>
-<span class="sd">        data_root (str): Root of the data archive</span>
-<span class="sd">        day (bool): Is this day data or not. Defaults to True</span>
-<span class="sd">        resolution (int): Outout resolution in the unit of the output</span>
-<span class="sd">            coordinate reference system.</span>
-<span class="sd">        proj4string (str): Optional proj4 string. If None (default), a lambert Azimutal Equal Area projection (laea), centered</span>
-<span class="sd">            on the provided extent is used. Note that non metric projections</span>
-<span class="sd">            are likely to cause problems with the automatic output file naming.</span>
-<span class="sd">        overwrite (bool): Overwrite existing L3m file. Defaults to False</span>
-<span class="sd">        preview (bool): Generate a png preview. Defaults to True</span>
-
-<span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; import satmo</span>
-
-<span class="sd">        &gt;&gt;&gt; filename = satmo.auto_L3m_process(date=&#39;2016-01-10&#39;, sensor_code=&#39;A&#39;, suite=&#39;CHL&#39;,</span>
-<span class="sd">                                              var=&#39;chlor_a&#39;, north=33, south=3, west=-122, east=-72,</span>
-<span class="sd">                                              overwrite=True, resolution=2000,</span>
-<span class="sd">                                              data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;)</span>
-
-<span class="sd">    Return:</span>
-<span class="sd">        The filename of the produced file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Get qual array name (if any) from global variable</span>
-    <span class="n">qual_array</span> <span class="o">=</span> <span class="n">QUAL_ARRAY_NAME_FROM_SUITE</span><span class="p">[</span><span class="n">suite</span><span class="p">]</span>
-    <span class="c1"># Build proj4string if not provided</span>
-    <span class="k">if</span> <span class="n">proj4string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">lat_0</span> <span class="o">=</span> <span class="p">(</span><span class="n">south</span> <span class="o">+</span> <span class="n">north</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
-        <span class="n">lon_0</span> <span class="o">=</span> <span class="p">(</span><span class="n">east</span> <span class="o">+</span> <span class="n">west</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
-        <span class="n">proj4string</span> <span class="o">=</span> <span class="s1">&#39;+proj=laea +lat_0=</span><span class="si">%.1f</span><span class="s1"> +lon_0=</span><span class="si">%.1f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat_0</span><span class="p">,</span> <span class="n">lon_0</span><span class="p">)</span>
-
-    <span class="c1"># Generate output filename </span>
-    <span class="n">resolution_str</span> <span class="o">=</span> <span class="n">resolution_to_km_str</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">filename_builder</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;L3m&#39;</span><span class="p">,</span> <span class="n">full_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                   <span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span>
-                                   <span class="n">sensor_code</span><span class="o">=</span><span class="n">sensor_code</span><span class="p">,</span> <span class="n">suite</span><span class="o">=</span><span class="n">suite</span><span class="p">,</span>
-                                   <span class="n">variable</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">composite</span><span class="o">=</span><span class="s1">&#39;DAY&#39;</span><span class="p">,</span>
-                                   <span class="n">resolution</span><span class="o">=</span><span class="n">resolution_str</span><span class="p">)</span>
-    <span class="c1"># Process the data (only if file does not yet exist, unless overwrite set</span>
-    <span class="c1"># to True</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">):</span>
-        <span class="c1"># Instantiate L3mProcessing class</span>
-        <span class="k">if</span> <span class="n">fun</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">band_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># The var exists in the L2 files</span>
-            <span class="n">bin_class</span> <span class="o">=</span> <span class="n">L3mProcess</span><span class="o">.</span><span class="n">from_sensor_date</span><span class="p">(</span><span class="n">sensor_code</span><span class="o">=</span><span class="n">sensor_code</span><span class="p">,</span>
-                                                    <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span>
-                                                    <span class="n">suite</span><span class="o">=</span><span class="n">L2_L3_SUITES_CORRESPONDENCES</span><span class="p">[</span><span class="n">suite</span><span class="p">],</span>
-                                                    <span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span>
-                                                    <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">qual_array</span><span class="o">=</span><span class="n">qual_array</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">bin_class</span> <span class="o">=</span> <span class="n">L3mProcess</span><span class="o">.</span><span class="n">from_sensor_date</span><span class="p">(</span><span class="n">sensor_code</span><span class="o">=</span><span class="n">sensor_code</span><span class="p">,</span>
-                                                    <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span>
-                                                    <span class="n">suite</span><span class="o">=</span><span class="n">L2_L3_SUITES_CORRESPONDENCES</span><span class="p">[</span><span class="n">suite</span><span class="p">],</span>
-                                                    <span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span> <span class="n">qual_array</span><span class="o">=</span><span class="n">qual_array</span><span class="p">)</span>
-            <span class="n">bin_class</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">band_list</span><span class="o">=</span><span class="n">band_list</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">fun</span><span class="p">)</span>
-        <span class="c1"># TODO: In case someone one day wants to adjust quality levels for filtering</span>
-        <span class="c1"># (mostly applies to temperature products), this should be done here</span>
-        <span class="n">bin_class</span><span class="o">.</span><span class="n">apply_mask</span><span class="p">(</span><span class="n">bit_mask</span><span class="p">)</span>
-        <span class="n">bin_class</span><span class="o">.</span><span class="n">bin_to_grid</span><span class="p">(</span><span class="n">south</span><span class="o">=</span><span class="n">south</span><span class="p">,</span> <span class="n">north</span><span class="o">=</span><span class="n">north</span><span class="p">,</span> <span class="n">west</span><span class="o">=</span><span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="o">=</span><span class="n">east</span><span class="p">,</span>
-                              <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">proj4string</span><span class="o">=</span><span class="n">proj4string</span><span class="p">)</span>
-        <span class="c1"># Create directory if not already exists</span>
-        <span class="n">L3m_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">L3m_dir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">L3m_dir</span><span class="p">)</span>
-        <span class="c1"># Write grid to file</span>
-        <span class="n">bin_class</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">preview</span><span class="p">:</span>
-            <span class="n">make_preview</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">filename</span></div>
-
-
-<div class="viewcode-block" id="auto_L3m_process_with_error_catcher"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.auto_L3m_process_with_error_catcher">[docs]</a><span class="k">def</span> <span class="nf">auto_L3m_process_with_error_catcher</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">sensor_code</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span>
-                                        <span class="n">data_root</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bit_mask</span> <span class="o">=</span> <span class="mh">0x0669D73B</span><span class="p">,</span> <span class="n">proj4string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                        <span class="n">fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">band_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">time_limit</span><span class="p">(</span><span class="mi">120</span><span class="p">):</span>
-            <span class="n">auto_L3m_process</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">sensor_code</span><span class="o">=</span><span class="n">sensor_code</span><span class="p">,</span> <span class="n">suite</span><span class="o">=</span><span class="n">suite</span><span class="p">,</span>
-                             <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">north</span><span class="o">=</span><span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="o">=</span><span class="n">south</span><span class="p">,</span> <span class="n">west</span><span class="o">=</span><span class="n">west</span><span class="p">,</span>
-                             <span class="n">east</span><span class="o">=</span><span class="n">east</span><span class="p">,</span> <span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
-                             <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span> <span class="n">bit_mask</span><span class="o">=</span><span class="n">bit_mask</span><span class="p">,</span> <span class="n">proj4string</span><span class="o">=</span><span class="n">proj4string</span><span class="p">,</span>
-                             <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">fun</span><span class="p">,</span> <span class="n">band_list</span><span class="o">=</span><span class="n">band_list</span><span class="p">,</span>
-                             <span class="n">preview</span><span class="o">=</span><span class="n">preview</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">pprint</span><span class="p">(</span><span class="s1">&#39;date </span><span class="si">%s</span><span class="s1">, sensor </span><span class="si">%s</span><span class="s1"> could not be processed, reason: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
-               <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">sensor_code</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">pprint</span><span class="p">(</span><span class="s1">&#39;date </span><span class="si">%s</span><span class="s1">, sensor </span><span class="si">%s</span><span class="s1"> could not be processed, reason: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
-               <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">sensor_code</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-    <span class="k">except</span> <span class="n">TimeoutException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">pprint</span><span class="p">(</span><span class="s1">&#39;date </span><span class="si">%s</span><span class="s1">, sensor </span><span class="si">%s</span><span class="s1"> could not be processed, Process timed out after 120 seconds&#39;</span> <span class="o">%</span>
-               <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">sensor_code</span><span class="p">)))</span></div>
-
-<div class="viewcode-block" id="timerange_auto_L3m_process"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.timerange_auto_L3m_process">[docs]</a><span class="k">def</span> <span class="nf">timerange_auto_L3m_process</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">sensor_codes</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span>
-                               <span class="n">data_root</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bit_mask</span> <span class="o">=</span>
-                               <span class="mh">0x0669D73B</span><span class="p">,</span> <span class="n">proj4string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                               <span class="n">fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">band_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                               <span class="n">n_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapper with parallel support for batch processing of L3m files</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        begin (datetime or str): Begining of time range. &#39;yyyy-mm-dd&#39; if str</span>
-<span class="sd">        end (datetime or str): End of time range. &#39;yyyy-mm-dd&#39; if str</span>
-<span class="sd">        sensor_codes (list): list of strings with sensor codes (e.g.: [&#39;A&#39;,</span>
-<span class="sd">            &#39;T&#39;])</span>
-<span class="sd">        n_threads (int): Number of threads to use for running the</span>
-<span class="sd">            auto_L3m_process function in parallel.</span>
-<span class="sd">        others (*): See help of auto_L3m_process for the other parameters.</span>
-
-<span class="sd">    Return:</span>
-<span class="sd">        This function does not return anything</span>
-
-<span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; import satmo</span>
-
-<span class="sd">        &gt;&gt;&gt; satmo.timerange_auto_L3m_process(begin=&#39;2001-01-01&#39;,</span>
-<span class="sd">                                             end=&#39;2017-12-31&#39;,</span>
-<span class="sd">                                             sensor_codes=[&#39;V&#39;, &#39;T&#39;, &#39;A&#39;],</span>
-<span class="sd">                                             suite=&#39;CHL&#39;, var=&#39;chlor_a&#39;,</span>
-<span class="sd">                                             north=33, south=3, west=-122,</span>
-<span class="sd">                                             east=-72,</span>
-<span class="sd">                                             data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;,</span>
-<span class="sd">                                             resolution=2000)</span>
-
-<span class="sd">        &gt;&gt;&gt; # Second example with calculation of new variable from Rrs layers</span>
-<span class="sd">        &gt;&gt;&gt; import satmo</span>
-<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-
-<span class="sd">        &gt;&gt;&gt; def add_bands(x, y):</span>
-<span class="sd">        &gt;&gt;&gt;     return np.add(x, y)</span>
-
-<span class="sd">        &gt;&gt;&gt; satmo.timerange_auto_L3m_process(begin=&#39;2016-01-01&#39;,</span>
-<span class="sd">                                             end=&#39;2016-01-16&#39;,</span>
-<span class="sd">                                             sensor_codes=[&#39;A&#39;, &#39;T&#39;],</span>
-<span class="sd">                                             suite=&#39;RRS&#39;, var=&#39;rrs_add&#39;,</span>
-<span class="sd">                                             north=33, south=3, west=-122,</span>
-<span class="sd">                                             east=-72,</span>
-<span class="sd">                                             data_root=&#39;/home/ldutrieux/sandbox/satmo2_data&#39;,</span>
-<span class="sd">                                             resolution=2000,</span>
-<span class="sd">                                             n_threads=3, overwrite=True, fun=add_bands,</span>
-<span class="sd">                                             band_list=[&#39;Rrs_555&#39;, &#39;Rrs_645&#39;])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">begin</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">ndays</span> <span class="o">=</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">begin</span><span class="p">)</span><span class="o">.</span><span class="n">days</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">date_range</span> <span class="o">=</span> <span class="p">[</span><span class="n">begin</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ndays</span><span class="p">)]</span>
-    <span class="c1"># Loop over each sensor and implement the mnultiprocessing there</span>
-    <span class="k">for</span> <span class="n">sensor_code</span> <span class="ow">in</span> <span class="n">sensor_codes</span><span class="p">:</span>
-
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">sensor_code</span><span class="p">,</span>
-                  <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">suite</span><span class="p">,</span>
-                  <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">var</span><span class="p">,</span>
-                  <span class="s1">&#39;north&#39;</span><span class="p">:</span> <span class="n">north</span><span class="p">,</span>
-                  <span class="s1">&#39;south&#39;</span><span class="p">:</span> <span class="n">south</span><span class="p">,</span>
-                  <span class="s1">&#39;west&#39;</span><span class="p">:</span> <span class="n">west</span><span class="p">,</span>
-                  <span class="s1">&#39;east&#39;</span><span class="p">:</span> <span class="n">east</span><span class="p">,</span>
-                  <span class="s1">&#39;data_root&#39;</span><span class="p">:</span> <span class="n">data_root</span><span class="p">,</span>
-                  <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="n">resolution</span><span class="p">,</span>
-                  <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span>
-                  <span class="s1">&#39;bit_mask&#39;</span><span class="p">:</span> <span class="n">bit_mask</span><span class="p">,</span>
-                  <span class="s1">&#39;proj4string&#39;</span><span class="p">:</span> <span class="n">proj4string</span><span class="p">,</span>
-                  <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span> <span class="n">overwrite</span><span class="p">,</span>
-                  <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">fun</span><span class="p">,</span>
-                  <span class="s1">&#39;band_list&#39;</span><span class="p">:</span> <span class="n">band_list</span><span class="p">,</span>
-                  <span class="s1">&#39;preview&#39;</span><span class="p">:</span> <span class="n">preview</span><span class="p">}</span>
-        <span class="n">pool</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">n_threads</span><span class="p">)</span>
-        <span class="c1"># Use of map_async().get(9999999) enables KeyboardInterrupt to work</span>
-        <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">auto_L3m_process_with_error_catcher</span><span class="p">,</span>
-                                         <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">date_range</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">9999999</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="timerange_time_compositer"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.timerange_time_compositer">[docs]</a><span class="k">def</span> <span class="nf">timerange_time_compositer</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span>
-                              <span class="n">composite</span><span class="p">,</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">sensor_code</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span>
-                              <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Runs make_time_composite in batch and parallel</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        begin (datetime.datetime or str): Begin date of the first composite</span>
-<span class="sd">        end (datetime.datetime or str): Begin date of the last composite</span>
-<span class="sd">        delta (int or str): composite length in days if int, &#39;month&#39; if str.</span>
-<span class="sd">        var (str): L3m variable to composite</span>
-<span class="sd">        suite (str): L3m suite to compose</span>
-<span class="sd">        resolution (str): Resolution of data to compose (e.g.: &#39;2km&#39;)</span>
-<span class="sd">        composite (str): Type/name of generated composite (e.g.: &#39;8DAY&#39;, &#39;16DAY&#39;). Used</span>
-<span class="sd">            for automatic output filename generation.</span>
-<span class="sd">        data_root (str): Root of the data archive</span>
-<span class="sd">        sensor_code (str): Sensor to composite (defaults to &#39;X&#39;, which</span>
-<span class="sd">            corresponds to daily (cross sensors) composites.</span>
-<span class="sd">        fun (str): compositing function, defaults to mean</span>
-<span class="sd">        overwrite (bool): Should output file be overwritten if it already</span>
-<span class="sd">            exists.</span>
-<span class="sd">        preview (bool): Should a png preview be automatically generated</span>
-<span class="sd">        n_threads (int): Number of threads to use for running the</span>
-<span class="sd">            auto_L3m_process function in parallel.</span>
-
-<span class="sd">    Return:</span>
-<span class="sd">        Used for its side effect of running make_time_composite in batch; does not</span>
-<span class="sd">            return anything</span>
-
-<span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; import satmo</span>
-<span class="sd">        &gt;&gt;&gt; # Create 16 days mean value composites of chlor_a</span>
-<span class="sd">        &gt;&gt;&gt; satmo.timerange_time_compositer(&#39;2000-01-01&#39;, &#39;2004-12-31&#39;, 16, &#39;chlor_a&#39;,</span>
-<span class="sd">                                            suite=&#39;CHL&#39;, resolution=&#39;2km&#39;, composite=&#39;16DAY&#39;,</span>
-<span class="sd">                                            data_root=&#39;/home/ldutrieux/sandbox/satmo2_data/&#39;,</span>
-<span class="sd">                                            overwrite=True, n_threads=2)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">begin</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">dateList_list</span> <span class="o">=</span> <span class="n">pre_compose</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
-    <span class="c1"># Define kwargs (arguments passed to make_time_composite other than date_list</span>
-    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">var</span><span class="p">,</span>
-              <span class="s1">&#39;suite&#39;</span><span class="p">:</span> <span class="n">suite</span><span class="p">,</span>
-              <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="n">resolution</span><span class="p">,</span>
-              <span class="s1">&#39;composite&#39;</span><span class="p">:</span> <span class="n">composite</span><span class="p">,</span>
-              <span class="s1">&#39;data_root&#39;</span><span class="p">:</span> <span class="n">data_root</span><span class="p">,</span>
-              <span class="s1">&#39;sensor_code&#39;</span><span class="p">:</span> <span class="n">sensor_code</span><span class="p">,</span>
-              <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">fun</span><span class="p">,</span>
-              <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-              <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span> <span class="n">overwrite</span><span class="p">,</span>
-              <span class="s1">&#39;preview&#39;</span><span class="p">:</span> <span class="n">preview</span><span class="p">}</span>
-    <span class="n">pool</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">n_threads</span><span class="p">)</span>
-    <span class="c1"># Use of map_async().get(9999999) enables KeyboardInterrupt to work</span>
-    <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">make_time_composite</span><span class="p">,</span>
-                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">dateList_list</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">9999999</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="l2mapgen_wrapper"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.l2mapgen_wrapper">[docs]</a><span class="k">def</span> <span class="nf">l2mapgen_wrapper</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">sensor_codes</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">north</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">data_root</span><span class="p">,</span>
                      <span class="n">night</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">outmode</span><span class="o">=</span><span class="s1">&#39;tiff&#39;</span><span class="p">,</span>
                      <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -643,7 +388,7 @@
 <span class="sd">        outmode (str): See seadas l2mapgen doc</span>
 <span class="sd">        overwrite (bool): Overwrite existing files? Return ValueError if file exists</span>
 <span class="sd">            and overwrite is set to False (default)</span>
-<span class="sd">        threshold (float): Minumum percentage of the filled pixels</span>
+<span class="sd">        threshold (float): Minimum percentage of the filled pixels</span>
 
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -756,7 +501,7 @@
 <span class="sd">            bands.</span>
 <span class="sd">        data_root (str): Root of the data archive</span>
 
-<span class="sd">    Return:</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        list: The list of files to which a variable was appended. However, the</span>
 <span class="sd">        function is mostly used for its side effect of appending a variable</span>
 <span class="sd">        to each file of a list of netcdf files.</span>
@@ -907,7 +652,7 @@
             <span class="c1"># Get final list of variables</span>
             <span class="n">var_dict</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">l3_suite</span> <span class="ow">in</span> <span class="n">l3_suites</span><span class="p">:</span>
-                <span class="n">var_dict</span><span class="p">[</span><span class="n">l3_suite</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">day_vars</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">STANDARD_L3_SUITES</span><span class="p">[</span><span class="n">l3_suite</span><span class="p">][</span><span class="n">sensor</span><span class="p">]))</span>
+                <span class="n">var_dict</span><span class="p">[</span><span class="n">l3_suite</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">night_vars</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">STANDARD_L3_SUITES</span><span class="p">[</span><span class="n">l3_suite</span><span class="p">][</span><span class="n">sensor</span><span class="p">]))</span>
             <span class="c1"># For each suite</span>
             <span class="k">for</span> <span class="n">suite</span> <span class="ow">in</span> <span class="n">l3_suites</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">var_dict</span><span class="p">[</span><span class="n">suite</span><span class="p">]:</span> <span class="c1"># Check that list is not empty</span>
@@ -968,7 +713,7 @@
 
 <div class="viewcode-block" id="l3bin_wrapper"><a class="viewcode-back" href="../../api/satmo.wrappers.html#satmo.wrappers.l3bin_wrapper">[docs]</a><span class="k">def</span> <span class="nf">l3bin_wrapper</span><span class="p">(</span><span class="n">sensor_codes</span><span class="p">,</span> <span class="n">date_list</span><span class="p">,</span> <span class="n">suite_list</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">north</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span>
                   <span class="n">composite</span><span class="p">,</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapper to run l3bin without having to name explicitely input or output files</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper to run l3bin without having to name explicitly input or output files</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        sensor_codes (list): List of sensor codes to include (e.g.: [&#39;A&#39;, &#39;T&#39;, &#39;V&#39;]</span>
@@ -1105,10 +850,10 @@
 <span class="sd">            to True), in which case the function will compare file size between the</span>
 <span class="sd">            local and remote archives before deciding or not to download the file.</span>
 
-<span class="sd">    Return:</span>
-<span class="sd">        A list of file paths corresponding to the local paths of downloaded files</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of file paths corresponding to the local paths of downloaded files</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
 <span class="sd">        &gt;&gt;&gt; satmo.subscriptions_download([1821, 1823], data_root=&#39;/export/isilon/datos2/satmo2_data&#39;,</span>
 <span class="sd">                                         refined=False)</span>
@@ -1160,28 +905,18 @@
 <span class="sd">        eight_day (bool): Generate 8 days temporal composites (defaults to False)</span>
 <span class="sd">        month (bool): Generate monthly temporal composites (defaults to False)</span>
 
-<span class="sd">    Return:</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        The function is used for it&#39;s side effects of downloading data, and processing</span>
 <span class="sd">            associated variables</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; # The idea is to call this wrapper several time within a scheduler</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
 
 <span class="sd">        &gt;&gt;&gt; satmo.nrt_wrapper(day_or_night=&#39;day&#39;, pp_type=&#39;nrt&#39;, var_list=[&#39;chlor_a&#39;, &#39;sst&#39;, &#39;nflh&#39;, &#39;Kd_490&#39;],</span>
 <span class="sd">                              north=33, south=3, west=-122, east=-72,</span>
 <span class="sd">                              data_root=&#39;/export/isilon/datos2/satmo2_data/&#39;,</span>
-<span class="sd">                              eight_day=True)</span>
-
-<span class="sd">    Details:</span>
-<span class="sd">        How to adapt this function?</span>
-<span class="sd">            - To add/remove subscriptions, simply edit the global variable SUBSCRIPTIONS</span>
-<span class="sd">            - To add new variables you probably have to edit the global variables L3_SUITE_FROM_VAR and</span>
-<span class="sd">                BIT_MASK_FROM_L3_SUITE (if the variable belongs to a suite that is not referenced in these variables)</span>
-<span class="sd">            - Adding a new temporal composite means adding the corresponding argument, and following</span>
-<span class="sd">                the logic of the eight_day and sixteen_day cases (already implemented)</span>
-<span class="sd">            - Every change that involves changing the function argument should be passed to the CLI</span>
-<span class="sd">                (satmo_nrt.py)</span>
+<span class="sd">                              eight_day=True)    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Run subscription download on one type of subscription</span>
     <span class="k">if</span> <span class="n">pp_type</span> <span class="o">==</span> <span class="s1">&#39;refined&#39;</span><span class="p">:</span>
@@ -1285,8 +1020,8 @@
 <span class="sd">        n_threads (int): Number of threads to use for running l2gen in parallel</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        None: The function is used for its side effect of running the L1A-download</span>
-<span class="sd">            to L2m processing chain</span>
+<span class="sd">        The function is used for its side effect of running the L1A-download</span>
+<span class="sd">        to L2m processing chain</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># 1 - Download data</span>
@@ -1342,12 +1077,12 @@
 <span class="sd">        west (float): west longitude of bounding box in DD</span>
 <span class="sd">        east (float): east longitude of bounding box in DD</span>
 <span class="sd">        data_root (str): Root of the data archive</span>
-<span class="sd">        delay (int): Delay in number of days between data aquisition and refined</span>
+<span class="sd">        delay (int): Delay in number of days between data acquisition and refined</span>
 <span class="sd">            processing. Defaults to 30.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        None: The function is used for its side effect of running l2gen on 1 month</span>
-<span class="sd">            old L1A data</span>
+<span class="sd">        The function is used for its side effect of running l2gen on 1 month</span>
+<span class="sd">        old L1A data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
     <span class="n">last_month</span> <span class="o">=</span> <span class="n">today</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
@@ -1402,7 +1137,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.1',
+            VERSION:'0.2.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
