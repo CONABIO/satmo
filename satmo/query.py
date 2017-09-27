@@ -99,14 +99,13 @@ def make_download_url(file_name, host = 'https://oceandata.sci.gsfc.nasa.gov/cgi
     for example), prepends the 'getFile url' of the oceancolor DAAC and appends 
     '.gz' when files are not netcdf.
 
+    In line with query_from_extent, this function is designed to work
+    with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and
+    other data levels.
+
     Args:
         file_name (str): name of a L1A file present on oceancolor servers
         host (str): Address of the root of the archive. DON'T FORGET TRAILING SLASH
-
-    Details:
-        In line with query_from_extent, this function is designed to work
-        with L1A files from MODIS, VIIRS and SeaWifs. Untested for other sensors and
-        other data levels.
 
     Returns:
         A string of the URL at which the file can be downloaded (ready to be passed to

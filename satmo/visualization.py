@@ -31,19 +31,18 @@ def make_map_title(file):
     Meant to be used by the make_preview() function. Parses a file name
     and produces a string to be used as title for the preview figure
 
-    Details:
-        Example map titles include:
-        Daily Chlor_a aqua 2014-01-27
-        Daily SST combined 2014-01-27
-        8 day composite SST combined 2014-01-27 (date corresponds to first day of the compositing period)
-        8 day composite SST Climatology January 1
-        Example file names are:
-        T2014027.L3m_DAY_CHL_chlor_a_1km.tif
-        X2014027.L3m_DAY_SST_sst_1km.tif
-        X2014027.L3m_8DAY_SST_sst_1km.tif
-        XCLIM027.L3m_8DAY_SST_sst_1km.tif (climatology)
-        T2004005.L3m_DAY_CHL_chlor_a_250m.tif
-        A2007009.L3m_DAY_SST4_sst4_4km.nc
+    Example map titles include:
+        * Daily Chlor_a aqua 2014-01-27
+        * Daily SST combined 2014-01-27
+        * 8 day composite SST combined 2014-01-27 (date corresponds to first day of the compositing period)
+        * 8 day composite SST Climatology January 1
+        * Example file names are:
+        * T2014027.L3m_DAY_CHL_chlor_a_1km.tif
+        * X2014027.L3m_DAY_SST_sst_1km.tif
+        * X2014027.L3m_8DAY_SST_sst_1km.tif
+        * XCLIM027.L3m_8DAY_SST_sst_1km.tif (climatology)
+        * T2004005.L3m_DAY_CHL_chlor_a_250m.tif
+        * A2007009.L3m_DAY_SST4_sst4_4km.nc
 
     Args:
         file (str): File name (usually a geoTiff)
@@ -77,7 +76,7 @@ def make_preview(file):
         file (str): Path to a raster file containing a single layer (usually a geoTiff)
 
     Returns:
-        Filename of the png file created
+        str: Filename of the png file created
 
     """
     # Retrieve color stretch information of available

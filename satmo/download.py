@@ -13,7 +13,10 @@ from .errors import HttpResourceNotAvailable
 def download_file(url, write_dir, overwrite = False, check_integrity = False, timeout = 15):
     """Generic file download function
 
-    Downloads a file from a URL, and write it to a user defined location
+    Downloads a file from a URL, and write it to a user defined location.
+    The function will raise a ConnectionError (via requests) if a connection cannot be established
+    with the server (e.g.: network is down) and an HttpResourceNotAvailable if the file appear not to
+    exist on the server
 
     Args:
         url (str): download url
@@ -22,11 +25,6 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False, ti
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
         timeout (float): How long to wait (in seconds) for the server to send data before giving up and 
             raising a requests.ConnectionError
-
-    Details:
-        The function will raise a ConnectionError (via requests) if a connection cannot be established
-        with the server (e.g.: network is down) and an HttpResourceNotAvailable if the file appear not to
-        exist on the server
 
     Returns:
         str: The filename of the downloaded data
@@ -60,21 +58,19 @@ def download_file(url, write_dir, overwrite = False, check_integrity = False, ti
 def download_to_tree(url, base_dir, overwrite = False, check_integrity = False):
     """Download an ocean product file and automatically write it to the right location
 
-    The idea is that the function immediatly knows where to write the file
+    The idea is that the function immediately knows where to write the file
     by parsing the filename (present in url)
+    Directories where data are downloaded do not need to exist before running the function
+    Similarly to download_file, the function will raise a ConnectionError (via requests) if a connection
+    cannot be established with the server (e.g.: network is down) and an HttpResourceNotAvailable
+    if the file appear not to exist on the server. It might be worth re-trying when catching requests.ConnectionError,
+    going to the next file is probably the best way if catching a HttpResourceNotAvailable
 
     Args:
         url (str): download url
         base_dir (str): root of the archive tree on the host
         overwrite (bool): Should the file be overwritten if already existing on local host
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
-
-    Details:
-        Directories where data are downloaded do not need to exist before running the function
-        Similarly to download_file, the function will raise a ConnectionError (via requests) if a connection
-        cannot be established with the server (e.g.: network is down) and an HttpResourceNotAvailable
-        if the file appear not to exist on the server. It might be worth re-trying when catching requests.ConnectionError,
-        going to the next file is probably the best way if catching a HttpResourceNotAvailable
 
     Returns:
         str: The filename of the downloaded file
@@ -88,7 +84,7 @@ def download_robust(url, base_dir, n_retries = 5, pause_retries = 10, overwrite 
     """Robust download of a list of urls
 
     Handles connection errors, optionally check for existing files and integrity
-    Suitable for real time use and for updating an archive without overwritting existing data
+    Suitable for real time use and for updating an archive without overwriting existing data
 
     Args:
         url (str): Download url

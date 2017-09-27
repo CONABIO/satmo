@@ -93,7 +93,7 @@ def l2gen(x, var_list, suite, data_root, get_anc=True):
 
     Run l2gen for modis and viirs data. All intermediary files are automatically
     generated in the case of MODIS; if input is a viirs L1A file, there must be a
-    corresponging GEO file in the same folder.
+    corresponding GEO file in the same folder.
 
     Args:
         x (str): Path to input L1A file

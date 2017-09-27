@@ -21,39 +21,41 @@ def filename_parser(filename, raiseError = True):
     """File parser for ocean color products
 
     Extract metadata information from a typical ocean color file name
+    
+    The parser will probably fail for the following products:
+        * L0
+        * Sentinel 3
+        * Meris for levels lower than L2
 
     Args:
         filename (str): String containing an ocean color file filename
         raiseError (bool): Behavior when no valid pattern is found.
-        True (default) returns a ValueError, false returns a dictionnaries of
+        True (default) returns a ValueError, false returns a dictionaries of
             Nones
 
-    Details:
-        The parser will probably fail for the following products:
-        - L0
-        - Sentinel 3
-        - Meris for levels lower than L2
 
     Returns:
-        A dictionnary with the following keys:
-        sensor (str)
-        sensor_code (str)
-        date (datetime.date)
-        time (datetime.time)
-        year (int)
-        month (int)
-        doy (int)
-        dom (int)
-        level (str)
-        filename (str)
-        climatology (bool)
-        anomaly (bool)
-        resolution (str)
-        variable (str)
-        suite (str)
-        composite (str) e.g.: DAY, 8DAY, ...
-        begin_year (int) (for climatologies only)
-        end_year (int) (for climatologies only)
+        dict: A dictionary with the following keys::
+
+            sensor (str)
+            sensor_code (str)
+            date (datetime.date)
+            time (datetime.time)
+            year (int)
+            month (int)
+            doy (int)
+            dom (int)
+            level (str)
+            filename (str)
+            climatology (bool)
+            anomaly (bool)
+            resolution (str)
+            variable (str)
+            suite (str)
+            composite (str) e.g.: DAY, 8DAY, ...
+            begin_year (int) (for climatologies only)
+            end_year (int) (for climatologies only)
+        
         Key values are set to None when not applicable
     """
     pattern_0 = re.compile(r'(?P<sensor_code>CLIM\.|ANOM\.|[A-Z]{1})(?P<time_info>\d{3}\.|\d{7}\.|\d{13}\.)(?P<level>L0|L1A|L1B|GEO|GEO-M|L2|L2m|L3b|L3m)_.*')
@@ -267,51 +269,56 @@ def filename_parser(filename, raiseError = True):
 
 def filename_builder(level, climatology = False, anomaly = False, full_path = False, data_root = None, **kwargs):
     """Utility to build valid ocean color filenames for every level
+    
+    Each level= chosen requires different kwargs.
+
+    'L2': filename and suite OR sensor_code, suite, date, and time
+
+    'L3b': filename, composite and suite OR sensor_code, date, composite, suite
+
+    'L3m' climatology: (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter
+        
+    'L3m' anomaly: filename OR date, composite, suite, variable, resolution
+        
+    'L3m': filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)
 
     Args:
-        Positional arguments:
-            level (str): the data level of the desired filename
-        keywork arguments:
-            climatology (bool): Does the filename correspond to climatology data
-            anomaly (bool): Does the filename correspond to anomaly data
-            full_path (bool): Should file path be computed (using path_builder)
-            data_root (str): To be used in combination with full_path = True, see path_builder()
-                doc for more details
-        kwargs:
-            General kwargs:
-                None
+        level (str): the data level of the desired filename
+        climatology (bool): Does the filename correspond to climatology data
+        anomaly (bool): Does the filename correspond to anomaly data
+        full_path (bool): Should file path be computed (using path_builder)
+        data_root (str): To be used in combination with full_path = True, see path_builder()
+            doc for more details
+        **kwargs:
             level specific kwargs (See details section to know which kwargs are required for each chosen level):
-                filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)
-                suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)
-                sensor_code (str): e.g.: 'A', 'V', 'X'
-                date (datetime.datetime or str). IN the case of climatologies the year is ignored so that '1970-05-01' can
+
+            filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)
+            
+            suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)
+            
+            sensor_code (str): e.g.: 'A', 'V', 'X'
+            
+            date (datetime.datetime or str). IN the case of climatologies the year is ignored so that '1970-05-01' can
                 be specified for example
-                time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))
-                doy (str or int): Day of the year
-                composite (str): e.g. DAY, 8DAY, 16DAY, etc
-                variable (str)
-                resolution (str): e.g. '1km'
-                begin_year (int or str): for climatologies, see CONVENTIONS.md
-                end_year (int or str): for climatologies, see CONVENTIONS.md
-                nc (bool): Should extension be '.nc' (instead of '.tif') (Only useful for L3m level, to distinguish between
-                    tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
+            
+            time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))
+            
+            doy (str or int): Day of the year
+            
+            composite (str): e.g. DAY, 8DAY, 16DAY, etc
+            
+            variable (str)
+            
+            resolution (str): e.g. '1km'
+            
+            begin_year (int or str): for climatologies, see CONVENTIONS.md
+            
+            end_year (int or str): for climatologies, see CONVENTIONS.md
+            
+            nc (bool): Should extension be '.nc' (instead of '.tif') (Only useful for L3m level, to distinguish between
+                tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
 
-
-    Details:
-        Each level= chosen requires different kwargs.
-        'L2':
-            filename and suite OR sensor_code, suite, date, and time
-        'L3b':
-            filename, composite and suite OR sensor_code, date, composite, suite
-        'L3m' climatology:
-            (date OR doy), composite, suite, variable, resolution, begin_year, end_year. If a date is provided, year does not matter
-            # TODO: There could be a problem with the leap year when using date
-        'L3m' anomaly:
-            filename OR date, composite, suite, variable, resolution
-        'L3m':
-            filename, composite, variable, resolution, (nc) OR date, sensor_code, suite, composite, variable, resolution, (nc)
-
-    Example usage:
+    Examples:
         > import satmo
         > from datetime import datetime, time
         >
@@ -319,7 +326,7 @@ def filename_builder(level, climatology = False, anomaly = False, full_path = Fa
         > satmo.filename_builder('L2', sensor_code = 'T', date = '1987-11-21', time = time(6, 35, 0), suite = 'OC')
 
     Returns:
-        str: a syntactically ocean color filename
+        str: a syntactically correct ocean color filename
     """
     if level not in DATA_LEVELS:
         raise ValueError("Invalid level set")
@@ -497,7 +504,9 @@ def path_builder(filename, data_root = None, add_file = True):
 def path_finder(data_root, date, level, sensor_code = None, composite = None, anomaly = False, climatology = False, search = True):
     """Builds and find existing paths from meta information
 
-    Builds a pseudo path name using provided metadata and runs glob.glob on it
+    Builds a pseudo path name using provided metadata and runs glob.glob on it.
+
+    If composite or anomaly is True, you only need to provide composite and date
 
     Args:
         data_root (str): Root of the data archive
@@ -510,11 +519,8 @@ def path_finder(data_root, date, level, sensor_code = None, composite = None, an
         search (bool): Should the function return the output of glob.glob() on the generated. Otherwise the glob pattern
             itself is returned. Defaults to True
 
-    Details:
-        if composite or anomaly is True, you only need to provide composite and date
-
     Returns:
-        A list of existing paths matching the 'query'
+        list: A list of existing paths matching the 'query'
     """
     if type(date) is str:
         date = datetime.strptime(date, "%Y-%m-%d")
@@ -543,10 +549,16 @@ def file_finder(data_root, date, level, suite = None, variable = None, sensor_co
     """Finds existing files on the system from meta information (date, level, variable, sensor_code, ...)
 
     Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly
-    targetted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:
-        - list all L2 files required to produce a L3b binned product (don't forget filtering using isDay() as well)
-        - list all L3m files from a same date but from different sensors in order to produce cross sensor composites
+    targeted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:
+        * list all L2 files required to produce a L3b binned product (don't forget filtering using isDay() as well)
+        * list all L3m files from a same date but from different sensors in order to produce cross sensor composites
 
+    Required arguments differ depending on the level set. See list below:
+        * 'L1A': data_root, date, level, (sensor_code)
+        * 'L2': data_root, date, level, suite, (sensor_code)
+        * 'L3m': data_root, date, level, suite, variable, (sensor_code), resolution, composite
+        * 'L3b': data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite
+    
     Args:
         data_root (str): Root of the data archive
         date (str or datetime): Date of the directory to find
@@ -557,20 +569,8 @@ def file_finder(data_root, date, level, suite = None, variable = None, sensor_co
         resolution (str): e.g. '1km'
         composite (str): Composite period of the files to query
 
-    Details:
-        Required arguments differ depending on the level set. See list below:
-        - 'L1A':
-            data_root, date, level, (sensor_code)
-        - 'L2':
-            data_root, date, level, suite, (sensor_code)
-        - 'L3m':
-            data_root, date, level, suite, variable, (sensor_code), resolution, composite
-        - 'L3b':
-            data_root, date, level, suite, (sdata_root, date, level, suite, (sensor_code), compositeensor_code), composite
-
-
     Returns:
-        A list of filenames (empty if no matches)
+        list: A list of filenames (empty if no matches)
     """
     if type(date) is str:
         date = datetime.strptime(date, "%Y-%m-%d")
@@ -612,16 +612,15 @@ def viirs_geo_filename_builder(x):
 def is_day(filename):
     """Logical function to check whether a file is a night or a day file
 
-    Details:
-        Because time reported in file names are GMT times and not local
-        times, this function has been customized for the satmo project area
-        and is only valid for that area
+    Because time reported in file names are GMT times and not local
+    times, this function has been customized for the satmo project area
+    and is only valid for that area
 
     Args:
         filename (str): file name of a dataset
 
     Returns:
-        Boolean, True if day file, False otherwise
+        bool: True if day file, False otherwise
     """
     dt_time = filename_parser(filename)['time']
     # 12pm threshold validated against a full year for aqua, terra, viirs
@@ -633,16 +632,15 @@ def is_day(filename):
 def is_night(filename):
     """Logical function to check whether a file is a night or a day file
 
-    Details:
-        Because time reported in file names are GMT times and not local
-        times, this function has been customized for the satmo project area
-        and is only valid for that area
+    Because time reported in file names are GMT times and not local
+    times, this function has been customized for the satmo project area
+    and is only valid for that area
 
     Args:
         filename (str): file name of a dataset
 
     Returns:
-        Boolean, True if night file, False otherwise
+        bool: True if night file, False otherwise
     """
     return not is_day(filename)
 
@@ -652,7 +650,7 @@ def to_km(x):
     Args:
         x (str): A distance (resolution) string with unit (e.g.: '1000m')
 
-    Return:
+    Returns:
         str: A string of the form 'xxkm'
     """
     resolution_km = ureg(x).to(ureg.km)
@@ -664,7 +662,7 @@ def resolution_to_km_str(x):
     Args:
         x (str): Typically a resolution in meters
 
-    Return:
+    Returns:
         str: A string of the form 'xxkm'
     """
     resolution_m = x * ureg.meter
@@ -678,8 +676,8 @@ def bit_pos_to_hex(x):
     Args:
         x (list): A list of bit position (e.g.: [0,3] for 1001, aka 9)
 
-    Return:
-        The integer corresponding to the list of bit position provided in the
+    Returns:
+        int: The integer corresponding to the list of bit position provided in the
         list
     """
     bit_list = [0] * (max(x) + 1)
@@ -691,17 +689,16 @@ def bit_pos_to_hex(x):
     return out
 
 def _range_dt(begin, end, delta):
-    """Internal function to make a list of dates with a given delta and
-        resetted to first of January on every year jump
+    """Internal function to make a list of dates with a given delta and retested to first of January on every year jump
 
     Args:
         begin (datetime.datetime): Begin date of the first composite
         end (datetime.datetime): Begin date of the last composite
         delta (int): composite length in days
 
-    Return:
-        A list of datetime.datetime corresponding to first day of each
-            composite
+    Returns:
+        list: A list of datetime.datetime corresponding to first day of each
+        composite
     """
     time_keeper = begin
     date_list = []
@@ -722,20 +719,19 @@ def _diff_month(d1, d2):
         d1 (datatime.datetime): posterior date
         d2 (datatime.datetime): anterior date
 
-    Return:
-        The integer corresponding to the number of months between the two dates.
+    Returns:
+        int: The integer corresponding to the number of months between the two dates.
     """
     return (d1.year - d2.year) * 12 + d1.month - d2.month
 
 def _month_dates_from_dt(dt):
-    """INternal function to return all the dates of the month to which belong the input
-        date provided
+    """INternal function to return all the dates of the month to which belong the input date provided
 
     Args:
         dt (datetime.datetime): Date
 
-    Return:
-        A list of dates.
+    Returns:
+        list: A list of dates.
     """
     nday = calendar.monthrange(dt.year, dt.month)[1]
     days = [datetime(dt.year, dt.month, day) for day in range(1, nday+1)]
@@ -744,11 +740,10 @@ def _month_dates_from_dt(dt):
 def pre_compose(begin, end, delta):
     """Prepare a list of list of datetime to run with a compositing function
 
-    Details:
-        Each sub list in the returned list contains the dates required to make the
-            composite. When delta is not a multiple of the number of day of a given
-            year, the last composite of the year is truncated and the next composite
-            starts on the first of January of the following calendart year.
+    Each sub list in the returned list contains the dates required to make the
+    composite. When delta is not a multiple of the number of day of a given
+    year, the last composite of the year is truncated and the next composite
+    starts on the first of January of the following calendar year.
 
     Args:
         begin (datetime.datetime): Begin date of the first composite
@@ -756,9 +751,9 @@ def pre_compose(begin, end, delta):
         delta (int or str): composite length in days if int, 'month' if str.
 
     Return:
-        A list of lists.
+        list: A list of lists.
 
-    Example:
+    Examples:
         >>> import satmo
         >>> satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), 16)
         >>> satmo.pre_compose(datetime.datetime(2000, 1, 1), datetime.datetime(2002,12,31), 'month')
@@ -781,17 +776,18 @@ def pre_compose(begin, end, delta):
 def processing_meta_from_list(file_list):
     """Takes a list of filenames and returns a list of dictionaries with processing metadata
 
-    Details:
-        The function is meant to be used within satmo.wrappers.nrt_wrapper to know
-            which information can be generated from a list of newly downloaded files
-            and hence kick-off the right processing chains.
+    The function is meant to be used within satmo.wrappers.nrt_wrapper to know
+    which information can be generated from a list of newly downloaded files
+    and hence kick-off the right processing chains.
 
-    Arguments:
+    Args:
         file_list (list): A list of file names parsable by filename_parser
 
-    Return:
+    Returns:
         A list of unique dictionaries containing processing information.
-            Example of a dict (list element):
+            
+        Example of a dict (list element)::
+
             {'date': datetime.date(2017, 6, 25),
              'products': ['Rrs_412',
                           'Rrs_443',
@@ -813,7 +809,8 @@ def processing_meta_from_list(file_list):
                           'poc',
                           'chlor_a'],
              'sensor': 'aqua',
-             'sensor_code': 'A'},
+             'sensor_code': 'A'}
+
     """
     def _processing_meta_from_name(x):
         """Function to generate with the appropriate keys from a single list item
@@ -854,12 +851,10 @@ def get_date_list(file_list):
     return date_list_unique
 
 def find_composite_date_list(date, delta):
-    """Find, given a date and delta, all the dates that compose the composite to
-        to which the input date belong
+    """Find, given a date and delta, all the dates that compose the composite to which the input date belong
 
-    Details:
-        To be used with the near real time wrapper function to find out, when a new
-            L3m file is produced, which composite should be created or updated.
+    To be used with the near real time wrapper function to find out, when a new
+    L3m file is produced, which composite should be created or updated.
 
     Args:
         date (datetime.datetime): Input date (probably corresponding to a newly
@@ -867,7 +862,7 @@ def find_composite_date_list(date, delta):
         delta (int or str): composite length in days if int, 'month' if str.
 
     Returns:
-        A list of dates (to be passed to make_time_composite)
+        list: A list of dates (to be passed to make_time_composite)
     """
     begin = datetime(date.year, 1, 1)
     end = datetime(date.year + 1, 1, 1)
@@ -882,7 +877,7 @@ def time_limit(seconds):
     Args:
         seconds (int): Timeout limit
 
-    Example:
+    Examples:
         >>> # Use in a context manager, raises a TimeoutException when time spent within
         >>> # the context manger exceeds specified duration in seconds
         >>> import time

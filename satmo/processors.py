@@ -24,11 +24,11 @@ def nc2tif(file, proj4string = None):
     """Generate geotiff from L3m netcdf array
 
     Reads an existing array from a netcdf file and writes it
-    with georeference as tif
+    with georeference as tiff
 
     Args:
         file (str): Path to the netcdf file containing the desired array
-        proj4string (str): Coordinate reference system (opional, see geo_dict_from_nc)
+        proj4string (str): Coordinate reference system (optional, see geo_dict_from_nc)
 
     Returns:
         The function is used for its side effect of writing a geotiff on
@@ -89,9 +89,9 @@ class FileComposer(Composer):
     """Class to compose multiple raster files into one (with methods inherited
     from the Composer class), and write the output to a file
 
-    Details:
-        Typically designed to produce composites from L3m files.
-        Can be used with single band geoTiff or single band netcdf files
+
+    Typically designed to produce composites from L3m files.
+    Can be used with single band geoTiff or single band netcdf files
 
     Example usage:
         >>> import satmo
@@ -106,10 +106,9 @@ class FileComposer(Composer):
     def _read_masked_array(self, file):
         """Util function to read a single layer raster file as masked np array
 
-        Note:
-            The 'masked' part has been removed when input is a geotiff (most
-            likely produced by the binning function), rasterio reads cells flagged as
-            nodata as np.nan in a geotiff by default.
+        The 'masked' part has been removed when input is a geotiff (most
+        likely produced by the binning function), rasterio reads cells flagged as
+        nodata as np.nan in a geotiff by default.
 
         Args:
             file (str): Input file name
@@ -130,7 +129,7 @@ class FileComposer(Composer):
         """Read the COMPOSITING_META tag of the input files
 
         Because input of the compositing method may be composites too, the idea
-            enable propagation of these compositing metadata.
+        enable propagation of these compositing metadata.
 
         Args:
             file (str): Input file name
@@ -182,30 +181,30 @@ class BasicBinMap(object):
     """ Class to produce daily gridded data for a given date/variable from L2 files
 
     The class is instantiated with a list of L2 files. The methods give the option to
-        processed new variables from reflectance layers present in the L2 file, extract an existing
-        one, mask the invalid observations and bin the resulting cleaned variable to a regular grid.
-        All the methods of this class are exposed in the L3mProcess class so
-        that there shouldn't be any need to use this class directly.
+    processed new variables from reflectance layers present in the L2 file, extract an existing
+    one, mask the invalid observations and bin the resulting cleaned variable to a regular grid.
+    All the methods of this class are exposed in the L3mProcess class so
+    that there shouldn't be any need to use this class directly.
 
     Args:
         file_list (list): List of L2 files (they should all belong to the same collection/day/etc)
         qual_array (str): Name of the quality array (named qual_prod in l2bin documentation)
             Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.
             Defaults to None.
-        var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
+        var (str): Optional name of variable to bin. Use when binning a variable that is already present in the archive
 
     Attributes:
-        file_list: list of strings (the pathnames of individual L2 files)
-        lon_dd: 1D Np array containing longitude coordinates
-        lat_dd: 1D Np array containing latitude coordinates
-        flag_array: 1D np array containing flag values
-        qual_array: 1D np array containing pixel quality information (higher values
+        file_list (list): list of strings (the pathnames of individual L2 files)
+        lon_dd (np.array): 1D Np array containing longitude coordinates
+        lat_dd (np.array): 1D Np array containing latitude coordinates
+        flag_array (np.array): 1D np array containing flag values
+        qual_array (np.array): 1D np array containing pixel quality information (higher values
             mean lower quality)
-        var_array: 1D np array containing variable to bin
-        output_array: a 2D np array containing binned variable
-        geo_dict: A dictionary used to write the output_array using rasterio
+        var_array (np.array): 1D np array containing variable to bin
+        output_array (np.array): a 2D np array containing binned variable
+        geo_dict (dict): A dictionary used to write the output_array using rasterio
 
-    Exemples:
+    Examples:
         >>> import satmo
 
         >>> # Instantiate class using factory classmethod
@@ -259,7 +258,7 @@ class BasicBinMap(object):
             qual_array (str): Name of the quality array (named qual_prod in l2bin documentation)
                 Used in a later filtering step by the apply_mask method. Mostly used for sst and nsst products.
                 Defaults to None.
-            var (str): Optional name of variable to bin. Use when bining a variable that is already present in the archive
+            var (str): Optional name of variable to bin. Use when binning a variable that is already present in the archive
         """
         file_list = file_finder(data_root, date, level = 'L2', suite = suite, sensor_code = sensor_code)
         file_list = [x for x in file_list if is_day(x) == day]
@@ -282,8 +281,7 @@ class BasicBinMap(object):
             out = src.groups['geophysical_data'].variables[var][:].flatten()
         return out
     def _read_band_all(self, var):
-        """Utility to read a variable as a flattened numpy array from all files
-            contained in self.file_list
+        """Utility to read a variable as a flattened numpy array from all files contained in self.file_list
 
         Args:
             var (str): Name of a variable present in all the netcdf files of
@@ -335,8 +333,7 @@ class BasicBinMap(object):
         self.var_array = x
 
     def apply_mask(self, bit_mask = 0x0669D73B, max_qual = 2):
-        """Method to mask data using information from the flag array. And optionally
-            the mask array (named qual_prod in l2bin documentation)
+        """Method to mask data using information from the flag array. And optionally the mask array (named qual_prod in l2bin documentation)
 
         Args:
             bit_mask (int): The mask to use for selecting active flags from the flag array
@@ -349,50 +346,91 @@ class BasicBinMap(object):
                 0, 1, 2 correspond to best, good, acceptable. Any value higher than that is bad
                 Only applies if qual_array is not None during the class instantiation.
 
-        Details:
-            Below the table of flag signification for modis, viirs and seawifs
+        Below the table of flag signification for modis, viirs and seawifs
 
-            | Flag Name Modis/viirs | Flag Name Seawifs | Bit number |
-            |=======================|===================|============|
-            | ATMFAIL               | ATMFAIL           |          0 |
-            | LAND                  | LAND              |          1 |
-            | PRODWARN              | PRODWARN          |          2 |
-            | HIGLINT               | HIGLINT           |          3 |
-            | HILT                  | HILT              |          4 |
-            | HISATZEN              | HISATZEN          |          5 |
-            | COASTZ                | COASTZ            |          6 |
-            | SPARE                 | SPARE             |          7 |
-            | STRAYLIGHT            | STRAYLIGHT        |          8 |
-            | CLDICE                | CLDICE            |          9 |
-            | COCCOLITH             | COCCOLITH         |         10 |
-            | TURBIDW               | TURBIDW           |         11 |
-            | HISOLZEN              | HISOLZEN          |         12 |
-            | SPARE                 | SPARE             |         13 |
-            | LOWLW                 | LOWLW             |         14 |
-            | CHLFAIL               | CHLFAIL           |         15 |
-            | NAVWARN               | NAVWARN           |         16 |
-            | ABSAER                | ABSAER            |         17 |
-            | SPARE                 | SPARE             |         18 |
-            | MAXAERITER            | MAXAERITER        |         19 |
-            | MODGLINT              | MODGLINT          |         20 |
-            | CHLWARN               | CHLWARN           |         21 |
-            | ATMWARN               | ATMWARN           |         22 |
-            | SPARE                 | SPARE             |         23 |
-            | SEAICE                | SEAICE            |         24 |
-            | NAVFAIL               | NAVFAIL           |         25 |
-            | FILTER                | FILTER            |         26 |
-            | SPARE                 | SPARE             |         27 |
-            | BOWTIEDEL             | SPARE             |         28 |
-            | HIPOL                 | HIPOL             |         29 |
-            | PRODFAIL              | PRODFAIL          |         30 |
-            | SPARE                 | SPARE             |         31 |
+        +-------------------------+---------------------+--------------+
+        | Flag Name Modis/viirs   | Flag Name Seawifs   | Bit number   |
+        +=========================+=====================+==============+
+        | ATMFAIL                 | ATMFAIL             | 0            |
+        +-------------------------+---------------------+--------------+
+        | LAND                    | LAND                | 1            |
+        +-------------------------+---------------------+--------------+
+        | PRODWARN                | PRODWARN            | 2            |
+        +-------------------------+---------------------+--------------+
+        | HIGLINT                 | HIGLINT             | 3            |
+        +-------------------------+---------------------+--------------+
+        | HILT                    | HILT                | 4            |
+        +-------------------------+---------------------+--------------+
+        | HISATZEN                | HISATZEN            | 5            |
+        +-------------------------+---------------------+--------------+
+        | COASTZ                  | COASTZ              | 6            |
+        +-------------------------+---------------------+--------------+
+        | SPARE                   | SPARE               | 7            |
+        +-------------------------+---------------------+--------------+
+        | STRAYLIGHT              | STRAYLIGHT          | 8            |
+        +-------------------------+---------------------+--------------+
+        | CLDICE                  | CLDICE              | 9            |
+        +-------------------------+---------------------+--------------+
+        | COCCOLITH               | COCCOLITH           | 10           |
+        +-------------------------+---------------------+--------------+
+        | TURBIDW                 | TURBIDW             | 11           |
+        +-------------------------+---------------------+--------------+
+        | HISOLZEN                | HISOLZEN            | 12           |
+        +-------------------------+---------------------+--------------+
+        | SPARE                   | SPARE               | 13           |
+        +-------------------------+---------------------+--------------+
+        | LOWLW                   | LOWLW               | 14           |
+        +-------------------------+---------------------+--------------+
+        | CHLFAIL                 | CHLFAIL             | 15           |
+        +-------------------------+---------------------+--------------+
+        | NAVWARN                 | NAVWARN             | 16           |
+        +-------------------------+---------------------+--------------+
+        | ABSAER                  | ABSAER              | 17           |
+        +-------------------------+---------------------+--------------+
+        | SPARE                   | SPARE               | 18           |
+        +-------------------------+---------------------+--------------+
+        | MAXAERITER              | MAXAERITER          | 19           |
+        +-------------------------+---------------------+--------------+
+        | MODGLINT                | MODGLINT            | 20           |
+        +-------------------------+---------------------+--------------+
+        | CHLWARN                 | CHLWARN             | 21           |
+        +-------------------------+---------------------+--------------+
+        | ATMWARN                 | ATMWARN             | 22           |
+        +-------------------------+---------------------+--------------+
+        | SPARE                   | SPARE               | 23           |
+        +-------------------------+---------------------+--------------+
+        | SEAICE                  | SEAICE              | 24           |
+        +-------------------------+---------------------+--------------+
+        | NAVFAIL                 | NAVFAIL             | 25           |
+        +-------------------------+---------------------+--------------+
+        | FILTER                  | FILTER              | 26           |
+        +-------------------------+---------------------+--------------+
+        | SPARE                   | SPARE               | 27           |
+        +-------------------------+---------------------+--------------+
+        | BOWTIEDEL               | SPARE               | 28           |
+        +-------------------------+---------------------+--------------+
+        | HIPOL                   | HIPOL               | 29           |
+        +-------------------------+---------------------+--------------+
+        | PRODFAIL                | PRODFAIL            | 30           |
+        +-------------------------+---------------------+--------------+
+        | SPARE                   | SPARE               | 31           |
+        +-------------------------+---------------------+--------------+
 
-            Default l2bin mask values for:
-                General: 0x669d73b (includes Chlorophyl algorithms, Rrs, etc)
-                FLH: 0x679d73f
-                PAR: 0x600000a
-                SST: 0x1002
-                NSST/SST4: 0x2
+        Default l2bin mask values for:
+
+            +----------------------------------------------------+------------+
+            | suite                                              | mask value |
+            +====================================================+============+
+            | General (includes Chlorophyl algorithms, Rrs, etc) | 0x669d73b  |
+            +----------------------------------------------------+------------+
+            | FLH                                                | 0x679d73f  |
+            +----------------------------------------------------+------------+
+            | PAR                                                | 0x600000a  |
+            +----------------------------------------------------+------------+
+            | SST                                                | 0x1002     |
+            +----------------------------------------------------+------------+
+            | NSST/SST4                                          | 0x2        |
+            +----------------------------------------------------+------------+
 
 
         """
@@ -413,7 +451,7 @@ class BasicBinMap(object):
         """Method for binning data to a defined grid
 
         A grid is defined by its extent (north, south, east, west), resolution, and
-            projection (proj4string).
+        projection (proj4string).
 
         Args:
             south (float): Southern border of output extent (in DD)
@@ -489,9 +527,10 @@ class BasicBinMap(object):
 
 
 class L3mProcess(BasicBinMap):
-    """Class to put the functions to compute, inherits from BasicBinMap so that
-        computing a new variable from reflectance bands is an optional step before
-        binning
+    """Class to put the functions to compute
+
+    inherits from BasicBinMap so that computing a new variable from reflectance bands is an optional step before
+    binning
 
     Example:
         >>> import satmo
@@ -514,7 +553,7 @@ class L3mProcess(BasicBinMap):
         >>> bin_class.bin_to_grid(south = 3, north = 33, west = -122, east = -72,
                                   resolution = 2000, proj4string = "+proj=laea +lat_0=20 +lon_0=-100")
 
-        >>> # Write grid with binned data to a georeferenced file
+        >>> # Write grid with binned data to a geo-referenced file
         >>> bin_class.to_file('/home/ldutrieux/sandbox/satmo2_data/aqua/L3m/DAY/2016/001/A2016001.L3m_DAY_CHL_chlor_a_2km.tif')
     """
     def __init__(self, file_list, qual_array = None, var = None):
@@ -523,16 +562,16 @@ class L3mProcess(BasicBinMap):
     def calc(self, band_list, fun):
         """Generic band math method
 
-        Applies an abitrary function to a set of arrays present in the netcdf
+        Applies an arbitrary function to a set of arrays present in the netcdf
         file.
 
         Args:
             band_list (list): A list of bands/variables present in the file
                 (e.g.: ['Rrs_555', 'Rrs_645'])
             fun (function): A function that takes len(band_list) arguments (all
-            them must be numpy array of the same dimension) performs some
-            element wise calculation on them and returns a single numpy array
-            with the same dimension than each input array.
+                them must be numpy array of the same dimension) performs some
+                element wise calculation on them and returns a single numpy array
+                with the same dimension than each input array.
         """
         # Read the bands from band_list with a list comprehension
         array_list = [self._read_band_all(x) for x in band_list]
@@ -544,16 +583,15 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
           filename = None, data_root = None, overwrite = False, flags = None):
     """Run l2bin for a list of L2 files
 
-    Details:
-        This is a simple no filter python wrapper around the seadas l2bin utility.
+    This is a simple no filter python wrapper around the seadas l2bin utility.
 
     Args:
         file_list (list): list of L2 files (full paths)
         L3b_suite (str): Product suite to bin (see global variable STANDARD_L3_SUITES
             for corresponding variables)
         var_list (list): Optional list of variables to include in the produced L3b file.
-            If None (default but not recommanded), a list of standard variables is
-            retrieved fom the global variable (STANDARD_L3_SUITES)
+            If None (default but not recommended), a list of standard variables is
+            retrieved from the global variable (STANDARD_L3_SUITES)
         resolution (int or str): See resolve argument in l2bin doc
         night (bool): Is that night products
         filename (str): Optional full path of output filename (L3b). If not provided, a
@@ -569,7 +607,7 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
         str: The output filename
 
     Raises:
-        satmo.SeadasError if the seadas command exists with status 1
+        satmo.SeadasError: if the seadas command exists with status 1
 
     Example usage:
         >>> import satmo, glob
@@ -648,7 +686,7 @@ def l3mapgen(x, variable, south, north, west, east, filename = None,
         str: The output filename
 
     Raises:
-        satmo.SeadasError if the seadas command exists with status 1
+        satmo.SeadasError: if the seadas command exists with status 1
     """
     # l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.tif resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147"
     input_meta = filename_parser(x)
@@ -708,16 +746,15 @@ def make_time_composite(date_list, var, suite, resolution, composite,
         sensor_code (str): Sensor to composite (defaults to 'X', which
             corresponds to daily (cross sensors) composites.
         fun (str): compositing function, defaults to mean
-        filename (str): Optional output filename. Autogenerated if not provided
+        filename (str): Optional output filename. Auto generated if not provided
         overwrite (bool): Should output file be overwritten if it already
             exists.
         preview (bool): Should a png preview be automatically generated
 
-    Return:
-        The filename of the produced file or if no file is produced (because no
-            input files were found, the function exits without return value.
-            When automatically generated the date of the composite corresponds to
-            the first day of the composite.
+    Returns:
+        str: The filename of the produced file.
+        In case no file is produced (because no input files were found, the function exits without return value.
+        When automatically generated the date of the composite corresponds to the first day of the composite.
 
     Example usage:
         >>> import datetime
@@ -788,9 +825,8 @@ def l2_append(x, bands, formula, short_name, long_name, standard_name,
         valid_min (float): Valid minimum value
         valid_max (float): Valid maximum value
 
-    Return:
-        None: The function is used for its side effect of appending a new variable
-            to an existing netCDF file.
+    Returns:
+        The function is used for its side effect of appending a new variable to an existing netCDF file.
     """
     with nc.Dataset(x, 'a') as src:
         geo = src['geophysical_data']
@@ -818,7 +854,7 @@ def l2mapgen(x, north, south, west, east, prod, flags, data_root, filename=None,
         data_root (str): Root of the data archive
         width (int): Width in pixels of the output image
         outmode (str): See seadas l2mapgen doc
-        threshold (float): Minumum percentage of the filled pixels
+        threshold (float): Minimum percentage of the filled pixels
         overwrite (bool): Overwrite existing files? Return ValueError if file exists
             and overwrite is set to False (default)
 
@@ -901,18 +937,6 @@ def l3bin(file_list, north, south, west, east, filename, overwrite=False):
         str: The output filename. Mostly used for its side effects of generating
             a L3b temporal composite file.
     """
-    # TODO: Need to find a smart way to build output filename from inputs
-    #   - Maybe asking for begin date of the composite in args
-    #   - Modify filename_builder ?
-    #   - Deal with it only in l3bin_wrapper... and ask for filename here
-    # Write file list to text file
-    # l3bin suite logique should be:
-        # l3bin: list of input files and filename need to be provided
-        # l3bin_wrapper: Take a list of dates, and a list of suites
-        # l3bin_map_wrapper: take a list of dates and a list of variables
-        # l3bin_map_batcher: begin, end, delta and list of variables
-    # TODO: Verify this overwrite logic, I have a doubt (taken fron l2bin, and probably used in many
-        # more utils
     output_meta = filename_parser(filename)
     if not (os.path.isfile(filename) and not overwrite):
         L3b_dir = os.path.dirname(filename)
@@ -944,7 +968,7 @@ def l3bin(file_list, north, south, west, east, filename, overwrite=False):
 
 def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east, composite,
                   overwrite=False):
-    """Wrapper to run l3bin without having to name explicitely input or output files
+    """Wrapper to run l3bin without having to name explicitly input or output files
 
     Args:
         sensor_codes (list): List of sensor codes to include (e.g.: ['A', 'T', 'V']

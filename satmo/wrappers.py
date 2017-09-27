@@ -33,8 +33,8 @@ def timerange_download(sensors, begin, end, write_dir,\
 
     Args:
         sensors: (list) list of strings, Valid entries are 'am' (aqua), 'tm' (terra),
-        'sw' (seawifs), 'v0' (viirs)
-        begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
+            'sw' (seawifs), 'v0' (viirs)
+        begin (datetime or str): Beginning of time range. 'yyyy-mm-dd' if str
         end (datetime or str): End of time range. 'yyyy-mm-dd' if str
         write_dir (str): Host directory to which the data will be written
         north (float): north latitude of bounding box in DD
@@ -44,12 +44,12 @@ def timerange_download(sensors, begin, end, write_dir,\
         day (bool): Order day data ?
         night (bool): Order night data ?
         product (str): Product to order, defaults to 'L1A'. Other possible values include
-        'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
+            'CHL' for L2_OC, 'SST' for L2_SST, and 'SST4' for L2_SST4
         overwrite (bool): Should existing files on the host be overwritten
         check_integrity (bool): Only makes sense if overwrite is set to False (when updating the archive)
 
     Returns:
-        list of boolean
+        list: list of boolean
     """
     if type(begin) is str:
         begin = datetime.strptime(begin, "%Y-%m-%d")
@@ -98,10 +98,10 @@ def make_daily_composite(date, variable, suite, data_root, resolution,
         preview (bool): Generate a png preview. Defaults to True
         overwrite (bool): Overwrite existing L3m file. Defaults to False
 
-    Return:
-        The filename of the created composite.
+    Returns:
+        str: The filename of the created composite.
 
-    Example:
+    Examples:
         >>> import satmo
 
         >>> satmo.make_daily_composite(date='2016-01-01', variable='chlor_a', suite='CHL',
@@ -165,13 +165,13 @@ def timerange_daily_composite(begin, end, variable, suite, data_root,
     """Produce daily composite for individual dates in a time-range in batch
 
     Args:
-        begin (datetime or str): Begining of time range. 'yyyy-mm-dd' if str
+        begin (datetime or str): Beginning of time range. 'yyyy-mm-dd' if str
         end (datetime or str): End of time range. 'yyyy-mm-dd' if str
         n_threads (int): Number of threads to use for running the
             make_daily_composite function in parallel.
         others (*): See help of make_daily_composite for the other parameters.
 
-    Example:
+    Examples:
         >>> import satmo
 
         >>> satmo.timerange_daily_composite(begin='2015-01-01', end='2016-06-30',
@@ -223,7 +223,7 @@ def l2mapgen_wrapper(date, sensor_codes, var, south, north, west, east, data_roo
         outmode (str): See seadas l2mapgen doc
         overwrite (bool): Overwrite existing files? Return ValueError if file exists
             and overwrite is set to False (default)
-        threshold (float): Minumum percentage of the filled pixels
+        threshold (float): Minimum percentage of the filled pixels
 
 
     """
@@ -336,7 +336,7 @@ def l2_append_wrapper(date, sensor_codes, var, suite, data_root):
             bands.
         data_root (str): Root of the data archive
 
-    Return:
+    Returns:
         list: The list of files to which a variable was appended. However, the
         function is mostly used for its side effect of appending a variable
         to each file of a list of netcdf files.
@@ -548,7 +548,7 @@ def bin_map_batcher(begin, end, sensor_codes, south, north, west, east, data_roo
 
 def l3bin_wrapper(sensor_codes, date_list, suite_list, south, north, west, east,
                   composite, data_root, overwrite=False):
-    """Wrapper to run l3bin without having to name explicitely input or output files
+    """Wrapper to run l3bin without having to name explicitly input or output files
 
     Args:
         sensor_codes (list): List of sensor codes to include (e.g.: ['A', 'T', 'V']
@@ -685,10 +685,10 @@ def subscriptions_download(sub_list, data_root, refined=False):
             to True), in which case the function will compare file size between the
             local and remote archives before deciding or not to download the file.
 
-    Return:
-        A list of file paths corresponding to the local paths of downloaded files
+    Returns:
+        list: A list of file paths corresponding to the local paths of downloaded files
 
-    Example:
+    Examples:
         >>> import satmo
         >>> satmo.subscriptions_download([1821, 1823], data_root='/export/isilon/datos2/satmo2_data',
                                          refined=False)
@@ -740,28 +740,18 @@ def nrt_wrapper(day_or_night, pp_type, var_list, north, south, west, east,
         eight_day (bool): Generate 8 days temporal composites (defaults to False)
         month (bool): Generate monthly temporal composites (defaults to False)
 
-    Return:
+    Returns:
         The function is used for it's side effects of downloading data, and processing
             associated variables
 
-    Example:
+    Examples:
         >>> # The idea is to call this wrapper several time within a scheduler
         >>> import satmo
 
         >>> satmo.nrt_wrapper(day_or_night='day', pp_type='nrt', var_list=['chlor_a', 'sst', 'nflh', 'Kd_490'],
                               north=33, south=3, west=-122, east=-72,
                               data_root='/export/isilon/datos2/satmo2_data/',
-                              eight_day=True)
-
-    Details:
-        How to adapt this function?
-            - To add/remove subscriptions, simply edit the global variable SUBSCRIPTIONS
-            - To add new variables you probably have to edit the global variables L3_SUITE_FROM_VAR and
-                BIT_MASK_FROM_L3_SUITE (if the variable belongs to a suite that is not referenced in these variables)
-            - Adding a new temporal composite means adding the corresponding argument, and following
-                the logic of the eight_day and sixteen_day cases (already implemented)
-            - Every change that involves changing the function argument should be passed to the CLI
-                (satmo_nrt.py)
+                              eight_day=True)    
     """
     # Run subscription download on one type of subscription
     if pp_type == 'refined':
@@ -865,8 +855,8 @@ def nrt_wrapper_l1(north, south, west, east, var_list, data_root, n_threads=1):
         n_threads (int): Number of threads to use for running l2gen in parallel
 
     Returns:
-        None: The function is used for its side effect of running the L1A-download
-            to L2m processing chain
+        The function is used for its side effect of running the L1A-download
+        to L2m processing chain
 
     """
     # 1 - Download data
@@ -922,12 +912,12 @@ def refined_processing_wrapper_l1(north, south, west, east, var_list, data_root,
         west (float): west longitude of bounding box in DD
         east (float): east longitude of bounding box in DD
         data_root (str): Root of the data archive
-        delay (int): Delay in number of days between data aquisition and refined
+        delay (int): Delay in number of days between data acquisition and refined
             processing. Defaults to 30.
 
     Returns:
-        None: The function is used for its side effect of running l2gen on 1 month
-            old L1A data
+        The function is used for its side effect of running l2gen on 1 month
+        old L1A data
     """
     today = datetime.today()
     last_month = today - timedelta(delay)

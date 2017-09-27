@@ -14,10 +14,9 @@ from .utils import filename_parser
 def geo_dict_from_nc(nc_file, proj4string = None):
     """Retrieves the georeferencing parameters from a netcdf file produced with l3mapgen
 
-    Details:
-        See https://oceancolor.gsfc.nasa.gov/forum/oceancolor/topic_show.pl?tid=6429
-        for justification of the approach used in this function to retrieve the projected
-        extent.
+    See https://oceancolor.gsfc.nasa.gov/forum/oceancolor/topic_show.pl?tid=6429
+    for justification of the approach used in this function to retrieve the projected
+    extent.
 
     Args:
         nc_file (str): Path to netcdf file
@@ -27,9 +26,9 @@ def geo_dict_from_nc(nc_file, proj4string = None):
     Return:
         Dictionary with georeferencing parameters
 
-    Exmaples:
-        Given a netcdf file produced with:
-        $l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.nc resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147" 
+    Examples:
+        # Given a netcdf file produced with:
+        # $l3mapgen ifile=T2016292.L3b_DAY_OC ofile=T2016292.L3B_DAY_RRS_laea.nc resolution=1km south=26 north=40 west=-155 east=-140 projection="+proj=laea +lat_0=33 +lon_0=-147" 
         
         >>> import rasterio
         >>> from pprint import pprint
@@ -83,16 +82,14 @@ def geo_dict_from_nc(nc_file, proj4string = None):
 def get_raster_meta(x, **kwargs):
     """Retrieve a full meta dict as required by rasterio from a nc or tiff file
 
+    driver is always assigned geoTiff, and lzw tiff compression is enabled
+    
     Args:
         x (str): Level L3m filename (tif or netcdf). Must comply with OC standards defined in CONVENTIONS.md
-        **kwargs:
-            proj4string (str): OPtional, passed to geo_dict_from_nc()
+        **kwargs: ONly one implemented: proj4string (str): OPtional, passed to geo_dict_from_nc()
 
     Returns:
-        A dictionary as used by rasterio
-    
-    Details:
-        driver is always assigned geoTiff, and lzw tiff compression is enabled
+        dict: A dictionary as used by rasterio
     """
     _, ext = os.path.splitext(x)
     if ext == '.nc':
