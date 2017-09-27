@@ -8,8 +8,7 @@ from .utils import filename_parser, filename_builder, path_builder, path_finder,
 from .utils import bit_pos_to_hex, resolution_to_km_str, pre_compose, processing_meta_from_list
 from .utils import find_composite_date_list, time_limit, viirs_geo_filename_builder
 from .utils import randomword, get_date_list
-from .wrappers import (timerange_download, auto_L3m_process, timerange_auto_L3m_process,
-                       make_daily_composite, timerange_daily_composite, timerange_time_compositer,
+from .wrappers import (timerange_download, make_daily_composite, timerange_daily_composite,
                        subscriptions_download, nrt_wrapper, l2mapgen_wrapper,
                        l2mapgen_batcher, l2gen_wrapper, l2gen_batcher,
                        refined_processing_wrapper_l1, nrt_wrapper_l1, bin_map_wrapper,
