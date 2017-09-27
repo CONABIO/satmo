@@ -93,7 +93,7 @@ class FileComposer(Composer):
     Typically designed to produce composites from L3m files.
     Can be used with single band geoTiff or single band netcdf files
 
-    Example usage:
+    Examples:
         >>> import satmo
         >>> file1 = 'aqua/L2/2015/001/A2015001.L3m_DAY_CHL_chlor_a_1km.tif'
         >>> file2 = 'terra/L2/2015/001/T2015001.L3m_DAY_CHL_chlor_a_1km.tif'
@@ -609,7 +609,7 @@ def l2bin(file_list, L3b_suite, var_list = None, resolution = 1, night = False,
     Raises:
         satmo.SeadasError: if the seadas command exists with status 1
 
-    Example usage:
+    Examples:
         >>> import satmo, glob
 
         >>> infiles = glob.glob('/home/ldutrieux/sandbox/satmo2_data/aqua/L2/2016/001/*L2*nc')
@@ -756,7 +756,7 @@ def make_time_composite(date_list, var, suite, resolution, composite,
         In case no file is produced (because no input files were found, the function exits without return value.
         When automatically generated the date of the composite corresponds to the first day of the composite.
 
-    Example usage:
+    Examples:
         >>> import datetime
         >>> import satmo
 

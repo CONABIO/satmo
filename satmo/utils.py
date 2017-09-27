@@ -319,11 +319,11 @@ def filename_builder(level, climatology = False, anomaly = False, full_path = Fa
                 tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)
 
     Examples:
-        > import satmo
-        > from datetime import datetime, time
-        >
-        > satmo.filename_builder('L2', filename = 'T2001117063500.L1A_LAC.bz2', suite = 'OC', full_path = True, data_root = '/export/isilon/datos2/satmo2_data')
-        > satmo.filename_builder('L2', sensor_code = 'T', date = '1987-11-21', time = time(6, 35, 0), suite = 'OC')
+        >>> import satmo
+        >>> from datetime import datetime, time
+        >>>
+        >>> satmo.filename_builder('L2', filename = 'T2001117063500.L1A_LAC.bz2', suite = 'OC', full_path = True, data_root = '/export/isilon/datos2/satmo2_data')
+        >>> satmo.filename_builder('L2', sensor_code = 'T', date = '1987-11-21', time = time(6, 35, 0), suite = 'OC')
 
     Returns:
         str: a syntactically correct ocean color filename

@@ -1,7 +1,7 @@
 satmo.geo module
 ===================
 
-.. automodule:: geo
+.. automodule:: satmo.geo
     :members:
     :undoc-members:
     :show-inheritance:
