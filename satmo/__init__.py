@@ -21,4 +21,4 @@ from .processors import (nc2tif, FileComposer, BasicBinMap, L3mProcess,
                          make_time_composite, l2_append, l2mapgen, l2bin, l3mapgen,
                          l3bin)
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
