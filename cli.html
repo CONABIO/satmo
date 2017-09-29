@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command Line Users Guide &mdash; satmo 0.2.2 documentation</title>
+  <title>Using the command line interface &mdash; satmo 0.2.3 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="satmo 0.2.2 documentation" href="index.html"/>
-        <link rel="next" title="satmo package" href="api/index.html"/>
+    <link rel="top" title="satmo 0.2.3 documentation" href="index.html"/>
+        <link rel="next" title="satmo API" href="api/index.html"/>
         <link rel="prev" title="satmo (Sistema Satelital de Monitoreo Oceanico)" href="index.html"/> 
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.2.2
+                0.2.3
               </div>
             
           
@@ -91,40 +91,29 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Users Guide</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using the command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#before-starting">Before starting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#starting-satmo-near-real-time-mode">Starting satmo near real time mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#update-mode">Update mode</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#download-data">Download data</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#downloading-data">Downloading data</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#examples-usage">Examples usage</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#l3m-products-processing">L3m products processing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Examples usage</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#generate-multisensor-composites">Generate multisensor composites</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Examples usage</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#generate-time-composites">Generate time composites</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id5">Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">Examples usage</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#near-real-time-mode">Near real time mode</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id7">Description</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id8">Examples usage</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#processing-l2-data-from-l1a">Processing L2 data from L1A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-additional-l2-variables">Generating additional L2 variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-mapped-l2-variables">Generating mapped L2 variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-mapped-l3m-variables">Generating mapped L3m variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-temporal-composites">Generating temporal composites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-visualization">Data visualization</a></li>
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chains.html">Satmo processing chains</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
@@ -174,7 +163,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Command Line Users Guide</li>
+      <li>Using the command line interface</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -193,21 +182,154 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="command-line-users-guide">
-<h1>Command Line Users Guide<a class="headerlink" href="#command-line-users-guide" title="Permalink to this headline">¶</a></h1>
-<p>Satmo operates in two modes; an update mode, to download archive data and (re-)process these archive data, and a near real time mode.</p>
-<p>These operation can be operated by a set of consistent command line interfaces.
-The present document presents the main uses, features and examples of operation of the interface.</p>
+  <div class="section" id="using-the-command-line-interface">
+<h1>Using the command line interface<a class="headerlink" href="#using-the-command-line-interface" title="Permalink to this headline">¶</a></h1>
+<p>Operation of the two different modes (near real time and update modes) is done via a set of command line, which are detailed below. Every command lines have a consistent syntax and naming convention.</p>
+<p>Every command line contains built in documentation that can be accessed by running <code class="docutils literal"><span class="pre">name_of_the_cli.py</span> <span class="pre">--help</span></code>.</p>
+<p>Because most of the commands runs for several hours or even days, it is preferable to run them within a <code class="docutils literal"><span class="pre">nohup</span></code> context. See the example below.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Run a command as a background process (allowing you to close the terminal), and writing the verbose to a log file</span>
+nohup command_name.py --arg1 input1 --arg2 input2 &gt; ~/YYYYMMDD_processing_log.log <span class="p">&amp;</span>
+</pre></div>
+</div>
+<div class="section" id="before-starting">
+<h2>Before starting<a class="headerlink" href="#before-starting" title="Permalink to this headline">¶</a></h2>
+<p>As detailed in the installation section, it is recommended to have installed the satmo package in a python virtual environment. Considering, you have already created a virtual environment named <code class="docutils literal"><span class="pre">satmo</span></code>, you have to activate that environment to be able to run a satmo command line. To activate the environment, simply run:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>workon satmo
+</pre></div>
+</div>
+</div>
+<div class="section" id="starting-satmo-near-real-time-mode">
+<h2>Starting satmo near real time mode<a class="headerlink" href="#starting-satmo-near-real-time-mode" title="Permalink to this headline">¶</a></h2>
+<p>As detailed in the installation instruction, you probably want to start the near real time operation mode automatically as soon as the system boots up, and for that you should add and entry to the linux user crontab. However, it is of course also possible to start satmo near real time mode manually, using the <code class="docutils literal"><span class="pre">satmo_nrt.py</span></code> command.</p>
+<p>Running <code class="docutils literal"><span class="pre">satmo_nrt.py</span> <span class="pre">--help</span></code> returns the following help page.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>usage: satmo_nrt.py <span class="o">[</span>-h<span class="o">]</span> -day_vars <span class="o">[</span>DAY_VARS <span class="o">[</span>DAY_VARS ...<span class="o">]]</span> -night_vars
+                <span class="o">[</span>NIGHT_VARS <span class="o">[</span>NIGHT_VARS ...<span class="o">]]</span>
+                <span class="o">[</span>-l1a_vars <span class="o">[</span>L1A_VARS <span class="o">[</span>L1A_VARS ...<span class="o">]]]</span> <span class="o">[</span>--no-refined<span class="o">]</span>
+                <span class="o">[</span>--no-8DAY<span class="o">]</span> <span class="o">[</span>--no-month<span class="o">]</span> -d DATA_ROOT
+                <span class="o">[</span>-map_res MAPPING_RESOLUTION<span class="o">]</span>
+                <span class="o">[</span>-bin_res BINNING_RESOLUTION<span class="o">]</span> -north NORTH -south SOUTH
+                -east EAST -west WEST <span class="o">[</span>-p PROJ<span class="o">]</span>
+                <span class="o">[</span>-flags <span class="o">[</span>FLAGS <span class="o">[</span>FLAGS ...<span class="o">]]]</span> <span class="o">[</span>-delay DELAY<span class="o">]</span>
+                <span class="o">[</span>-multi N_THREADS<span class="o">]</span>
+
+optional arguments:
+  -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
+  -day_vars <span class="o">[</span>DAY_VARS <span class="o">[</span>DAY_VARS ...<span class="o">]]</span>, --day_vars <span class="o">[</span>DAY_VARS <span class="o">[</span>DAY_VARS ...<span class="o">]]</span>
+                        day <span class="nb">time</span> variables to process
+  -night_vars <span class="o">[</span>NIGHT_VARS <span class="o">[</span>NIGHT_VARS ...<span class="o">]]</span>, --night_vars <span class="o">[</span>NIGHT_VARS <span class="o">[</span>NIGHT_VARS ...<span class="o">]]</span>
+                        night <span class="nb">time</span> variables to process
+  -l1a_vars <span class="o">[</span>L1A_VARS <span class="o">[</span>L1A_VARS ...<span class="o">]]</span>, --l1a_vars <span class="o">[</span>L1A_VARS <span class="o">[</span>L1A_VARS ...<span class="o">]]</span>
+                        Additional L2 variables to process from OC2 collection
+                        <span class="o">(</span>generated from L1A files<span class="o">)</span>
+  --no-refined          Disable download of refined processed L2 data,
+                        reprocessing of L2 data from L1A, and L3m processing
+                        from them
+  --no-8DAY             Disable processing of <span class="m">8</span> days temporal composites
+  --no-month            Disable processing of monthly temporal composites
+  -d DATA_ROOT, --data_root DATA_ROOT
+                        Root of the <span class="nb">local</span> archive
+  -map_res MAPPING_RESOLUTION, --mapping_resolution MAPPING_RESOLUTION
+                        Output resolution in meters <span class="o">(</span>defaults to <span class="m">1000</span><span class="o">)</span>
+  -bin_res BINNING_RESOLUTION, --binning_resolution BINNING_RESOLUTION
+                        Output resolution in meters <span class="o">(</span>defaults to <span class="m">1000</span><span class="o">)</span>
+  -north NORTH, --north NORTH
+                        Northern boundary in DD
+  -south SOUTH, --south SOUTH
+                        Southern boundary in DD
+  -east EAST, --east EAST
+                        Eastern most boundary in DD
+  -west WEST, --west WEST
+                        Western most boundary in DD
+  -p PROJ, --proj PROJ  Optional Coordinate reference system of the output in
+                        proj4 format, or any predifined crs name in seadas
+                        l3mapgen. If None is provided, +proj<span class="o">=</span>eqc +lon_0<span class="o">=</span><span class="m">0</span> is
+                        used
+  -flags <span class="o">[</span>FLAGS <span class="o">[</span>FLAGS ...<span class="o">]]</span>, --flags <span class="o">[</span>FLAGS <span class="o">[</span>FLAGS ...<span class="o">]]</span>
+                        List of flags to use in the binning step. If not
+                        provided defaults are retrieved <span class="k">for</span> each L3 suite
+                        independently from the satmo global variable FLAGS
+  -delay DELAY, --delay DELAY
+                        NUmber of days to <span class="nb">wait</span> before triggering refined
+                        reprocessing of the L2 OC2 suite from L1A
+  -multi N_THREADS, --n_threads N_THREADS
+                        Number of threads to use <span class="k">for</span> parallel implementation
+
+Command Line utility to control the operational mode of the satmo system
+Enables download of L2 and L1A data from OBPG server <span class="o">(</span>NRT and refined processing<span class="o">)</span>, processing of L3m files <span class="k">for</span> several night and
+day variables, processing of daily composites, and processing of temporal composites.
+All these download and processing steps are scheduled and ran operationally.
+Daily composites and temporales composites are enabled by default
+Use the --no-daily_compose, --no-8DAY, and --no-16DAY to disable their generation
+
+------------------
+Example usage:
+------------------
+
+satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north <span class="m">33</span> --south <span class="m">3</span> --west -122 -multi <span class="m">3</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="update-mode">
 <h2>Update mode<a class="headerlink" href="#update-mode" title="Permalink to this headline">¶</a></h2>
-<p>Update mode is used primarilly to download and process archive data. All command start by the prefix <code class="docutils literal"><span class="pre">timerange</span></code>, indicating that their action apply to time range.</p>
-<div class="section" id="download-data">
-<h3>Download data<a class="headerlink" href="#download-data" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="description">
-<h4>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h4>
-<p>The general data download interface is called <code class="docutils literal"><span class="pre">timerange_download.py</span></code>; running <code class="docutils literal"><span class="pre">timerange_download.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
-<p>&gt; Note: Downloading full speed causes problems of breaking connection, it is therefore preferable to limit download speed with tools like <strong>trickle</strong>.
-&gt; In accordance with the recommandations of the CONABIO IT department the overall download speed for the whole system should not exceed 15 MB/s. Therefore if running two download commands in parallel, use for each command <code class="docutils literal"><span class="pre">nohup</span> <span class="pre">trickle</span> <span class="pre">-d</span> <span class="pre">7</span> <span class="pre">timerange_download.py</span> <span class="pre">...</span> <span class="pre">&amp;</span></code></p>
+<p>Update mode is used primarilly to download and process archive data. All command start by the prefix <code class="docutils literal"><span class="pre">timerange</span></code>, indicating that their action apply to a range of dates defined by a <code class="docutils literal"><span class="pre">--begin</span></code> and <code class="docutils literal"><span class="pre">--end</span></code> argument. The full list of functions is presented in the table below.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="44%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">CLI name</th>
+<th class="head">description</th>
+<th class="head">Should be ran after</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">timerange_download.py</span></code></td>
+<td>Downloads data from the OBPG servers to a local archive</td>
+<td>None</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">timerange_L2_process.py</span></code></td>
+<td>Generates L2 products from L1A</td>
+<td><code class="docutils literal"><span class="pre">timerange_download.py</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">timerange_L2_append.py</span></code></td>
+<td>Computes additional variables and appends the result to an existing L2 file</td>
+<td><code class="docutils literal"><span class="pre">timerange_L2_process.py</span></code> or <code class="docutils literal"><span class="pre">timerange_download.py</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">timerange_L2m_process.py</span></code></td>
+<td>Maps L2 product variables to a plattecarre projection</td>
+<td><code class="docutils literal"><span class="pre">timerange_L2_process.py</span></code> or <code class="docutils literal"><span class="pre">timerange_download.py</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code></td>
+<td>Performs spatial binning and mapping of a variable across multiple L2 files</td>
+<td><code class="docutils literal"><span class="pre">timerange_L2_process.py</span></code> or <code class="docutils literal"><span class="pre">timerange_download.py</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">timerange_time_compositing.py</span></code></td>
+<td>Perform temporal binning and mapping of a variable</td>
+<td><code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">timerange_daily_composite.py</span></code></td>
+<td>Average L3m products across different sensors</td>
+<td><code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">make_preview.py</span></code></td>
+<td>Generate png preview of a L3m file</td>
+<td><code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code> or <code class="docutils literal"><span class="pre">timerange_time_compositing.py</span></code></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="downloading-data">
+<h3>Downloading data<a class="headerlink" href="#downloading-data" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">timerange_download.py</span></code> command line can be used to download data from the OBPG servers to a local archive. It supports downloading L1A as well as L2 files, with the option to select the suite in case of L2 download, and to choose between night or day data. Running <code class="docutils literal"><span class="pre">timerange_download.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Downloading full speed causes problems of breaking connection, it is therefore preferable to limit download speed with tools like <strong>trickle</strong>.</p>
+</div>
+<p>The example below illustrates a download process (L1A data) with speed limited to 3MBps.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Download L1A data with speed limited to 3 MB/s</span>
+nohup trickle -d <span class="m">3000</span> timerange_download.py --terra --aqua -b <span class="m">2010</span>-01-01 -e <span class="m">2012</span>-12-31 -north <span class="m">32</span> -south <span class="m">4</span> -west -121 -east -73 -d /some/directory/with/free/space &gt; YYYYMMDD_download_log.log <span class="p">&amp;</span>
+</pre></div>
 </div>
 <div class="section" id="examples-usage">
 <h4>Examples usage<a class="headerlink" href="#examples-usage" title="Permalink to this headline">¶</a></h4>
@@ -221,87 +343,71 @@ The present document presents the main uses, features and examples of operation 
 <li>L2 data download</li>
 </ul>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> Ocean color variables <span class="o">(</span>Blue reflectances, chlor<span class="se">\_</span>a, etc<span class="o">)</span>
-<span class="gp">$</span> nohup timerange_download.py --terra --aqua --viirs -b <span class="m">2000</span>-02-24 -e <span class="m">2016</span>-12-31 -north <span class="m">32</span> -south <span class="m">4</span> -west -121 -east -73 -p OC --no-night -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log <span class="p">&amp;</span>
+<span class="go">nohup timerange_download.py --terra --aqua --viirs -b 2000-02-24 -e 2016-12-31 -north 32 -south 4 -west -121 -east -73 -p OC --no-night -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log &amp;</span>
 
 <span class="gp">#</span> Day <span class="nb">time</span> SST
-<span class="gp">$</span> nohup timerange_download.py --terra --aqua --viirs -b <span class="m">2000</span>-02-24 -e <span class="m">2016</span>-12-31 -north <span class="m">32</span> -south <span class="m">4</span> -west -121 -east -73 -p SST --no-night -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log <span class="p">&amp;</span>
+<span class="go">nohup timerange_download.py --terra --aqua --viirs -b 2000-02-24 -e 2016-12-31 -north 32 -south 4 -west -121 -east -73 -p SST --no-night -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log &amp;</span>
 
 <span class="gp">#</span> Night <span class="nb">time</span> SST
-<span class="gp">$</span> nohup timerange_download.py --terra --aqua --viirs -b <span class="m">2000</span>-02-24 -e <span class="m">2016</span>-12-31 -north <span class="m">32</span> -south <span class="m">4</span> -west -121 -east -73 -p SST --no-day -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log <span class="p">&amp;</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="l3m-products-processing">
-<h3>L3m products processing<a class="headerlink" href="#l3m-products-processing" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id1">
-<h4>Description<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
-<p>The commands <code class="docutils literal"><span class="pre">timerange_L3m_process.py</span></code> generates L3m files, projected to a regular georeferenced grid, from the input L2 files, downloaded using the <code class="docutils literal"><span class="pre">timerange_download.py</span></code> command line interface. Each variable has to be processed separately (But multiple sensors can be processed at the same time). Running <code class="docutils literal"><span class="pre">timerange_L3m_process.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
-</div>
-<div class="section" id="id2">
-<h4>Examples usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> Process Cholorophyll-a at <span class="m">2000</span> m resolution <span class="k">for</span> aqua, terra and viirs.
-<span class="gp">$</span> nohup timerange_L3m_process.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-05-10 -s CHL -v chlor_a -d /export/isilon/datos2/satmo2_data/ -r <span class="m">2000</span> --overwrite -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -multi <span class="m">4</span> <span class="p">&amp;</span>
-
-<span class="gp">#</span> Process SST at <span class="m">2000</span> m resolution <span class="k">for</span> aqua, terra and viirs.
-<span class="gp">$</span> nohup timerange_L3m_process.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-05-10 -s SST -v sst -mask 0x1002 -d /export/isilon/datos2/satmo2_data/ -r <span class="m">2000</span> --overwrite -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -multi <span class="m">4</span> <span class="p">&amp;</span>
-
-<span class="gp">#</span> Process PAR at <span class="m">2000</span> m resolution <span class="k">for</span> aqua, terra and viirs.
-<span class="gp">$</span> nohup timerange_L3m_process.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-05-10 -s PAR -v par -mask 0x600000a -d /export/isilon/datos2/satmo2_data/ -r <span class="m">2000</span> --overwrite -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -multi <span class="m">4</span> <span class="p">&amp;</span>
-
-<span class="gp">#</span> Process FLH at <span class="m">2000</span> m resolution <span class="k">for</span> aqua, terra and viirs.
-<span class="gp">$</span> nohup timerange_L3m_process.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-05-10 -s FLH -v nflh -mask 0x679d73f -d /export/isilon/datos2/satmo2_data/ -r <span class="m">2000</span> --overwrite -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -multi <span class="m">4</span> <span class="p">&amp;</span>
-
-<span class="gp">#</span> Process NSST at <span class="m">2000</span> m resolution <span class="k">for</span> aqua, terra and viirs <span class="o">(</span>note the <span class="sb">`</span>--night<span class="sb">`</span> flag<span class="o">)</span>
-<span class="gp">$</span> nohup timerange_L3m_process.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-05-10 -s NSST -v sst -mask 0x2 --night -d /export/isilon/datos2/satmo2_data/ -r <span class="m">2000</span> --overwrite -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -multi <span class="m">4</span> <span class="p">&amp;</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="generate-multisensor-composites">
-<h3>Generate multisensor composites<a class="headerlink" href="#generate-multisensor-composites" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id3">
-<h4>Description<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<p>The command <code class="docutils literal"><span class="pre">timerange_daily_composite.py</span></code> produces multi sensors composites (e.g.: Data from aqua and terra, acquired on the same day are combined into a single product). The input files for this operation are sensor specific L3m files; it is therefore essential to run <code class="docutils literal"><span class="pre">timerange_L3m_process.py</span></code> prior to this command. The files generated use the sensor code prefix <code class="docutils literal"><span class="pre">X</span></code> and are written to the <code class="docutils literal"><span class="pre">combined</span></code> sensor subdirectory of the data archive. Running <code class="docutils literal"><span class="pre">timerange_daily_composite.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
-</div>
-<div class="section" id="id4">
-<h4>Examples usage<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> Combine chlorophyll-a data from all the sensors available:
-<span class="gp">$</span> nohup timerange_daily_composite.py -b <span class="m">2000</span>-01-01 -e <span class="m">2016</span>-12-31 -v chlor_a -s CHL -d /export/isilon/datos2/satmo2_data/ -r 2km --overwrite -multi <span class="m">4</span> <span class="p">&amp;</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="generate-time-composites">
-<h3>Generate time composites<a class="headerlink" href="#generate-time-composites" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id5">
-<h4>Description<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
-<p>The command <code class="docutils literal"><span class="pre">timerange_time_composite.py</span></code> produces temporal composites for a given variable using daily data from a given sensor (which can be combined (default)). Running <code class="docutils literal"><span class="pre">timerange_time_composite.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
-</div>
-<div class="section" id="id6">
-<h4>Examples usage<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> Generate <span class="m">16</span> days composites from the daily composites of chlorophyll-a produced by the <span class="sb">`</span>timerange_daily_composite.py<span class="sb">`</span> command.
-<span class="gp">$</span> nohup timerange_time_composite.py -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-06-01 -delta <span class="m">16</span> -s CHL -v chlor_a -d /export/isilon/datos2/satmo2_data/ -r 2km --overwrite --preview -multi <span class="m">4</span>
+<span class="go">nohup timerange_download.py --terra --aqua --viirs -b 2000-02-24 -e 2016-12-31 -north 32 -south 4 -west -121 -east -73 -p SST --no-day -d /export/isilon/datos2/satmo2_data/ &gt; ~/dl_log.log &amp;</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<div class="section" id="near-real-time-mode">
-<h2>Near real time mode<a class="headerlink" href="#near-real-time-mode" title="Permalink to this headline">¶</a></h2>
-<p>The main command to operate satmo near real time mode is called <code class="docutils literal"><span class="pre">satmo_nrt.py</span></code>.</p>
-<div class="section" id="id7">
-<h3>Description<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal"><span class="pre">satmo_nrt.py</span></code> starts the near real time mode of the satmo system. The current version of the near real time mode handles downloading of NRT and refined processing data, processing to L3m level and production of daily and temporal composites (8 and 16 days).
-Running <code class="docutils literal"><span class="pre">satmo_nrt.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
-</div>
-<div class="section" id="id8">
-<h3>Examples usage<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> Start the system with download of NRT + refined processing L2 data, processing of <span class="sb">`</span>chlor_a<span class="sb">`</span>, <span class="sb">`</span>nflh<span class="sb">`</span> and <span class="sb">`</span>sst<span class="sb">`</span> <span class="o">(</span>day and night<span class="o">)</span>, at 2km resolution
-<span class="gp">$</span> nohup satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --north <span class="m">33</span> --south <span class="m">3</span> --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -r <span class="m">2000</span> &gt; ~/nrt_log.log <span class="p">&amp;</span>
+<div class="section" id="processing-l2-data-from-l1a">
+<h2>Processing L2 data from L1A<a class="headerlink" href="#processing-l2-data-from-l1a" title="Permalink to this headline">¶</a></h2>
+<p>The command line <code class="docutils literal"><span class="pre">timerange_L2_process.py</span></code> processes L2 files from L1A. The command line is a wrapper (and batcher) around the seadas utility <code class="docutils literal"><span class="pre">l2gen</span></code>. The figure below details the processing chain triggered by the command line.</p>
+<img alt="_images/l2gen_flowchart.png" src="_images/l2gen_flowchart.png" />
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process a L2 suite called OC2 that contains Rayleight corrected reflectances</span>
+timerange_L2_process.py --aqua --terra --viirs -b <span class="m">2014</span>-01-01 -e <span class="m">2014</span>-12-31 -v rhos_nnn -s OC2 -d /export/isilon/data2/satmo2_data -multi <span class="m">3</span>
 </pre></div>
 </div>
 </div>
+<div class="section" id="generating-additional-l2-variables">
+<h2>Generating additional L2 variables<a class="headerlink" href="#generating-additional-l2-variables" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">timerange_L2_append.py</span></code> command line enables computing additional variables from bands present in an L2 file. The new index/band layer is appended to the L2 file from which the input were taken.</p>
+<p>The list of variables that can be processed using that command line can be found in <code class="docutils literal"><span class="pre">satmo.global_variables.BAND_MATH_FUNCTIONS</span></code>. Edit that variable in the satmo source code following the existing model to enable processing of additional variables.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process afai and append it to the OC2 L2 suite generated by the command above</span>
+timerange_L2_append.py --aqua --terra --viirs -b <span class="m">2014</span>-01-01 -e <span class="m">2014</span>-12-31 -v afai -s OC2 -d /export/isilon/data2/satmo2_data -multi <span class="m">3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-mapped-l2-variables">
+<h2>Generating mapped L2 variables<a class="headerlink" href="#generating-mapped-l2-variables" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">timerange_L2m_process.py</span></code> runs seadas <code class="docutils literal"><span class="pre">l2mapgen</span></code> on individual L2 file, to produced mapped products.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process afai and append it to the OC2 L2 suite generated by the command above</span>
+timerange_L2_append.py --aqua --terra --viirs -b <span class="m">2014</span>-01-01 -e <span class="m">2014</span>-12-31 -v afai -s OC2 -d /export/isilon/data2/satmo2_data -multi <span class="m">3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-mapped-l3m-variables">
+<h2>Generating mapped L3m variables<a class="headerlink" href="#generating-mapped-l3m-variables" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code> runs seadas <code class="docutils literal"><span class="pre">l2bin</span></code> and <code class="docutils literal"><span class="pre">l3mapgen</span></code> sequentially, hence producing L3m products. It also produces L3b files (one for each collection), which are intermediary output in that case, but required inputs for the temporal compositing command line (<code class="docutils literal"><span class="pre">timerange_time_compositing.py</span></code>).</p>
+<p>The <code class="docutils literal"><span class="pre">l2bin</span></code> utility uses default masking values fetched from a global variable named <code class="docutils literal"><span class="pre">FLAGS</span></code> and located at <code class="docutils literal"><span class="pre">satmo.global_variables</span></code>. Edit this variable to change the default values.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process chlor_a, night sst, sst, and chl_ocx for viirs, aqua and terra between 2000 and 2017</span>
+timerange_bin_map.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-12-31 -south <span class="m">3</span> -north <span class="m">33</span> -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -bin_res <span class="m">1</span> -map_res <span class="m">1000</span> -day_vars chlor_a chl_ocx sst -night_vars sst -multi <span class="m">6</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-temporal-composites">
+<h2>Generating temporal composites<a class="headerlink" href="#generating-temporal-composites" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">timerange_time_compositing.py</span></code> runs seadas <code class="docutils literal"><span class="pre">l3bin</span></code> and <code class="docutils literal"><span class="pre">l3mapgen</span></code> sequentially, hence producing mapped temporal composites.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Generate 8 days composites for aqua, viirs and terra for the period 2000-2017 (for chlor_a, chl_ocx, sst and night sst)</span>
+timerange_time_compositing.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-12-31 -delta <span class="m">8</span> -day_vars chlor_a chl_ocx sst -night_vars sst -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -d /export/isilon/datos2/satmo2_data
+</pre></div>
+</div>
+</div>
+<div class="section" id="data-visualization">
+<h2>Data visualization<a class="headerlink" href="#data-visualization" title="Permalink to this headline">¶</a></h2>
+<p>Satmo comes with a command line for generating preview of existing georeferenced tiff files. It produces png files, with continents and coastlines, and supports linear as well as logarithmic scaling of the variable. Variables have to be referenced in the global variable <code class="docutils literal"><span class="pre">VIZ_PARAMS</span></code>, located at <code class="docutils literal"><span class="pre">satmo.global_variables</span></code>. Do not set <code class="docutils literal"><span class="pre">vmin</span></code> to zero for a log scaled variable since the logarithm of zero is not defined.</p>
+<p>The example below produces the figure at the end of this page.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>make_preview.py A2006001.L3m_MO_CHL_chlor_a_1km.tif
+make_preview.py A2006001.L3m_MO_SST_sst_1km.tif
+</pre></div>
+</div>
+<img alt="_images/A2006001.L3m_MO_CHL_chlor_a_1km.png" src="_images/A2006001.L3m_MO_CHL_chlor_a_1km.png" />
+<img alt="_images/A2006001.L3m_MO_SST_sst_1km.png" src="_images/A2006001.L3m_MO_SST_sst_1km.png" />
 </div>
 </div>
 
@@ -315,7 +421,7 @@ Running <code class="docutils literal"><span class="pre">satmo_nrt.py</span> <sp
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api/index.html" class="btn btn-neutral float-right" title="satmo package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="api/index.html" class="btn btn-neutral float-right" title="satmo API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="satmo (Sistema Satelital de Monitoreo Oceanico)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -349,7 +455,7 @@ Running <code class="docutils literal"><span class="pre">satmo_nrt.py</span> <sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.2',
+            VERSION:'0.2.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -1,7 +1,7 @@
-satmo package
+satmo API
 =============
 
-Submodules
+Modules
 ----------
 
 .. toctree::
@@ -16,11 +16,3 @@ Submodules
    satmo.query
    satmo.visualization
    satmo.wrappers
-
-Module contents
----------------
-
-.. automodule:: satmo
-    :members:
-    :undoc-members:
-    :show-inheritance:

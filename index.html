@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo (Sistema Satelital de Monitoreo Oceanico) &mdash; satmo 0.2.2 documentation</title>
+  <title>satmo (Sistema Satelital de Monitoreo Oceanico) &mdash; satmo 0.2.3 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="satmo 0.2.2 documentation" href="#"/>
-        <link rel="next" title="Command Line Users Guide" href="cli.html"/> 
+    <link rel="top" title="satmo 0.2.3 documentation" href="#"/>
+        <link rel="next" title="Using the command line interface" href="cli.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2.2
+                0.2.3
               </div>
             
           
@@ -90,10 +90,12 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Users Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Using the command line interface</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chains.html">Satmo processing chains</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
@@ -166,28 +168,98 @@
 <h1>satmo (Sistema Satelital de Monitoreo Oceanico)<a class="headerlink" href="#satmo-sistema-satelital-de-monitoreo-oceanico" title="Permalink to this headline">¶</a></h1>
 <p>This is the documentation of the <code class="docutils literal"><span class="pre">satmo</span></code> python package. The source code is available in a
 git repository hosted at <a class="reference external" href="https://github.com/CONABIO/satmo">https://github.com/CONABIO/satmo</a></p>
+<img alt="_images/A2006001.L3m_MO_CHL_chlor_a_1km.png" src="_images/A2006001.L3m_MO_CHL_chlor_a_1km.png" />
+</div>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>SATMO is the satellite component of a complete marine monitoring and analysis system (<em>sistema de información y análisis de ecosistemas marino-costeros de México</em>).
+Direct applications of the satmo system are:</p>
+<ul>
+<li><p class="first">Alert, forecast and early warning system for issues such as:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Algae blooms</li>
+<li>Risks of coral bleaching</li>
+<li>Arrival of Sargassum and drift forecast</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Facilitated centralized access to various kind of data and information about seas and oceans</p>
+</li>
+</ul>
+<p>These activities should result in:</p>
+<ul class="simple">
+<li>An improved knowledge and understanding of marine ecosystems and dynamics</li>
+<li>A better capacity to monitor, protect, and manage marine ecosystems</li>
+</ul>
+<div class="section" id="characteristics-of-the-satmo-system">
+<h2>Characteristics of the SATMO system<a class="headerlink" href="#characteristics-of-the-satmo-system" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/satmo_infographic.png" src="_images/satmo_infographic.png" />
+<p>Specific roles of SATMO are to:</p>
+<ul class="simple">
+<li>Provide facilitated access to up to date information on various ocean parameters measurable by satellite</li>
+<li>Generate alerts of risks of coral bleaching, algae blooms, and presence of sargassum</li>
+<li>Facilitate analysis of ocean color data, jointly with other data sources (e.g. In-situ data from the SIDMO system)</li>
+</ul>
+<p>This implies that SATMO must:</p>
+<ul class="simple">
+<li>Ingest relevant archived and upcoming satellite data in an operational manner</li>
+<li>Ingest auxiliary products required for analysis and forecasting (e.g. Ocean currents)</li>
+<li>Compute ecologically meaningful and relevant variables, and project them to a common grid</li>
+<li>Apply event detection algorithms to the satellite image time-series for the generation of alerts</li>
+<li>Include a data distribution platform (e.g.: ftp server)</li>
+<li>Include a data visualization platform (e.g.: Geo-portal)</li>
+<li>Have Various data access tools (API)</li>
+<li>Function automatically and in near real time</li>
+</ul>
+</div>
+<div class="section" id="satmo-operating-modes">
+<h2>Satmo operating modes<a class="headerlink" href="#satmo-operating-modes" title="Permalink to this headline">¶</a></h2>
+<p>Satmo has two operating modes; a near real time mode, that ingests and processes data a few hours after aquisition by the sensors, and a update mode, to download and reprocess archive data. The two modes are further detailed below.</p>
+<div class="section" id="near-real-time-mode">
+<h3>Near real time mode<a class="headerlink" href="#near-real-time-mode" title="Permalink to this headline">¶</a></h3>
+<p>The near real time operating mode of the system allows download of recently acquired data and processing to level 3m (L3m), including generation of temporal composites. It can be started with a single command line available as part of the satmo package (<code class="docutils literal"><span class="pre">satmo_nrt.py</span></code>).</p>
+<p>The figure below provides a simplified overview of the overall ocean color data processing chain handled nightly by the satmo near real time system.</p>
+<img alt="_images/chain_0.png" src="_images/chain_0.png" />
+</div>
+<div class="section" id="update-mode">
+<h3>Update mode<a class="headerlink" href="#update-mode" title="Permalink to this headline">¶</a></h3>
+<p>The update mode allows data download from the Ocean Biology Processing Group servers and processing to level 3m (L3m) for a user defined time-range and set of variables. These functionalities are exposed via a set of command lines.</p>
+<p>The figure below presents a simplified version of the overall download and processing chain, with the corresponding satmo command line utilities superimposed.</p>
+<img alt="_images/chain_1.png" src="_images/chain_1.png" />
+</div>
+</div>
 </div>
 <div class="section" id="user-guide">
 <h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Users Guide</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Using the command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#before-starting">Before starting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#starting-satmo-near-real-time-mode">Starting satmo near real time mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli.html#update-mode">Update mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cli.html#near-real-time-mode">Near real time mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#processing-l2-data-from-l1a">Processing L2 data from L1A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#generating-additional-l2-variables">Generating additional L2 variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#generating-mapped-l2-variables">Generating mapped L2 variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#generating-mapped-l3m-variables">Generating mapped L3m variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#generating-temporal-composites">Generating temporal composites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#data-visualization">Data visualization</a></li>
 </ul>
 </li>
 </ul>
 </div>
+<p>Many processing parameters (default masking values, formulas, suites, variables) are stored in global variables, stored in satmo/oceancolor/global_variables.py. The section below explains which variables have to be edited …</p>
 </div>
-<div class="section" id="api-doc">
-<h1>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="technical-documentation">
+<h1>Technical documentation<a class="headerlink" href="#technical-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/index.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/index.html#module-satmo">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#modules">Modules</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chains.html">Satmo processing chains</a></li>
 </ul>
 </div>
 </div>
@@ -224,7 +296,7 @@ git repository hosted at <a class="reference external" href="https://github.com/
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cli.html" class="btn btn-neutral float-right" title="Command Line Users Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cli.html" class="btn btn-neutral float-right" title="Using the command line interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -256,7 +328,7 @@ git repository hosted at <a class="reference external" href="https://github.com/
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.2',
+            VERSION:'0.2.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

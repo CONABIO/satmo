@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.utils &mdash; satmo 0.2.2 documentation</title>
+  <title>satmo.utils &mdash; satmo 0.2.3 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="satmo 0.2.2 documentation" href="../../index.html"/>
+    <link rel="top" title="satmo 0.2.3 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.2.2
+                0.2.3
               </div>
             
           
@@ -90,10 +90,12 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Users Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Using the command line interface</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">satmo API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../chains.html">Satmo processing chains</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
@@ -463,8 +465,8 @@
 <span class="sd">            </span>
 <span class="sd">            sensor_code (str): e.g.: &#39;A&#39;, &#39;V&#39;, &#39;X&#39;</span>
 <span class="sd">            </span>
-<span class="sd">            date (datetime.datetime or str). IN the case of climatologies the year is ignored so that &#39;1970-05-01&#39; can</span>
-<span class="sd">                be specified for example</span>
+<span class="sd">            date (datetime.datetime or str): IN the case of climatologies the year is ignored so that &#39;1970-05-01&#39; can</span>
+<span class="sd">            be specified for example</span>
 <span class="sd">            </span>
 <span class="sd">            time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))</span>
 <span class="sd">            </span>
@@ -481,7 +483,7 @@
 <span class="sd">            end_year (int or str): for climatologies, see CONVENTIONS.md</span>
 <span class="sd">            </span>
 <span class="sd">            nc (bool): Should extension be &#39;.nc&#39; (instead of &#39;.tif&#39;) (Only useful for L3m level, to distinguish between</span>
-<span class="sd">                tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</span>
+<span class="sd">            tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import satmo</span>
@@ -1105,7 +1107,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.2',
+            VERSION:'0.2.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>satmo.utils module &mdash; satmo 0.2.2 documentation</title>
+  <title>satmo.utils module &mdash; satmo 0.2.3 documentation</title>
   
 
   
@@ -35,10 +35,10 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="satmo 0.2.2 documentation" href="../index.html"/>
-        <link rel="up" title="satmo package" href="index.html"/>
+    <link rel="top" title="satmo 0.2.3 documentation" href="../index.html"/>
+        <link rel="up" title="satmo API" href="index.html"/>
         <link rel="next" title="satmo.download module" href="satmo.download.html"/>
-        <link rel="prev" title="satmo package" href="index.html"/> 
+        <link rel="prev" title="satmo API" href="index.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.2
+                0.2.3
               </div>
             
           
@@ -92,11 +92,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Users Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Using the command line interface</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">satmo package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">satmo API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#modules">Modules</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">satmo.utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="satmo.download.html">satmo.download module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="satmo.errors.html">satmo.errors module</a></li>
@@ -109,9 +109,10 @@
 <li class="toctree-l3"><a class="reference internal" href="satmo.wrappers.html">satmo.wrappers module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#module-satmo">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chains.html">Satmo processing chains</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
@@ -161,7 +162,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="index.html">satmo package</a> &raquo;</li>
+          <li><a href="index.html">satmo API</a> &raquo;</li>
         
       <li>satmo.utils module</li>
     
@@ -277,10 +278,8 @@ doc for more details</li>
 <p>filename (str): filename of the main input file used to produce the output (typically filename of a lower level file)</p>
 <p>suite (str): product suite of the desired file name (e.g. OC, SST, SST4, IOP)</p>
 <p>sensor_code (str): e.g.: ‘A’, ‘V’, ‘X’</p>
-<dl class="docutils">
-<dt>date (datetime.datetime or str). IN the case of climatologies the year is ignored so that ‘1970-05-01’ can</dt>
-<dd>be specified for example</dd>
-</dl>
+<p>date (datetime.datetime or str): IN the case of climatologies the year is ignored so that ‘1970-05-01’ can
+be specified for example</p>
 <p>time (datetime.time): with hour, min, sec (e.g. datetime.time(12, 35, 0))</p>
 <p>doy (str or int): Day of the year</p>
 <p>composite (str): e.g. DAY, 8DAY, 16DAY, etc</p>
@@ -288,10 +287,8 @@ doc for more details</li>
 <p>resolution (str): e.g. ‘1km’</p>
 <p>begin_year (int or str): for climatologies, see CONVENTIONS.md</p>
 <p>end_year (int or str): for climatologies, see CONVENTIONS.md</p>
-<dl class="docutils">
-<dt>nc (bool): Should extension be ‘.nc’ (instead of ‘.tif’) (Only useful for L3m level, to distinguish between</dt>
-<dd>tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</dd>
-</dl>
+<p>nc (bool): Should extension be ‘.nc’ (instead of ‘.tif’) (Only useful for L3m level, to distinguish between
+tif files which are produced by e.g. custom compositing functions, and netcdf output of l3mapgen)</p>
 </li>
 </ul>
 </td>
@@ -706,7 +703,7 @@ and hence kick-off the right processing chains.</p>
         <a href="satmo.download.html" class="btn btn-neutral float-right" title="satmo.download module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="satmo package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="satmo API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -737,7 +734,7 @@ and hence kick-off the right processing chains.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.2',
+            VERSION:'0.2.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
