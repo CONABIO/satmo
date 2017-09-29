@@ -893,7 +893,7 @@ def nrt_wrapper_l1(north, south, west, east, var_list, data_root, n_threads=1):
             try:
                 param = BAND_MATH_FUNCTIONS[var][sensor]
                 suite = L3_SUITE_FROM_VAR['day'][var]
-                l2_append(L2_file, **afai_param)
+                l2_append(L2_file, **param)
                 l2mapgen(L2_file, south=south, north=north, west=west, east=east,
                          prod=var, flags=FLAGS[suite], data_root=data_root)
             except Exception as e:
