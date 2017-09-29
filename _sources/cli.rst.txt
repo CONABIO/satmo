@@ -32,14 +32,14 @@ Running ``satmo_nrt.py --help`` returns the following help page.
 .. code-block:: bash
 
     usage: satmo_nrt.py [-h] -day_vars [DAY_VARS [DAY_VARS ...]] -night_vars
-                    [NIGHT_VARS [NIGHT_VARS ...]]
-                    [-l1a_vars [L1A_VARS [L1A_VARS ...]]] [--no-refined]
-                    [--no-8DAY] [--no-month] -d DATA_ROOT
-                    [-map_res MAPPING_RESOLUTION]
-                    [-bin_res BINNING_RESOLUTION] -north NORTH -south SOUTH
-                    -east EAST -west WEST [-p PROJ]
-                    [-flags [FLAGS [FLAGS ...]]] [-delay DELAY]
-                    [-multi N_THREADS]
+                        [NIGHT_VARS [NIGHT_VARS ...]]
+                        [-l1a_vars [L1A_VARS [L1A_VARS ...]]] [--no-refined]
+                        [--no-8DAY] [--no-month] -d DATA_ROOT
+                        [-map_res MAPPING_RESOLUTION]
+                        [-bin_res BINNING_RESOLUTION] -north NORTH -south SOUTH
+                        -east EAST -west WEST [-p PROJ]
+                        [-flags [FLAGS [FLAGS ...]]] [-delay DELAY]
+                        [-multi N_THREADS]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -83,21 +83,19 @@ Running ``satmo_nrt.py --help`` returns the following help page.
       -multi N_THREADS, --n_threads N_THREADS
                             Number of threads to use for parallel implementation
 
-    Command Line utility to control the operational mode of the satmo system 
-    Enables download of L2 and L1A data from OBPG server (NRT and refined processing), processing of L3m files for several night and 
-    day variables, processing of daily composites, and processing of temporal composites. 
-    All these download and processing steps are scheduled and ran operationally. 
-    Daily composites and temporales composites are enabled by default 
-    Use the --no-daily_compose, --no-8DAY, and --no-16DAY to disable their generation 
+    Command Line utility to control the operational mode of the satmo system. Enables download of L2 and (day only) L1A data from OBPG server (NRT and refined processing),
+    processing of L3m and L2m files for several night and day variables, processing of daily composites, and processing of temporal composites. All these download and processing steps
+    are scheduled and ran operationally. Temporal composites are enabled by default. Use the --no-daily_compose, and --no-8DAYto disable their generation.
+
+    The L2 suite generated from L1A data by this command line is named OC2, and contains a list of variables defined in the global variable VARS_FROM_L2_SUITE. Additional variables can be
+    appended to the OC2 suite by passing them to --l1a_vars (these variable must have an entry in the BAND_MATH_FUNCTIONS satmo global variable). At the moment the OC2 suite is only
+    used for fai and afai generation, and therefore only processed up to level 2m (L2m).
 
     ------------------
     Example usage:
     ------------------
-
-    satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 -multi 3 
-
-
-
+    satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi 3
+    
 
 Update mode
 ^^^^^^^^^^^
@@ -130,7 +128,7 @@ Downloading data
 
 The ``timerange_download.py`` command line can be used to download data from the OBPG servers to a local archive. It supports downloading L1A as well as L2 files, with the option to select the suite in case of L2 download, and to choose between night or day data. Running ``timerange_download.py --help`` displays the help page of the command line interface.
 
-.. warning:: Downloading full speed causes problems of breaking connection, it is therefore preferable to limit download speed with tools like **trickle**.
+.. warning:: Downloading data for a long period without speed restriction may cause problems of breaking connection, and is not permitted during office hours at CONABIO. It is therefore preferable to limit download speed with tools like **trickle**. See example below.
 
 The example below illustrates a download process (L1A data) with speed limited to 3MBps.
 
@@ -263,3 +261,34 @@ The example below produces the figure at the end of this page.
 .. image:: img/A2006001.L3m_MO_CHL_chlor_a_1km.png
 .. image:: img/A2006001.L3m_MO_SST_sst_1km.png
 
+
+Combinining command lines
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to combine various steps of the processing by adding the individual command to a bash script, and runnning the script. Such example of script is available `here`_ (also pasted below). This particular example processes, from L2, for the year 2015, five variables (chlor_a nflh Kd_490 sst nsst) to level 3, including 8 days composites and monthly composites.
+
+The different steps to run such script are to:
+
+- Save the script not forgetting the bash shebang
+- Make the script executable
+- Run the script with a command like ``nohup ./script_name.sh > ~/YYYYMMDD_processing_log.log &``
+  
+
+Example script combinining multiple command lines.
+
+.. code-block:: bash
+
+    
+    #!/usr/bin/env bash
+
+    # Process standard variables from L2 for the 3 sensors for the year 2015
+    timerange_bin_map.py --aqua --terra --viirs -b 2015-01-01 -e 2015-12-31 -south 3 -north 33 -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -day_vars chlor_a nflh Kd_490 sst -night_vars sst -multi 6
+
+    # Generate 8 days composites for aqua, viirs and terra for the same variables and the year 2015
+    timerange_time_compositing.py --aqua --terra --viirs -b 2015-01-01 -e 2015-12-31 -delta 8 -day_vars chlor_a nflh Kd_490 sst -night_vars sst -north 33 -south 3 -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -multi 6
+
+    # Generate monthly composites for aqua, viirs and terra for the period 2000-2017 (for chlor_a, chl_ocx, sst and night sst)
+    timerange_time_compositing.py --aqua --terra --viirs -b 2015-01-01 -e 2015-12-31 -delta month -day_vars chlor_a nflh Kd_490 sst -night_vars sst -north 33 -south 3 -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -multi 6
+
+
+.. _here: https://github.com/CONABIO/satmo/blob/master/scripts/2017-09-28_data_processing_example.py

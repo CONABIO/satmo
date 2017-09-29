@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Background &mdash; satmo 0.2.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="satmo 0.2.4 documentation" href="index.html"/>
+        <link rel="next" title="Using the command line interface" href="cli.html"/>
+        <link rel="prev" title="satmo (Sistema Satelital de Monitoreo Oceanico)" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#characteristics-of-the-satmo-system">Characteristics of the SATMO system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#satmo-operating-modes">Satmo operating modes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#near-real-time-mode">Near real time mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-mode">Update mode</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Using the command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variables.html">Adjusting default processing parameters and variables</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chains.html">Satmo processing chains</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Installation and documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Background</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="background">
+<h1>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h1>
+<p>SATMO is the satellite component of a complete marine monitoring and analysis system (<em>sistema de información y análisis de ecosistemas marino-costeros de México</em>).
+Direct applications of the satmo system are:</p>
+<ul>
+<li><p class="first">Alert, forecast and early warning system for issues such as:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Algae blooms</li>
+<li>Risks of coral bleaching</li>
+<li>Arrival of Sargassum and drift forecast</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Facilitated centralized access to various kind of data and information about seas and oceans</p>
+</li>
+</ul>
+<p>These activities should result in:</p>
+<ul class="simple">
+<li>An improved knowledge and understanding of marine ecosystems and dynamics</li>
+<li>A better capacity to monitor, protect, and manage marine ecosystems</li>
+</ul>
+</div>
+<div class="section" id="characteristics-of-the-satmo-system">
+<h1>Characteristics of the SATMO system<a class="headerlink" href="#characteristics-of-the-satmo-system" title="Permalink to this headline">¶</a></h1>
+<img alt="_images/satmo_infographic.png" src="_images/satmo_infographic.png" />
+<p>Specific roles of SATMO are to:</p>
+<ul class="simple">
+<li>Provide facilitated access to up to date information on various ocean parameters measurable by satellite</li>
+<li>Generate alerts of risks of coral bleaching, algae blooms, and presence of sargassum</li>
+<li>Facilitate analysis of ocean color data, jointly with other data sources (e.g. In-situ data from the SIDMO system)</li>
+</ul>
+<p>This implies that SATMO must:</p>
+<ul class="simple">
+<li>Ingest relevant archived and upcoming satellite data in an operational manner</li>
+<li>Ingest auxiliary products required for analysis and forecasting (e.g. Ocean currents)</li>
+<li>Compute ecologically meaningful and relevant variables, and project them to a common grid</li>
+<li>Apply event detection algorithms to the satellite image time-series for the generation of alerts</li>
+<li>Include a data distribution platform (e.g.: ftp server)</li>
+<li>Include a data visualization platform (e.g.: Geo-portal)</li>
+<li>Have Various data access tools (API)</li>
+<li>Function automatically and in near real time</li>
+</ul>
+</div>
+<div class="section" id="satmo-operating-modes">
+<h1>Satmo operating modes<a class="headerlink" href="#satmo-operating-modes" title="Permalink to this headline">¶</a></h1>
+<p>Satmo has two operating modes; a near real time mode, that ingests and processes data a few hours after aquisition by the sensors, and a update mode, to download and reprocess archive data. The two modes are further detailed below.</p>
+<div class="section" id="near-real-time-mode">
+<h2>Near real time mode<a class="headerlink" href="#near-real-time-mode" title="Permalink to this headline">¶</a></h2>
+<p>The near real time operating mode of the system allows download of recently acquired data and processing to level 3m (L3m), including generation of temporal composites. It can be started with a single command line available as part of the satmo package (<code class="docutils literal"><span class="pre">satmo_nrt.py</span></code>).</p>
+<p>The figure below provides a simplified overview of the overall ocean color data processing chain handled nightly by the satmo near real time system.</p>
+<img alt="_images/chain_0.png" src="_images/chain_0.png" />
+</div>
+<div class="section" id="update-mode">
+<h2>Update mode<a class="headerlink" href="#update-mode" title="Permalink to this headline">¶</a></h2>
+<p>The update mode allows data download from the Ocean Biology Processing Group servers and processing to level 3m (L3m) for a user defined time-range and set of variables. These functionalities are exposed via a set of command lines.</p>
+<p>The figure below presents a simplified version of the overall download and processing chain, with the corresponding satmo command line utilities superimposed.</p>
+<img alt="_images/chain_1.png" src="_images/chain_1.png" />
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cli.html" class="btn btn-neutral float-right" title="Using the command line interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="satmo (Sistema Satelital de Monitoreo Oceanico)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

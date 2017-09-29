@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Using the command line interface &mdash; satmo 0.2.3 documentation</title>
+  <title>Using the command line interface &mdash; satmo 0.2.4 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="satmo 0.2.3 documentation" href="index.html"/>
-        <link rel="next" title="satmo API" href="api/index.html"/>
-        <link rel="prev" title="satmo (Sistema Satelital de Monitoreo Oceanico)" href="index.html"/> 
+    <link rel="top" title="satmo 0.2.4 documentation" href="index.html"/>
+        <link rel="next" title="Adjusting default processing parameters and variables" href="variables.html"/>
+        <link rel="prev" title="Background" href="introduction.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.2.3
+                0.2.4
               </div>
             
           
@@ -90,7 +90,14 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#characteristics-of-the-satmo-system">Characteristics of the SATMO system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#satmo-operating-modes">Satmo operating modes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Using the command line interface</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#before-starting">Before starting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#starting-satmo-near-real-time-mode">Starting satmo near real time mode</a></li>
@@ -120,14 +127,18 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#data-visualization">Data visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combinining-command-lines">Combinining command lines</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="variables.html">Adjusting default processing parameters and variables</a></li>
 </ul>
+<p class="caption"><span class="caption-text">Technical documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="chains.html">Satmo processing chains</a></li>
 </ul>
+<p class="caption"><span class="caption-text">Installation and documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodoc.html">Documentation</a></li>
@@ -216,14 +227,14 @@ nohup command_name.py --arg1 input1 --arg2 input2 &gt; ~/YYYYMMDD_processing_log
 <p>As detailed in the installation instruction, you probably want to start the near real time operation mode automatically as soon as the system boots up, and for that you should add and entry to the linux user crontab. However, it is of course also possible to start satmo near real time mode manually, using the <code class="docutils literal"><span class="pre">satmo_nrt.py</span></code> command.</p>
 <p>Running <code class="docutils literal"><span class="pre">satmo_nrt.py</span> <span class="pre">--help</span></code> returns the following help page.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>usage: satmo_nrt.py <span class="o">[</span>-h<span class="o">]</span> -day_vars <span class="o">[</span>DAY_VARS <span class="o">[</span>DAY_VARS ...<span class="o">]]</span> -night_vars
-                <span class="o">[</span>NIGHT_VARS <span class="o">[</span>NIGHT_VARS ...<span class="o">]]</span>
-                <span class="o">[</span>-l1a_vars <span class="o">[</span>L1A_VARS <span class="o">[</span>L1A_VARS ...<span class="o">]]]</span> <span class="o">[</span>--no-refined<span class="o">]</span>
-                <span class="o">[</span>--no-8DAY<span class="o">]</span> <span class="o">[</span>--no-month<span class="o">]</span> -d DATA_ROOT
-                <span class="o">[</span>-map_res MAPPING_RESOLUTION<span class="o">]</span>
-                <span class="o">[</span>-bin_res BINNING_RESOLUTION<span class="o">]</span> -north NORTH -south SOUTH
-                -east EAST -west WEST <span class="o">[</span>-p PROJ<span class="o">]</span>
-                <span class="o">[</span>-flags <span class="o">[</span>FLAGS <span class="o">[</span>FLAGS ...<span class="o">]]]</span> <span class="o">[</span>-delay DELAY<span class="o">]</span>
-                <span class="o">[</span>-multi N_THREADS<span class="o">]</span>
+                    <span class="o">[</span>NIGHT_VARS <span class="o">[</span>NIGHT_VARS ...<span class="o">]]</span>
+                    <span class="o">[</span>-l1a_vars <span class="o">[</span>L1A_VARS <span class="o">[</span>L1A_VARS ...<span class="o">]]]</span> <span class="o">[</span>--no-refined<span class="o">]</span>
+                    <span class="o">[</span>--no-8DAY<span class="o">]</span> <span class="o">[</span>--no-month<span class="o">]</span> -d DATA_ROOT
+                    <span class="o">[</span>-map_res MAPPING_RESOLUTION<span class="o">]</span>
+                    <span class="o">[</span>-bin_res BINNING_RESOLUTION<span class="o">]</span> -north NORTH -south SOUTH
+                    -east EAST -west WEST <span class="o">[</span>-p PROJ<span class="o">]</span>
+                    <span class="o">[</span>-flags <span class="o">[</span>FLAGS <span class="o">[</span>FLAGS ...<span class="o">]]]</span> <span class="o">[</span>-delay DELAY<span class="o">]</span>
+                    <span class="o">[</span>-multi N_THREADS<span class="o">]</span>
 
 optional arguments:
   -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
@@ -267,18 +278,18 @@ optional arguments:
   -multi N_THREADS, --n_threads N_THREADS
                         Number of threads to use <span class="k">for</span> parallel implementation
 
-Command Line utility to control the operational mode of the satmo system
-Enables download of L2 and L1A data from OBPG server <span class="o">(</span>NRT and refined processing<span class="o">)</span>, processing of L3m files <span class="k">for</span> several night and
-day variables, processing of daily composites, and processing of temporal composites.
-All these download and processing steps are scheduled and ran operationally.
-Daily composites and temporales composites are enabled by default
-Use the --no-daily_compose, --no-8DAY, and --no-16DAY to disable their generation
+Command Line utility to control the operational mode of the satmo system. Enables download of L2 and <span class="o">(</span>day only<span class="o">)</span> L1A data from OBPG server <span class="o">(</span>NRT and refined processing<span class="o">)</span>,
+processing of L3m and L2m files <span class="k">for</span> several night and day variables, processing of daily composites, and processing of temporal composites. All these download and processing steps
+are scheduled and ran operationally. Temporal composites are enabled by default. Use the --no-daily_compose, and --no-8DAYto disable their generation.
+
+The L2 suite generated from L1A data by this <span class="nb">command</span> line is named OC2, and contains a list of variables defined in the global variable VARS_FROM_L2_SUITE. Additional variables can be
+appended to the OC2 suite by passing them to --l1a_vars <span class="o">(</span>these variable must have an entry in the BAND_MATH_FUNCTIONS satmo global variable<span class="o">)</span>. At the moment the OC2 suite is only
+used <span class="k">for</span> fai and afai generation, and therefore only processed up to level 2m <span class="o">(</span>L2m<span class="o">)</span>.
 
 ------------------
 Example usage:
 ------------------
-
-satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north <span class="m">33</span> --south <span class="m">3</span> --west -122 -multi <span class="m">3</span>
+satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north <span class="m">33</span> --south <span class="m">3</span> --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi <span class="m">3</span>
 </pre></div>
 </div>
 </div>
@@ -338,7 +349,7 @@ satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai
 <p>The <code class="docutils literal"><span class="pre">timerange_download.py</span></code> command line can be used to download data from the OBPG servers to a local archive. It supports downloading L1A as well as L2 files, with the option to select the suite in case of L2 download, and to choose between night or day data. Running <code class="docutils literal"><span class="pre">timerange_download.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Downloading full speed causes problems of breaking connection, it is therefore preferable to limit download speed with tools like <strong>trickle</strong>.</p>
+<p class="last">Downloading data for a long period without speed restriction may cause problems of breaking connection, and is not permitted during office hours at CONABIO. It is therefore preferable to limit download speed with tools like <strong>trickle</strong>. See example below.</p>
 </div>
 <p>The example below illustrates a download process (L1A data) with speed limited to 3MBps.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Download L1A data with speed limited to 3 MB/s</span>
@@ -437,6 +448,29 @@ make_preview.py A2006001.L3m_MO_SST_sst_1km.tif
 <img alt="_images/A2006001.L3m_MO_CHL_chlor_a_1km.png" src="_images/A2006001.L3m_MO_CHL_chlor_a_1km.png" />
 <img alt="_images/A2006001.L3m_MO_SST_sst_1km.png" src="_images/A2006001.L3m_MO_SST_sst_1km.png" />
 </div>
+<div class="section" id="combinining-command-lines">
+<h2>Combinining command lines<a class="headerlink" href="#combinining-command-lines" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to combine various steps of the processing by adding the individual command to a bash script, and runnning the script. Such example of script is available <a class="reference external" href="https://github.com/CONABIO/satmo/blob/master/scripts/2017-09-28_data_processing_example.py">here</a> (also pasted below). This particular example processes, from L2, for the year 2015, five variables (chlor_a nflh Kd_490 sst nsst) to level 3, including 8 days composites and monthly composites.</p>
+<p>The different steps to run such script are to:</p>
+<ul class="simple">
+<li>Save the script not forgetting the bash shebang</li>
+<li>Make the script executable</li>
+<li>Run the script with a command like <code class="docutils literal"><span class="pre">nohup</span> <span class="pre">./script_name.sh</span> <span class="pre">&gt;</span> <span class="pre">~/YYYYMMDD_processing_log.log</span> <span class="pre">&amp;</span></code></li>
+</ul>
+<p>Example script combinining multiple command lines.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+
+<span class="c1"># Process standard variables from L2 for the 3 sensors for the year 2015</span>
+timerange_bin_map.py --aqua --terra --viirs -b <span class="m">2015</span>-01-01 -e <span class="m">2015</span>-12-31 -south <span class="m">3</span> -north <span class="m">33</span> -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -day_vars chlor_a nflh Kd_490 sst -night_vars sst -multi <span class="m">6</span>
+
+<span class="c1"># Generate 8 days composites for aqua, viirs and terra for the same variables and the year 2015</span>
+timerange_time_compositing.py --aqua --terra --viirs -b <span class="m">2015</span>-01-01 -e <span class="m">2015</span>-12-31 -delta <span class="m">8</span> -day_vars chlor_a nflh Kd_490 sst -night_vars sst -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -multi <span class="m">6</span>
+
+<span class="c1"># Generate monthly composites for aqua, viirs and terra for the period 2000-2017 (for chlor_a, chl_ocx, sst and night sst)</span>
+timerange_time_compositing.py --aqua --terra --viirs -b <span class="m">2015</span>-01-01 -e <span class="m">2015</span>-12-31 -delta month -day_vars chlor_a nflh Kd_490 sst -night_vars sst -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -multi <span class="m">6</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -449,10 +483,10 @@ make_preview.py A2006001.L3m_MO_SST_sst_1km.tif
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api/index.html" class="btn btn-neutral float-right" title="satmo API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="variables.html" class="btn btn-neutral float-right" title="Adjusting default processing parameters and variables" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="satmo (Sistema Satelital de Monitoreo Oceanico)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="introduction.html" class="btn btn-neutral" title="Background" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -483,7 +517,7 @@ make_preview.py A2006001.L3m_MO_SST_sst_1km.tif
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.3',
+            VERSION:'0.2.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

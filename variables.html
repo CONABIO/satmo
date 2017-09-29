@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Adjusting default processing parameters and variables &mdash; satmo 0.2.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="satmo 0.2.4 documentation" href="index.html"/>
+        <link rel="next" title="satmo API" href="api/index.html"/>
+        <link rel="prev" title="Using the command line interface" href="cli.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> satmo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#characteristics-of-the-satmo-system">Characteristics of the SATMO system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#satmo-operating-modes">Satmo operating modes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Using the command line interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adjusting default processing parameters and variables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adding-variables-to-the-oc2-collection">Adding variables to the OC2 collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-default-masking-parameters-used-for-spatial-binning">Change default masking parameters used for spatial binning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-visualization">Data visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-system-in-a-different-region-of-the-world">Using the system in a different region of the world</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Technical documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">satmo API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chains.html">Satmo processing chains</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Installation and documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html#building-the-doc">Building the doc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">satmo</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Adjusting default processing parameters and variables</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/variables.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="adjusting-default-processing-parameters-and-variables">
+<h1>Adjusting default processing parameters and variables<a class="headerlink" href="#adjusting-default-processing-parameters-and-variables" title="Permalink to this headline">¶</a></h1>
+<p>A user may want to ajust certain variables according to its needs, the following page documents which variables of the satmo can be edited and for which purpose. All global variables are in <code class="docutils literal"><span class="pre">satmo/global_variables.py</span></code></p>
+<div class="section" id="adding-variables-to-the-oc2-collection">
+<h2>Adding variables to the OC2 collection<a class="headerlink" href="#adding-variables-to-the-oc2-collection" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">OC2</span></code> is a non standard L2 suite produced by the near real time component of the system. By default this collection includes the Raileyght corrected reflectances (<code class="docutils literal"><span class="pre">rhos_nnn</span></code>) to which are later on then appended fai and afai. To enable other variables to be generated by seadas l2gen, you must append these products to the global variable <code class="docutils literal"><span class="pre">VARS_FROM_L2_SUITE</span></code> located in <code class="docutils literal"><span class="pre">satmo.global_variables</span></code>.</p>
+<p>Product that seadas l2gen is not able to generate can also be added to the <code class="docutils literal"><span class="pre">OC2</span></code> collection by adding them to the <code class="docutils literal"><span class="pre">BAND_MATH_FUNCTIONS</span></code> global variables. The inputs required by the function listed in the <code class="docutils literal"><span class="pre">BAND_MATH_FUNCTIONS</span></code> must be available in the initial <code class="docutils literal"><span class="pre">OC2</span></code> L2 file.</p>
+<p>If you wish to produce L3m data from these new variables, you’ll likely need to edits the <code class="docutils literal"><span class="pre">STANDARD_L3_SUITES</span></code> and <code class="docutils literal"><span class="pre">L2_L3_SUITES_CORRESPONDENCES</span></code>, eventually creating a new L3 suite for that/these variable(s).</p>
+</div>
+<div class="section" id="change-default-masking-parameters-used-for-spatial-binning">
+<h2>Change default masking parameters used for spatial binning<a class="headerlink" href="#change-default-masking-parameters-used-for-spatial-binning" title="Permalink to this headline">¶</a></h2>
+<p>Seadas l2bin, called in the <code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code> command line, uses a set of masking parameters that differs for each L3 suite. These masking parameters are stored in the <code class="docutils literal"><span class="pre">FLAGS</span></code> global variable and can therefore be edited from there.</p>
+<p>Note that the <code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code> command line also includes a –flag argument that overrides the default flags values retrieved from the <code class="docutils literal"><span class="pre">FLAGS</span></code> global variable.</p>
+</div>
+<div class="section" id="data-visualization">
+<h2>Data visualization<a class="headerlink" href="#data-visualization" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">make_preview.py</span></code> command line that allows png previews to be generated relies for its scaling and color ramp selection on a global variable named <code class="docutils literal"><span class="pre">VIZ_PARAMS</span></code>. The selection of parameters is based on the variable name and specific to each variable. New variables should therefore be added as entry to that global variable.</p>
+</div>
+<div class="section" id="using-the-system-in-a-different-region-of-the-world">
+<h2>Using the system in a different region of the world<a class="headerlink" href="#using-the-system-in-a-different-region-of-the-world" title="Permalink to this headline">¶</a></h2>
+<p>Nearly all the functions of the library are generic and can be applied to ocean color data all around the world. There is one exception; the <code class="docutils literal"><span class="pre">is_day()</span></code> function from the <code class="docutils literal"><span class="pre">utils</span></code> module is tailored to the Mexico zone. Users that wish to use satmo in different regions should therefore adjust the threshold values of that function.</p>
+<p>Additionally, the near real time mode uses <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov/subscriptions/">data subscriptions</a> to retrieve the most recent real time and refined processing ocean color data. These subscriptions are obviously tailored to the initial satmo area, and new subscriptions should be made for the system to be operational in another part of the world. In satmo, data subscriptions codes are stored in the global variable <code class="docutils literal"><span class="pre">SUBSCRIPTIONS</span></code>.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api/index.html" class="btn btn-neutral float-right" title="satmo API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cli.html" class="btn btn-neutral" title="Using the command line interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
