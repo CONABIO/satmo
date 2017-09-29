@@ -711,7 +711,7 @@ with the same dimension than each input array.</li>
 <code class="descclassname">satmo.processors.</code><code class="descname">l2_append</code><span class="sig-paren">(</span><em>x</em>, <em>bands</em>, <em>formula</em>, <em>short_name</em>, <em>long_name</em>, <em>standard_name</em>, <em>valid_min</em>, <em>valid_max</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/satmo/processors.html#l2_append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#satmo.processors.l2_append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a new array and append it to an existing OBPG L2 file</p>
 <p>This function can be called by passing a nested dict of the global variable
-BAND_MATH_FUNCTIONS as kwargs. Example l2_append(x, <a href="#id1"><span class="problematic" id="id2">**</span></a>BAND_MATH_FUNCTIONS[‘afai’][sensor])</p>
+BAND_MATH_FUNCTIONS as kwargs. Example l2_append(x, **BAND_MATH_FUNCTIONS[‘afai’][sensor])</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

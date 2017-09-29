@@ -727,10 +727,12 @@
 
 <span class="sd">    Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly</span>
 <span class="sd">    targeted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:</span>
+
 <span class="sd">        * list all L2 files required to produce a L3b binned product (don&#39;t forget filtering using isDay() as well)</span>
 <span class="sd">        * list all L3m files from a same date but from different sensors in order to produce cross sensor composites</span>
 
 <span class="sd">    Required arguments differ depending on the level set. See list below:</span>
+<span class="sd">    </span>
 <span class="sd">        * &#39;L1A&#39;: data_root, date, level, (sensor_code)</span>
 <span class="sd">        * &#39;L2&#39;: data_root, date, level, suite, (sensor_code)</span>
 <span class="sd">        * &#39;L3m&#39;: data_root, date, level, suite, variable, (sensor_code), resolution, composite</span>
