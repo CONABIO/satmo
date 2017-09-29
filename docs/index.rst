@@ -25,6 +25,7 @@ git repository hosted at https://github.com/CONABIO/satmo
    :caption: User guide
 
    cli
+   variables
 
 
 .. toctree::

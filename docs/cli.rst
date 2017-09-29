@@ -32,14 +32,14 @@ Running ``satmo_nrt.py --help`` returns the following help page.
 .. code-block:: bash
 
     usage: satmo_nrt.py [-h] -day_vars [DAY_VARS [DAY_VARS ...]] -night_vars
-                    [NIGHT_VARS [NIGHT_VARS ...]]
-                    [-l1a_vars [L1A_VARS [L1A_VARS ...]]] [--no-refined]
-                    [--no-8DAY] [--no-month] -d DATA_ROOT
-                    [-map_res MAPPING_RESOLUTION]
-                    [-bin_res BINNING_RESOLUTION] -north NORTH -south SOUTH
-                    -east EAST -west WEST [-p PROJ]
-                    [-flags [FLAGS [FLAGS ...]]] [-delay DELAY]
-                    [-multi N_THREADS]
+                        [NIGHT_VARS [NIGHT_VARS ...]]
+                        [-l1a_vars [L1A_VARS [L1A_VARS ...]]] [--no-refined]
+                        [--no-8DAY] [--no-month] -d DATA_ROOT
+                        [-map_res MAPPING_RESOLUTION]
+                        [-bin_res BINNING_RESOLUTION] -north NORTH -south SOUTH
+                        -east EAST -west WEST [-p PROJ]
+                        [-flags [FLAGS [FLAGS ...]]] [-delay DELAY]
+                        [-multi N_THREADS]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -83,21 +83,19 @@ Running ``satmo_nrt.py --help`` returns the following help page.
       -multi N_THREADS, --n_threads N_THREADS
                             Number of threads to use for parallel implementation
 
-    Command Line utility to control the operational mode of the satmo system 
-    Enables download of L2 and L1A data from OBPG server (NRT and refined processing), processing of L3m files for several night and 
-    day variables, processing of daily composites, and processing of temporal composites. 
-    All these download and processing steps are scheduled and ran operationally. 
-    Daily composites and temporales composites are enabled by default 
-    Use the --no-daily_compose, --no-8DAY, and --no-16DAY to disable their generation 
+    Command Line utility to control the operational mode of the satmo system. Enables download of L2 and (day only) L1A data from OBPG server (NRT and refined processing),
+    processing of L3m and L2m files for several night and day variables, processing of daily composites, and processing of temporal composites. All these download and processing steps
+    are scheduled and ran operationally. Temporal composites are enabled by default. Use the --no-daily_compose, and --no-8DAYto disable their generation.
+
+    The L2 suite generated from L1A data by this command line is named OC2, and contains a list of variables defined in the global variable VARS_FROM_L2_SUITE. Additional variables can be
+    appended to the OC2 suite by passing them to --l1a_vars (these variable must have an entry in the BAND_MATH_FUNCTIONS satmo global variable). At the moment the OC2 suite is only
+    used for fai and afai generation, and therefore only processed up to level 2m (L2m).
 
     ------------------
     Example usage:
     ------------------
-
-    satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 -multi 3 
-
-
-
+    satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi 3
+    
 
 Update mode
 ^^^^^^^^^^^
@@ -130,7 +128,7 @@ Downloading data
 
 The ``timerange_download.py`` command line can be used to download data from the OBPG servers to a local archive. It supports downloading L1A as well as L2 files, with the option to select the suite in case of L2 download, and to choose between night or day data. Running ``timerange_download.py --help`` displays the help page of the command line interface.
 
-.. warning:: Downloading full speed causes problems of breaking connection, it is therefore preferable to limit download speed with tools like **trickle**.
+.. warning:: Downloading data for a long period without speed restriction may cause problems of breaking connection, and is not permitted during office hours at CONABIO. It is therefore preferable to limit download speed with tools like **trickle**. See example below.
 
 The example below illustrates a download process (L1A data) with speed limited to 3MBps.
 

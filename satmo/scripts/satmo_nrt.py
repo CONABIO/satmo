@@ -106,17 +106,22 @@ def main(day_vars, night_vars, l1a_vars, refined, eight_day, month, data_root,
         time.sleep(1)
 
 if __name__ == '__main__':
-    epilog = ('Command Line utility to control the operational mode of the satmo system \n'
-              'Enables download of L2 and L1A data from OBPG server (NRT and refined processing), processing of L3m files for several night and \n'
-              'day variables, processing of daily composites, and processing of temporal composites. \n'
-              'All these download and processing steps are scheduled and ran operationally. \n'
-              'Daily composites and temporales composites are enabled by default \n'
-              'Use the --no-daily_compose, --no-8DAY, and --no-16DAY to disable their generation \n\n'
-              '------------------\n'
-              'Example usage:\n'
-              '------------------\n\n'
-              'satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 \n'
-              '--east -72 -d /export/isilon/datos2/satmo2_data/ -multi 3')
+    epilog = """
+
+Command Line utility to control the operational mode of the satmo system. Enables download of L2 and (day only) L1A data from OBPG server (NRT and refined processing),
+processing of L3m and L2m files for several night and day variables, processing of daily composites, and processing of temporal composites. All these download and processing steps
+are scheduled and ran operationally. Temporal composites are enabled by default. Use the --no-daily_compose, and --no-8DAYto disable their generation.
+
+The L2 suite generated from L1A data by this command line is named OC2, and contains a list of variables defined in the global variable VARS_FROM_L2_SUITE. Additional variables can be
+appended to the OC2 suite by passing them to --l1a_vars (these variable must have an entry in the BAND_MATH_FUNCTIONS satmo global variable). At the moment the OC2 suite is only
+used for fai and afai generation, and therefore only processed up to level 2m (L2m).
+
+------------------
+Example usage:
+------------------
+satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai fai --north 33 --south 3 --west -122 --east -72 -d /export/isilon/datos2/satmo2_data/ -multi 3
+"""
+
 
     parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
 
