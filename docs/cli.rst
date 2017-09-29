@@ -126,7 +126,7 @@ Update mode is used primarilly to download and process archive data. All command
 
 
 Downloading data
-""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^
 
 The ``timerange_download.py`` command line can be used to download data from the OBPG servers to a local archive. It supports downloading L1A as well as L2 files, with the option to select the suite in case of L2 download, and to choose between night or day data. Running ``timerange_download.py --help`` displays the help page of the command line interface.
 
@@ -140,8 +140,9 @@ The example below illustrates a download process (L1A data) with speed limited t
     nohup trickle -d 3000 timerange_download.py --terra --aqua -b 2010-01-01 -e 2012-12-31 -north 32 -south 4 -west -121 -east -73 -d /some/directory/with/free/space > YYYYMMDD_download_log.log &
 
 
+
 Examples usage
-++++++++++++++
+""""""""""""""""""""""""""
 
 * L1A data download
 
@@ -173,7 +174,7 @@ The command line ``timerange_L2_process.py`` processes L2 files from L1A. The co
 
 
 Examples usage
-++++++++++++++
+""""""""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -190,7 +191,7 @@ The ``timerange_L2_append.py`` command line enables computing additional variabl
 The list of variables that can be processed using that command line can be found in ``satmo.global_variables.BAND_MATH_FUNCTIONS``. Edit that variable in the satmo source code following the existing model to enable processing of additional variables. 
 
 Examples usage
-++++++++++++++
+""""""""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -206,7 +207,7 @@ The ``timerange_L2m_process.py`` runs seadas ``l2mapgen`` on individual L2 file,
 
 
 Examples usage
-++++++++++++++
+""""""""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -223,7 +224,7 @@ The ``l2bin`` utility uses default masking values fetched from a global variable
 
 
 Examples usage
-++++++++++++++
+""""""""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -238,7 +239,7 @@ The ``timerange_time_compositing.py`` runs seadas ``l3bin`` and ``l3mapgen`` seq
 
 
 Examples usage
-++++++++++++++
+""""""""""""""""""""""""""
 
 .. code-block:: bash
 
