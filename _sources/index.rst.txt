@@ -101,10 +101,6 @@ User guide
    cli
 
 
-Many processing parameters (default masking values, formulas, suites, variables) are stored in global variables, stored in satmo/oceancolor/global_variables.py. The section below explains which variables have to be edited ...
-
-
-
 
 Technical documentation
 =======================

@@ -94,18 +94,31 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Using the command line interface</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#before-starting">Before starting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#starting-satmo-near-real-time-mode">Starting satmo near real time mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#update-mode">Update mode</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#downloading-data">Downloading data</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#examples-usage">Examples usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-mode">Update mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-data">Downloading data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#examples-usage">Examples usage</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#processing-l2-data-from-l1a">Processing L2 data from L1A</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Examples usage</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#processing-l2-data-from-l1a">Processing L2 data from L1A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generating-additional-l2-variables">Generating additional L2 variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generating-mapped-l2-variables">Generating mapped L2 variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generating-mapped-l3m-variables">Generating mapped L3m variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generating-temporal-composites">Generating temporal composites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-additional-l2-variables">Generating additional L2 variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Examples usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-mapped-l2-variables">Generating mapped L2 variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Examples usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-mapped-l3m-variables">Generating mapped L3m variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Examples usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-temporal-composites">Generating temporal composites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Examples usage</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#data-visualization">Data visualization</a></li>
 </ul>
 </li>
@@ -319,8 +332,9 @@ satmo_nrt.py --day_vars chlor_a nflh sst Kd_490 --night_vars sst --l1a_vars afai
 </tr>
 </tbody>
 </table>
+</div>
 <div class="section" id="downloading-data">
-<h3>Downloading data<a class="headerlink" href="#downloading-data" title="Permalink to this headline">¶</a></h3>
+<h2>Downloading data<a class="headerlink" href="#downloading-data" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">timerange_download.py</span></code> command line can be used to download data from the OBPG servers to a local archive. It supports downloading L1A as well as L2 files, with the option to select the suite in case of L2 download, and to choose between night or day data. Running <code class="docutils literal"><span class="pre">timerange_download.py</span> <span class="pre">--help</span></code> displays the help page of the command line interface.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -332,7 +346,7 @@ nohup trickle -d <span class="m">3000</span> timerange_download.py --terra --aqu
 </pre></div>
 </div>
 <div class="section" id="examples-usage">
-<h4>Examples usage<a class="headerlink" href="#examples-usage" title="Permalink to this headline">¶</a></h4>
+<h3>Examples usage<a class="headerlink" href="#examples-usage" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>L1A data download</li>
 </ul>
@@ -354,48 +368,62 @@ nohup trickle -d <span class="m">3000</span> timerange_download.py --terra --aqu
 </div>
 </div>
 </div>
-</div>
 <div class="section" id="processing-l2-data-from-l1a">
 <h2>Processing L2 data from L1A<a class="headerlink" href="#processing-l2-data-from-l1a" title="Permalink to this headline">¶</a></h2>
 <p>The command line <code class="docutils literal"><span class="pre">timerange_L2_process.py</span></code> processes L2 files from L1A. The command line is a wrapper (and batcher) around the seadas utility <code class="docutils literal"><span class="pre">l2gen</span></code>. The figure below details the processing chain triggered by the command line.</p>
 <img alt="_images/l2gen_flowchart.png" src="_images/l2gen_flowchart.png" />
+<div class="section" id="id1">
+<h3>Examples usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process a L2 suite called OC2 that contains Rayleight corrected reflectances</span>
 timerange_L2_process.py --aqua --terra --viirs -b <span class="m">2014</span>-01-01 -e <span class="m">2014</span>-12-31 -v rhos_nnn -s OC2 -d /export/isilon/data2/satmo2_data -multi <span class="m">3</span>
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="generating-additional-l2-variables">
 <h2>Generating additional L2 variables<a class="headerlink" href="#generating-additional-l2-variables" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">timerange_L2_append.py</span></code> command line enables computing additional variables from bands present in an L2 file. The new index/band layer is appended to the L2 file from which the input were taken.</p>
 <p>The list of variables that can be processed using that command line can be found in <code class="docutils literal"><span class="pre">satmo.global_variables.BAND_MATH_FUNCTIONS</span></code>. Edit that variable in the satmo source code following the existing model to enable processing of additional variables.</p>
+<div class="section" id="id2">
+<h3>Examples usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process afai and append it to the OC2 L2 suite generated by the command above</span>
 timerange_L2_append.py --aqua --terra --viirs -b <span class="m">2014</span>-01-01 -e <span class="m">2014</span>-12-31 -v afai -s OC2 -d /export/isilon/data2/satmo2_data -multi <span class="m">3</span>
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="generating-mapped-l2-variables">
 <h2>Generating mapped L2 variables<a class="headerlink" href="#generating-mapped-l2-variables" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">timerange_L2m_process.py</span></code> runs seadas <code class="docutils literal"><span class="pre">l2mapgen</span></code> on individual L2 file, to produced mapped products.</p>
+<div class="section" id="id3">
+<h3>Examples usage<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process afai and append it to the OC2 L2 suite generated by the command above</span>
 timerange_L2_append.py --aqua --terra --viirs -b <span class="m">2014</span>-01-01 -e <span class="m">2014</span>-12-31 -v afai -s OC2 -d /export/isilon/data2/satmo2_data -multi <span class="m">3</span>
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="generating-mapped-l3m-variables">
 <h2>Generating mapped L3m variables<a class="headerlink" href="#generating-mapped-l3m-variables" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">timerange_bin_map.py</span></code> runs seadas <code class="docutils literal"><span class="pre">l2bin</span></code> and <code class="docutils literal"><span class="pre">l3mapgen</span></code> sequentially, hence producing L3m products. It also produces L3b files (one for each collection), which are intermediary output in that case, but required inputs for the temporal compositing command line (<code class="docutils literal"><span class="pre">timerange_time_compositing.py</span></code>).</p>
 <p>The <code class="docutils literal"><span class="pre">l2bin</span></code> utility uses default masking values fetched from a global variable named <code class="docutils literal"><span class="pre">FLAGS</span></code> and located at <code class="docutils literal"><span class="pre">satmo.global_variables</span></code>. Edit this variable to change the default values.</p>
+<div class="section" id="id4">
+<h3>Examples usage<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Process chlor_a, night sst, sst, and chl_ocx for viirs, aqua and terra between 2000 and 2017</span>
 timerange_bin_map.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-12-31 -south <span class="m">3</span> -north <span class="m">33</span> -west -122 -east -72 -d /export/isilon/datos2/satmo2_data -bin_res <span class="m">1</span> -map_res <span class="m">1000</span> -day_vars chlor_a chl_ocx sst -night_vars sst -multi <span class="m">6</span>
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="generating-temporal-composites">
 <h2>Generating temporal composites<a class="headerlink" href="#generating-temporal-composites" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">timerange_time_compositing.py</span></code> runs seadas <code class="docutils literal"><span class="pre">l3bin</span></code> and <code class="docutils literal"><span class="pre">l3mapgen</span></code> sequentially, hence producing mapped temporal composites.</p>
+<div class="section" id="id5">
+<h3>Examples usage<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Generate 8 days composites for aqua, viirs and terra for the period 2000-2017 (for chlor_a, chl_ocx, sst and night sst)</span>
 timerange_time_compositing.py --aqua --terra --viirs -b <span class="m">2000</span>-01-01 -e <span class="m">2017</span>-12-31 -delta <span class="m">8</span> -day_vars chlor_a chl_ocx sst -night_vars sst -north <span class="m">33</span> -south <span class="m">3</span> -west -122 -east -72 -d /export/isilon/datos2/satmo2_data
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="data-visualization">
