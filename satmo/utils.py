@@ -550,10 +550,12 @@ def file_finder(data_root, date, level, suite = None, variable = None, sensor_co
 
     Builds a glob pattern from the provided information and runs glob.glob on it. THis function is not fully generic, and so mostly
     targeted at L1A, L2, and L3m file (no climatologies or anomalies). Example applications include:
+
         * list all L2 files required to produce a L3b binned product (don't forget filtering using isDay() as well)
         * list all L3m files from a same date but from different sensors in order to produce cross sensor composites
 
     Required arguments differ depending on the level set. See list below:
+    
         * 'L1A': data_root, date, level, (sensor_code)
         * 'L2': data_root, date, level, suite, (sensor_code)
         * 'L3m': data_root, date, level, suite, variable, (sensor_code), resolution, composite
