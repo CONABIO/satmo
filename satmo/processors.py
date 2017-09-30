@@ -809,7 +809,7 @@ def l2_append(x, bands, formula, short_name, long_name, standard_name,
     """Compute a new array and append it to an existing OBPG L2 file
 
     This function can be called by passing a nested dict of the global variable
-    BAND_MATH_FUNCTIONS as kwargs. Example ``l2_append(x, \*\*BAND_MATH_FUNCTIONS['afai'][sensor])``
+    BAND_MATH_FUNCTIONS as kwargs. Example ``l2_append(x, **BAND_MATH_FUNCTIONS['afai'][sensor])``
 
     Args:
         x (str): Input L2 file in netCDF format
